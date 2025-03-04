@@ -21,7 +21,6 @@ final class CategoryViewController: UIViewController {
         setupTableView()
         setupUI()
     }
-    
 }
 
 private extension CategoryViewController {
@@ -30,8 +29,6 @@ private extension CategoryViewController {
         tblView.translatesAutoresizingMaskIntoConstraints = false
         tblView.register(CategoryCell.self, forCellReuseIdentifier: "CategoryCell")
         tblView.separatorStyle = .none
-        
-        
         NSLayoutConstraint.activate([
             tblView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tblView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -45,7 +42,6 @@ private extension CategoryViewController {
         title = "All categories"
         navigationController?.navigationBar.prefersLargeTitles = true
     }
-    
 }
 
 extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
@@ -56,9 +52,7 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
         headerView.delegate = self
         headerView.titleLabel.text = data[section].headerName
         headerView.leftImageView.image = UIImage(named: data[section].image)
-        
         headerView.toggleChevron(isExpandable: data[section].isExpandable)
-
         return headerView
     }
     
@@ -79,15 +73,11 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
         return 55
     }
     
-    
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as? CategoryCell else {
             return UITableViewCell()
         }
-        
         cell.textLabel?.text = data[indexPath.section].subType[indexPath.row]
-        
         return cell
         
     }
