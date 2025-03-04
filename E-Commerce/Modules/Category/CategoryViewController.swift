@@ -27,10 +27,10 @@ final class CategoryViewController: UIViewController {
 private extension CategoryViewController {
     func setupTableView() {
         view.addSubview(tblView)
-//        tblView.tableFooterView = UIView()
         tblView.translatesAutoresizingMaskIntoConstraints = false
         tblView.register(CategoryCell.self, forCellReuseIdentifier: "CategoryCell")
-
+        tblView.separatorStyle = .none
+        
         
         NSLayoutConstraint.activate([
             tblView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -55,6 +55,10 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
         headerView.secIndex = section
         headerView.delegate = self
         headerView.btn.setTitle(data[section].headerName, for: .normal)
+        headerView.leftImageView.image = UIImage(named: data[section].image)
+        
+        headerView.toggleChevron(isExpandable: data[section].isExpandable)
+
         return headerView
     }
     
@@ -75,24 +79,24 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
         return 55
     }
     
- 
+    
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as? CategoryCell else {
             return UITableViewCell()
         }
-            
+        
         cell.textLabel?.text = data[indexPath.section].subType[indexPath.row]
         
         return cell
         
     }
 }
-    
-    extension CategoryViewController: HeaderDelegate {
 
+extension CategoryViewController: HeaderDelegate {
+    
     func callHeader(idx: Int) {
-        data[idx].isExpandable = !data[idx].isExpandable
+        data[idx].isExpandable.toggle()
         tblView.reloadSections ([idx], with: .automatic)
     }
 }

@@ -17,6 +17,23 @@ class HeaderView: UIView {
     var secIndex: Int?
     var delegate: HeaderDelegate?
     
+    lazy var leftImageView: UIImageView = {
+        let imgView = UIImageView()
+        imgView.contentMode = .scaleAspectFill
+        imgView.layer.cornerRadius = 5
+        imgView.clipsToBounds = true
+        imgView.translatesAutoresizingMaskIntoConstraints = false
+        return imgView
+    }()
+    
+    lazy var rightImageView: UIImageView = {
+            let img = UIImageView()
+            img.image = UIImage(systemName: "chevron.down")
+            img.tintColor = .blue
+            img.translatesAutoresizingMaskIntoConstraints = false
+            return img
+        }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.addSubview(btn)
@@ -41,26 +58,14 @@ class HeaderView: UIView {
         btn.setTitleColor(.black, for: .normal)
         btn.addTarget(self, action: #selector(onClickHeaderView), for: .touchUpInside)
         
-        let leftImageView = UIImageView()
-        leftImageView.image = UIImage(named: "sample")
-        leftImageView.contentMode = .scaleAspectFill
-        leftImageView.layer.cornerRadius = 5
-        leftImageView.clipsToBounds = true
-        leftImageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        let rightImageView = UIImageView()
-        rightImageView.image = UIImage(systemName: "chevron.up")
-        rightImageView.tintColor = .blue
-        rightImageView.translatesAutoresizingMaskIntoConstraints = false
-        
         btn.addSubview(leftImageView)
         btn.addSubview(rightImageView)
         
         NSLayoutConstraint.activate([
-            leftImageView.leadingAnchor.constraint(equalTo: btn.leadingAnchor, constant: 10),
-            leftImageView.topAnchor.constraint(equalTo: btn.topAnchor, constant: 10),
-            leftImageView.widthAnchor.constraint(equalToConstant: 39),
-            leftImageView.heightAnchor.constraint(equalToConstant: 39),
+            leftImageView.leadingAnchor.constraint(equalTo: btn.leadingAnchor, constant: -5),
+            leftImageView.centerYAnchor.constraint(equalTo: btn.centerYAnchor),
+            leftImageView.widthAnchor.constraint(equalToConstant: 45),
+            leftImageView.heightAnchor.constraint(equalToConstant: 45),
             
             rightImageView.trailingAnchor.constraint(equalTo: btn.trailingAnchor, constant: -10),
             rightImageView.centerYAnchor.constraint(equalTo: btn.centerYAnchor)
@@ -74,4 +79,12 @@ class HeaderView: UIView {
             delegate?.callHeader(idx: idx)
         }
     }
+    
+    func toggleChevron(isExpandable: Bool) {
+            let chevron = isExpandable ? "chevron.up" : "chevron.down"
+            UIView.animate(withDuration: 0.3) {
+                self.rightImageView.image = UIImage(systemName: chevron)
+            }
+        }
+    
 }
