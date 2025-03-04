@@ -19,7 +19,14 @@ class TabBarViewController: UITabBarController {
         setupViewControllers()
     }
 
-    private func setupViewControllers() {        
+    private func setupViewControllers() {
+        tabBar.backgroundColor = .white
+        tabBar.layer.shadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.1).cgColor
+        tabBar.layer.shadowOffset = CGSize(width: 0.0, height: -1.0)
+        tabBar.layer.shadowRadius = 1
+        tabBar.layer.shadowOpacity = 1
+        tabBar.layer.masksToBounds = false
+        
         homeVC.tabBarItem.image = UIImage(resource: .homeTab)
         homeVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         
@@ -36,5 +43,3 @@ class TabBarViewController: UITabBarController {
     }
 
 }
-
-
