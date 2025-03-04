@@ -8,7 +8,7 @@
 import UIKit
 
 final class CategoryCell: UITableViewCell {
-    
+
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
@@ -20,12 +20,13 @@ final class CategoryCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
         contentView.addSubview(titleLabel)
         NSLayoutConstraint.activate([
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
         ])
+        
+        setupSelectedBackground()
     }
     
     required init?(coder: NSCoder) {
@@ -34,5 +35,14 @@ final class CategoryCell: UITableViewCell {
     
     func configure(with text: String) {
         titleLabel.text = text
+    }
+    
+    private func setupSelectedBackground() {
+        let selectedView = UIView()
+        selectedView.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
+        selectedView.layer.cornerRadius = 7
+        selectedView.layer.masksToBounds = true
+        selectedView.layer.cornerCurve = .continuous
+        self.selectedBackgroundView = selectedView
     }
 }
