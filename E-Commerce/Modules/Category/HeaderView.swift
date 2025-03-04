@@ -12,7 +12,7 @@ protocol HeaderDelegate {
     func callHeader(idx: Int)
 }
 
-class HeaderView: UIView {
+final class HeaderView: UIView {
     
     var secIndex: Int?
     var delegate: HeaderDelegate?
@@ -65,7 +65,6 @@ class HeaderView: UIView {
         btn.layer.borderWidth = 0
         btn.setTitleColor(.black, for: .normal)
         btn.addTarget(self, action: #selector(onClickHeaderView), for: .touchUpInside)
-        
         btn.addSubview(leftImageView)
         btn.addSubview(rightImageView)
         btn.addSubview(titleLabel)
@@ -75,10 +74,8 @@ class HeaderView: UIView {
             leftImageView.centerYAnchor.constraint(equalTo: btn.centerYAnchor),
             leftImageView.widthAnchor.constraint(equalToConstant: 45),
             leftImageView.heightAnchor.constraint(equalToConstant: 45),
-            
             titleLabel.leadingAnchor.constraint(equalTo: leftImageView.trailingAnchor, constant: 10),
             titleLabel.centerYAnchor.constraint(equalTo: btn.centerYAnchor),
-            
             rightImageView.trailingAnchor.constraint(equalTo: btn.trailingAnchor, constant: -10),
             rightImageView.centerYAnchor.constraint(equalTo: btn.centerYAnchor)
         ])

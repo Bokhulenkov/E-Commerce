@@ -7,8 +7,8 @@
 
 import UIKit
 
-class CategoryCell: UITableViewCell {
- 
+final class CategoryCell: UITableViewCell {
+    
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
@@ -22,7 +22,6 @@ class CategoryCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         contentView.addSubview(titleLabel)
-        
         NSLayoutConstraint.activate([
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
