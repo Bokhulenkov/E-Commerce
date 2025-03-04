@@ -14,9 +14,20 @@ class TabBarViewController: UITabBarController {
     let cartVC = CartViewController()
     let settingsVC = SettingsViewController()
 
+    private let indicatorView = UIView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViewControllers()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateIndicatorPosition(for: tabBar.items?[selectedIndex])
+    }
+    
+    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+        updateIndicatorPosition(for: item)
     }
 
     private func setupViewControllers() {
@@ -40,6 +51,31 @@ class TabBarViewController: UITabBarController {
         settingsVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         
         viewControllers = [homeVC, wishlistVC, cartVC, settingsVC]
+        
+        guard let tabBarItems = tabBar.items else { return }
+        
+        indicatorView.backgroundColor = UIColor.black
+        indicatorView.layer.cornerRadius = 2
+        tabBar.addSubview(indicatorView)
+                
+        if let firstItem = tabBarItems.first {
+            updateIndicatorPosition(for: firstItem)
+        }
+    }
+        
+    private func updateIndicatorPosition(for item: UITabBarItem?) {
+        guard let item = item, let index = tabBar.items?.firstIndex(of: item) else { return }
+            
+        let tabBarItemCount = CGFloat(tabBar.items?.count ?? 1)
+        let itemWidth = tabBar.frame.width / tabBarItemCount
+        let indicatorWidth: CGFloat = 10
+        let indicatorHeight: CGFloat = 3
+        let indicatorYPosition: CGFloat = 45
+        let itemXPosition = (itemWidth * CGFloat(index)) + (itemWidth / 2) - (indicatorWidth / 2)
+
+        UIView.animate(withDuration: 0.2) {
+            self.indicatorView.frame = CGRect(x: itemXPosition, y: indicatorYPosition, width: indicatorWidth, height: indicatorHeight)
+        }
     }
 
 }
