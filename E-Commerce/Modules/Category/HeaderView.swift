@@ -27,12 +27,20 @@ class HeaderView: UIView {
     }()
     
     lazy var rightImageView: UIImageView = {
-            let img = UIImageView()
-            img.image = UIImage(systemName: "chevron.down")
-            img.tintColor = .blue
-            img.translatesAutoresizingMaskIntoConstraints = false
-            return img
-        }()
+        let img = UIImageView()
+        img.image = UIImage(systemName: "chevron.down")
+        img.tintColor = .blue
+        img.translatesAutoresizingMaskIntoConstraints = false
+        return img
+    }()
+    
+    lazy var titleLabel: UILabel = {
+        let titleLabel = UILabel()
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        titleLabel.textColor = .black
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        return titleLabel
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -60,12 +68,16 @@ class HeaderView: UIView {
         
         btn.addSubview(leftImageView)
         btn.addSubview(rightImageView)
+        btn.addSubview(titleLabel)
         
         NSLayoutConstraint.activate([
-            leftImageView.leadingAnchor.constraint(equalTo: btn.leadingAnchor, constant: -5),
+            leftImageView.leadingAnchor.constraint(equalTo: btn.leadingAnchor, constant: 5),
             leftImageView.centerYAnchor.constraint(equalTo: btn.centerYAnchor),
             leftImageView.widthAnchor.constraint(equalToConstant: 45),
             leftImageView.heightAnchor.constraint(equalToConstant: 45),
+            
+            titleLabel.leadingAnchor.constraint(equalTo: leftImageView.trailingAnchor, constant: 10),
+            titleLabel.centerYAnchor.constraint(equalTo: btn.centerYAnchor),
             
             rightImageView.trailingAnchor.constraint(equalTo: btn.trailingAnchor, constant: -10),
             rightImageView.centerYAnchor.constraint(equalTo: btn.centerYAnchor)
@@ -81,10 +93,10 @@ class HeaderView: UIView {
     }
     
     func toggleChevron(isExpandable: Bool) {
-            let chevron = isExpandable ? "chevron.up" : "chevron.down"
-            UIView.animate(withDuration: 0.3) {
-                self.rightImageView.image = UIImage(systemName: chevron)
-            }
+        let chevron = isExpandable ? "chevron.up" : "chevron.down"
+        UIView.animate(withDuration: 0.3) {
+            self.rightImageView.image = UIImage(systemName: chevron)
         }
+    }
     
 }
