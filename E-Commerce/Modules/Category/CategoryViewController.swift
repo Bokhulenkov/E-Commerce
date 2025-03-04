@@ -54,7 +54,7 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
         let headerView = HeaderView(frame: CGRect(x: 0, y: 0, width: tblView.frame.size.width, height: 55))
         headerView.secIndex = section
         headerView.delegate = self
-        headerView.btn.setTitle(data[section].headerName, for: .normal)
+        headerView.titleLabel.text = data[section].headerName
         headerView.leftImageView.image = UIImage(named: data[section].image)
         
         headerView.toggleChevron(isExpandable: data[section].isExpandable)
