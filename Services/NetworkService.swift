@@ -44,9 +44,9 @@ struct NetworkService {
         let decoder = JSONDecoder()
         
         do {
-            let decodedData = try decoder.decode(ProductData.self, from: productData)
+            let decodedData = try decoder.decode([ProductData].self, from: productData)
             
-            let productModels = decodedData.products.map { product in
+            let productModels = decodedData.map { product in
                 ProductModel(
                     id: product.id,
                     title: product.title,

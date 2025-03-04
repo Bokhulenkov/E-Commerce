@@ -8,10 +8,6 @@
 import Foundation
 
 struct ProductData: Codable {
-    let products: [Product]
-}
-
-struct Product: Codable {
     let id: Int
     let title: String
     let price: Double
