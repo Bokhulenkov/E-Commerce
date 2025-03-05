@@ -134,6 +134,7 @@ final class HomeViewController: UIViewController {
     
     @objc func openCategoriesButtonAction(_ button: UIButton) {
         print("openCategoriesButtonAction")
+        tabBarController?.selectedIndex = 2
     }
     
     @objc func openPopularButtonAction(_ button: UIButton) {
