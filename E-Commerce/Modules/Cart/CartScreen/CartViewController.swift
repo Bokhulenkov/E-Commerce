@@ -208,6 +208,7 @@ class CartItemCell: UITableViewCell {
         didSet {
             counterLabel.text = "\(quantity)"
             onQuantityChanged?(quantity)
+            updateMinusButtonState()
         }
     }
     
@@ -220,12 +221,25 @@ class CartItemCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private func updateMinusButtonState() {
+        if quantity <= 1 {
+            minusButton.isEnabled = false
+            minusButton.setTitleColor(.lightGray, for: .normal)
+            minusButton.layer.borderColor = UIColor.lightGray.cgColor
+        } else {
+            minusButton.isEnabled = true
+            minusButton.setTitleColor(.blue, for: .normal)
+            minusButton.layer.borderColor = UIColor.blue.cgColor
+        }
+    }
+    
     func configure(image: UIImage?, title: String, size: String, price: Double, quantity: Int) {
         itemImageView.image = image
         titleLabel.text = title
         sizeLabel.text = "Size: \(size)"
         priceLabel.text = String(format: "$%.2f", price)
         self.quantity = quantity
+        updateMinusButtonState()
     }
     
     private func setupUI() {
