@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let appearance = UITabBar.appearance()
         appearance.tintColor = UIColor.black
-        appearance.unselectedItemTintColor = UIColor(red: 0, green: 0.298, blue: 1, alpha: 1)
+        appearance.unselectedItemTintColor = .button
         
         return true
     }

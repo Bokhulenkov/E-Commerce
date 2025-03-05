@@ -14,7 +14,7 @@ class HeaderWithButtonView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = ""
         label.font = UIFont.custom(font: .ralewayBold, size: 21)
-        label.textColor = .black
+        label.textColor = .text
         return label
     }()
 
@@ -24,13 +24,13 @@ class HeaderWithButtonView: UIView {
         label.text = ""
         label.textAlignment = .right
         label.font = UIFont.custom(font: .ralewayBold, size: 15)
-        label.textColor = .black
+        label.textColor = .text
         return label
     }()
 
     private let viewButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(red: 0, green: 0.298, blue: 1, alpha: 1)
+        button.backgroundColor = .button
         button.layer.cornerRadius = 15
         button.setImage(UIImage(systemName: "arrow.right"), for: .normal)
         button.tintColor = .white
@@ -49,7 +49,7 @@ class HeaderWithButtonView: UIView {
     }
 
     private func configureView() {
-        backgroundColor = .white
+        backgroundColor = .backgound
         translatesAutoresizingMaskIntoConstraints = false
         heightAnchor.constraint(equalToConstant: 30).isActive = true
 

@@ -14,12 +14,64 @@ final class HomeViewController: UIViewController {
     private var popularProducts: [ProductModel] = []
     private var justForYouProducts: [ProductModel] = []
     private var uniqueCategories: [String] = []
+    private var cartCount: Int {
+        get {
+            return Int(cartCountLabel.text ?? "0") ?? 0
+        }
+        set {
+            cartCountLabel.text = "\(newValue)"
+            cartCountLabel.isHidden = newValue == 0
+        }
+    }
+    
+    private let cartButton: UIButton = {
+        let button = UIButton()
+        button.setImage(.chartIcon, for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+        
+    private let cartCountLabel: UILabel = {
+        let label = UILabel()
+        label.backgroundColor = .red
+        label.text = "0"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.custom(font: .ralewayBold, size: 7)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.layer.cornerRadius = 6
+        label.clipsToBounds = true
+        label.isHidden = true
+        return label
+    }()
+    
+    private let shopTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Shop"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.custom(font: .ralewayBold, size: 28)
+        label.textColor = .text
+        label.textAlignment = .left
+        return label
+    }()
+    
+    private let searchTextField: UITextField = {
+        let textField = UITextField()
+        textField.backgroundColor = .searchFieldBackGround
+        textField.layer.cornerRadius = 18
+        textField.placeholder = "Search"
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
+        textField.leftView = leftPaddingView
+        textField.leftViewMode = .always
+        return textField
+    }()
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.showsVerticalScrollIndicator = false
-        scrollView.clipsToBounds = false
+        scrollView.clipsToBounds = true
         return scrollView
     }()
     
@@ -67,7 +119,7 @@ final class HomeViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Just For You"
         label.font = UIFont.custom(font: .ralewayBold, size: 21)
-        label.textColor = .black
+        label.textColor = .text
         return label
     }()
     lazy var collectionProductsView: UICollectionView = {
@@ -90,15 +142,40 @@ final class HomeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        cartButton.addTarget(self, action: #selector(openCartButtonAction), for: .touchUpInside)
         networkService.delegate = self
         networkService.performRequest()
     }
     
     private func configureUI() {
+        view.addSubview(cartButton)
+        cartButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -21).isActive = true
+        cartButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 11).isActive = true
+        cartButton.heightAnchor.constraint(equalToConstant: 28).isActive = true
+        cartButton.widthAnchor.constraint(equalToConstant: 31).isActive = true
+        
+        view.addSubview(cartCountLabel)
+        cartCountLabel.leftAnchor.constraint(equalTo: cartButton.centerXAnchor, constant: 4).isActive = true
+        cartCountLabel.bottomAnchor.constraint(equalTo: cartButton.centerYAnchor, constant: -4).isActive = true
+        cartCountLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
+        cartCountLabel.widthAnchor.constraint(equalToConstant: 12).isActive = true
+        
+        view.addSubview(shopTitle)
+        shopTitle.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 21).isActive = true
+        shopTitle.topAnchor.constraint(equalTo: cartButton.bottomAnchor, constant: 10).isActive = true
+        shopTitle.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        shopTitle.widthAnchor.constraint(equalToConstant: 70).isActive = true
+        
+        view.addSubview(searchTextField)
+        searchTextField.leftAnchor.constraint(equalTo: shopTitle.rightAnchor, constant: 19).isActive = true
+        searchTextField.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -21).isActive = true
+        searchTextField.topAnchor.constraint(equalTo: cartButton.bottomAnchor, constant: 10).isActive = true
+        searchTextField.heightAnchor.constraint(equalToConstant: 36).isActive = true
+
         view.addSubview(scrollView)
         scrollView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
         scrollView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24).isActive = true
+        scrollView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 14).isActive = true
         scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
 
         scrollView.addSubview(headerCategoriesView)
@@ -138,6 +215,13 @@ final class HomeViewController: UIViewController {
         collectionProductsView.heightAnchor.constraint(equalTo: collectionProductsView.widthAnchor, multiplier: 1.8).isActive = true
     }
     
+    //MARK: Func
+    
+    private func changeCountCart(add: Int) {
+        cartCount += add
+        cartCountLabel.text = "\(cartCount)"
+    }
+    
     //MARK: Action
     
     @objc func openCategoriesButtonAction(_ button: UIButton) {
@@ -146,6 +230,10 @@ final class HomeViewController: UIViewController {
     
     @objc func openPopularButtonAction(_ button: UIButton) {
         print("openPopularButtonAction")
+    }
+    
+    @objc func openCartButtonAction(_ button: UIButton) {
+        tabBarController?.selectedIndex = 3
     }
 }
 
@@ -195,6 +283,16 @@ extension HomeViewController: UICollectionViewDataSource {
 
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
             cell.configure(justForYouProducts[indexPath.row].image, justForYouProducts[indexPath.row].title, justForYouProducts[indexPath.row].price)
+            
+            cell.addButtonAction = {
+                print("Add to cart: \(self.justForYouProducts[indexPath.item].title)")
+                self.changeCountCart(add: 1)
+            }
+            
+            cell.likeButtonAction = { liked in
+                print("like state \(liked) for \(self.justForYouProducts[indexPath.item].title)")
+            }
+            
             return cell
 
         } else {

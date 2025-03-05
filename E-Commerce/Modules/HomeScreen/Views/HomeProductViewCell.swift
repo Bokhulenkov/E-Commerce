@@ -10,6 +10,9 @@ import Kingfisher
 
 class HomeProductViewCell: UICollectionViewCell {
     
+    var addButtonAction: (() -> Void)?
+    var likeButtonAction: ((Bool) -> Void)?
+
     private let addButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -33,10 +36,10 @@ class HomeProductViewCell: UICollectionViewCell {
     
     private let productTitle: UILabel = {
         let label = UILabel()
-        label.text = "Lorem ipsum dolor sit amet consectetur"
+        label.text = ""
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.custom(font: .nunito, size: 12)
-        label.textColor = .black
+        label.textColor = .text
         label.textAlignment = .left
         label.numberOfLines = 2
         label.lineBreakMode = .byWordWrapping
@@ -45,10 +48,10 @@ class HomeProductViewCell: UICollectionViewCell {
     
     private let productPrice: UILabel = {
         let label = UILabel()
-        label.text = "$17,00"
+        label.text = ""
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.custom(font: .ralewayBold, size: 17)
-        label.textColor = .black
+        label.textColor = .text
         label.textAlignment = .left
         label.numberOfLines = 2
         label.lineBreakMode = .byWordWrapping
@@ -57,13 +60,15 @@ class HomeProductViewCell: UICollectionViewCell {
     
     private let likeButton: UIButton = {
         let button = UIButton()
-        button.setImage(.likeButton, for: .normal)
+        button.setImage(.heartRed, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
+        likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
         configureCell()
     }
         
@@ -102,8 +107,8 @@ class HomeProductViewCell: UICollectionViewCell {
         addSubview(likeButton)
         likeButton.centerYAnchor.constraint(equalTo: productPrice.centerYAnchor, constant: 0).isActive = true
         likeButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -2).isActive = true
-        likeButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        likeButton.widthAnchor.constraint(equalToConstant: 18).isActive = true
+        likeButton.heightAnchor.constraint(equalToConstant: 18).isActive = true
+        likeButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
         
         addSubview(addButton)
         addButton.topAnchor.constraint(equalTo: productPrice.bottomAnchor, constant: 8).isActive = true
@@ -120,5 +125,14 @@ class HomeProductViewCell: UICollectionViewCell {
             productImageView.kf.setImage(with: url)
             productImageView.layer.cornerRadius = 5
         }
+    }
+    
+    @objc private func addButtonTapped() {
+        addButtonAction?()
+    }
+    
+    @objc private func likeButtonTapped() {
+        likeButtonAction?(likeButton.currentImage == .heartRed)
+        likeButton.currentImage == .heartRed ? likeButton.setImage(.heartRedFull, for: .normal) : likeButton.setImage(.heartRed, for: .normal)
     }
 }

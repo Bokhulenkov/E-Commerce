@@ -13,7 +13,7 @@ class HomePopularViewCell: UICollectionViewCell {
     private let productImageViewContainer: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 9
-        view.backgroundColor = .white
+        view.backgroundColor = .backgound
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOpacity = 0.1
         view.layer.shadowRadius = 10
@@ -38,7 +38,7 @@ class HomePopularViewCell: UICollectionViewCell {
         label.text = ""
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.custom(font: .nunito, size: 12)
-        label.textColor = .black
+        label.textColor = .text
         label.textAlignment = .left
         label.numberOfLines = 2
         label.lineBreakMode = .byWordWrapping
@@ -50,7 +50,7 @@ class HomePopularViewCell: UICollectionViewCell {
         label.text = ""
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.custom(font: .ralewayBold, size: 17)
-        label.textColor = .black
+        label.textColor = .text
         label.textAlignment = .left
         label.numberOfLines = 2
         label.lineBreakMode = .byWordWrapping

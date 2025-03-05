@@ -16,7 +16,7 @@ class HomeCategoriesViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.custom(font: .ralewayBold, size: 17)
-        label.textColor = .black
+        label.textColor = .text
         return label
     }()
     
@@ -24,7 +24,7 @@ class HomeCategoriesViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.custom(font: .ralewayBold, size: 12)
-        label.textColor = .black
+        label.textColor = .text
         label.textAlignment = .center
         return label
     }()
@@ -32,7 +32,7 @@ class HomeCategoriesViewCell: UICollectionViewCell {
     private let countView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 6
-        view.backgroundColor = UIColor(red: 0.875, green: 0.914, blue: 1, alpha: 1)
+        view.backgroundColor = .itemsBackground
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -47,13 +47,13 @@ class HomeCategoriesViewCell: UICollectionViewCell {
     }
         
     override func prepareForReuse() {
-        backgroundColor = .white
+        backgroundColor = .backgound
         titleLabel.text = nil
         countLabel.text = nil
     }
     
     private func configureCell() {
-        backgroundColor = .white
+        backgroundColor = .backgound
         layer.cornerRadius = 10
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.1
