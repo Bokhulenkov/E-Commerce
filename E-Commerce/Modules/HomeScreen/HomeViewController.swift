@@ -434,12 +434,8 @@ extension HomeViewController: CLLocationManagerDelegate {
                     } else {
                         print("Страна не найдена")
                     }
-                    
                 }
             }
-            
-            
-            
         }
     }
 
