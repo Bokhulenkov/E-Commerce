@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class HomeCategoriesViewCell: UICollectionViewCell {
     
@@ -92,13 +93,13 @@ class HomeCategoriesViewCell: UICollectionViewCell {
         }
     }
     
-    public func configure(with category: String, count: Int, images: [UIImage?]) {
+    public func configure(with category: String, count: Int, images: [String?]) {
         titleLabel.text = "\(category)"
         countLabel.text = "\(count)"
         
-        for i in 0..<imageViews.count {
-            if let image = images[i] {
-                imageViews[i].image = image
+        for i in 0..<min(4, images.count) {
+            if let imageUrl = images[i], let url = URL(string: imageUrl) {
+                imageViews[i].kf.setImage(with: url)
             }
         }
     }

@@ -9,6 +9,12 @@ import UIKit
 
 final class HomeViewController: UIViewController {
     
+    private var networkService = NetworkService()
+    private var allProducts: [ProductModel] = []
+    private var popularProducts: [ProductModel] = []
+    private var justForYouProducts: [ProductModel] = []
+    private var uniqueCategories: [String] = []
+    
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -48,6 +54,7 @@ final class HomeViewController: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .clear
+        collectionView.clipsToBounds = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.isPagingEnabled = false
@@ -83,7 +90,8 @@ final class HomeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
+        networkService.delegate = self
+        networkService.performRequest()
     }
     
     private func configureUI() {
@@ -103,7 +111,7 @@ final class HomeViewController: UIViewController {
         collectionCategoriesView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 21).isActive = true
         collectionCategoriesView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -21).isActive = true
         collectionCategoriesView.topAnchor.constraint(equalTo: headerCategoriesView.bottomAnchor, constant: 10).isActive = true
-        collectionCategoriesView.heightAnchor.constraint(equalTo: collectionCategoriesView.widthAnchor, multiplier: 1.8).isActive = true
+        collectionCategoriesView.heightAnchor.constraint(equalTo: collectionCategoriesView.widthAnchor, multiplier: 0.6 * CGFloat(ceil(Double(uniqueCategories.count / 2)))).isActive = true
         
         scrollView.addSubview(headerPopularView)
         headerPopularView.configure("Popular", "See All", self, #selector(openPopularButtonAction))
@@ -133,7 +141,6 @@ final class HomeViewController: UIViewController {
     //MARK: Action
     
     @objc func openCategoriesButtonAction(_ button: UIButton) {
-        print("openCategoriesButtonAction")
         tabBarController?.selectedIndex = 2
     }
     
@@ -158,11 +165,11 @@ extension HomeViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == collectionCategoriesView {
-            return 6
+            return uniqueCategories.count
         } else if collectionView == collectionPopularView {
-            return 10
+            return popularProducts.count
         } else if collectionView == collectionProductsView {
-            return 4
+            return justForYouProducts.count > 0 ? 4 : 0
         } else {
             return 0
         }
@@ -172,17 +179,22 @@ extension HomeViewController: UICollectionViewDataSource {
         if collectionView == collectionCategoriesView {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeCategoriesViewCell", for: indexPath) as! HomeCategoriesViewCell
-            cell.configure(with: "Watch", count: 288, images: [.F_2_E_8_E_4_C_3_E_5_F_7_45_BC_9_DFD_34_A_479_B_8_D_2_B_7, .F_2_E_8_E_4_C_3_E_5_F_7_45_BC_9_DFD_34_A_479_B_8_D_2_B_7, .F_2_E_8_E_4_C_3_E_5_F_7_45_BC_9_DFD_34_A_479_B_8_D_2_B_7 ,.F_2_E_8_E_4_C_3_E_5_F_7_45_BC_9_DFD_34_A_479_B_8_D_2_B_7])
+            let uniqueProducts = allProducts.filter { $0.category == uniqueCategories[indexPath.row] }
+            let images = uniqueProducts.compactMap { $0.image }
+            
+            cell.configure(with: "\(uniqueCategories[indexPath.row])", count: uniqueProducts.count, images: images)
             return cell
             
         } else if collectionView == collectionPopularView {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomePopularViewCell", for: indexPath) as! HomePopularViewCell
+            cell.configure(popularProducts[indexPath.row].image, popularProducts[indexPath.row].title, popularProducts[indexPath.row].price)
             return cell
             
         } else if collectionView == collectionProductsView {
-            
+
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
+            cell.configure(justForYouProducts[indexPath.row].image, justForYouProducts[indexPath.row].title, justForYouProducts[indexPath.row].price)
             return cell
 
         } else {
@@ -217,5 +229,27 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
             
             return CGSize(width: 0, height: 0)
         }
+    }
+}
+
+//MARK: NetworkServiceDelegate
+
+extension HomeViewController: NetworkServiceDelegate {
+    func didUpdateData(products: [ProductModel]) {
+        
+        allProducts = products
+        popularProducts = products.sorted { $0.rate > $1.rate }
+        justForYouProducts = Array(products.shuffled().prefix(4))
+        uniqueCategories = Array(Set(products.map { $0.category }))
+
+        configureUI()
+
+        collectionPopularView.reloadData()
+        collectionProductsView.reloadData()
+        collectionCategoriesView.reloadData()
+    }
+    
+    func didFailWithError(error: any Error) {
+        print("didFailWithError: \(error)")
     }
 }

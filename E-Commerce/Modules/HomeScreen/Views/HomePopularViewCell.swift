@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class HomePopularViewCell: UICollectionViewCell {
     
@@ -34,7 +35,7 @@ class HomePopularViewCell: UICollectionViewCell {
     
     private let productTitle: UILabel = {
         let label = UILabel()
-        label.text = "Lorem ipsum dolor sit amet consectetur"
+        label.text = ""
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.custom(font: .nunito, size: 12)
         label.textColor = .black
@@ -46,7 +47,7 @@ class HomePopularViewCell: UICollectionViewCell {
     
     private let productPrice: UILabel = {
         let label = UILabel()
-        label.text = "$17,00"
+        label.text = ""
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.custom(font: .ralewayBold, size: 17)
         label.textColor = .black
@@ -98,5 +99,15 @@ class HomePopularViewCell: UICollectionViewCell {
         productPrice.leftAnchor.constraint(equalTo: leftAnchor, constant: 0).isActive = true
         productPrice.rightAnchor.constraint(equalTo: rightAnchor, constant: 0).isActive = true
         productPrice.heightAnchor.constraint(equalToConstant: 21).isActive = true
+    }
+    
+    public func configure(_ image: String?, _ title: String, _ price: Double) {
+        productTitle.text = "\(title)"
+        productPrice.text = "$\(price)"
+        
+        if let imageUrl = image, let url = URL(string: imageUrl) {
+            productImageView.kf.setImage(with: url)
+            productImageView.layer.cornerRadius = 5
+        }
     }
 }

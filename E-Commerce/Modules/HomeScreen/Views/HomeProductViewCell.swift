@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class HomeProductViewCell: UICollectionViewCell {
     
@@ -109,5 +110,15 @@ class HomeProductViewCell: UICollectionViewCell {
         addButton.leftAnchor.constraint(equalTo: leftAnchor, constant: 0).isActive = true
         addButton.rightAnchor.constraint(equalTo: rightAnchor, constant: 0).isActive = true
         addButton.heightAnchor.constraint(equalToConstant: 31).isActive = true
+    }
+    
+    public func configure(_ image: String?, _ title: String, _ price: Double) {
+        productTitle.text = "\(title)"
+        productPrice.text = "$\(price)"
+        
+        if let imageUrl = image, let url = URL(string: imageUrl) {
+            productImageView.kf.setImage(with: url)
+            productImageView.layer.cornerRadius = 5
+        }
     }
 }
