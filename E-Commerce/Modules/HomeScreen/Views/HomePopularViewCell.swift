@@ -101,9 +101,9 @@ class HomePopularViewCell: UICollectionViewCell {
         productPrice.heightAnchor.constraint(equalToConstant: 21).isActive = true
     }
     
-    public func configure(_ image: String?, _ title: String, _ price: Double) {
+    public func configure(_ image: String?, _ title: String, _ price: String) {
         productTitle.text = "\(title)"
-        productPrice.text = "$\(price)"
+        productPrice.text = "\(price)"
         
         if let imageUrl = image, let url = URL(string: imageUrl) {
             productImageView.kf.setImage(with: url)
