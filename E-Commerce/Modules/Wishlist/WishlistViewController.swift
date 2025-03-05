@@ -8,12 +8,172 @@
 import UIKit
 
 final class WishlistViewController: UIViewController {
-
+    // MARK: - GUI Variables
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        
+        label.text = "Wishlist"
+        label.font = .systemFont(ofSize: 28, weight: .bold)
+        label.textAlignment = .center
+        label.textColor = .black
+        
+        return label
+    }()
+    
+    private lazy var searchContainer: UIView = {
+        let view = UIView()
+        
+        view.backgroundColor = .clear
+        
+        return view
+    }()
+    
+    private lazy var searchLabel: UILabel = {
+        let label = UILabel()
+        
+        label.text = "Search"
+        label.font = .systemFont(ofSize: 16, weight: .regular)
+        label.textAlignment = .left
+        label.textColor = UIColor(red: 199 / 255.0, green: 199 / 255.0, blue: 199 / 255.0, alpha: 1.0)
+        
+        return label
+    }()
+    
+    private lazy var searchTextField: UITextField = {
+        let textField = UITextField()
+        
+        textField.backgroundColor = UIColor(red: 248 / 255.0, green: 248 / 255.0, blue: 248 / 255.0, alpha: 1.0)
+        textField.layer.cornerRadius = 18
+        textField.borderStyle = .none
+        textField.placeholder = ""
+        textField.font = UIFont.systemFont(ofSize: 16)
+        textField.clearButtonMode = .whileEditing
+        
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 8, height: textField.frame.height))
+        textField.leftView = paddingView
+        textField.leftViewMode = .always
+        
+        return textField
+    }()
+    
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        
+        layout.minimumInteritemSpacing = 15
+        layout.minimumLineSpacing = 25
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 18)
+        
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        
+        collectionView.backgroundColor = .clear
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(WishlistViewCell.self, forCellWithReuseIdentifier: "WishlistViewCell")
+        collectionView.allowsMultipleSelection = true
+        
+        return collectionView
+    }()
+    
+    // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        
+        navigationController?.isNavigationBarHidden = true
+        view.backgroundColor = .white
+        
+        setupUI()
+        setupKeyboardHandling()
     }
     
+    //MARK: - Private methods
+    private func setupUI() {
+        view.addSubview(titleLabel)
+        view.addSubview(searchContainer)
+        searchContainer.addSubview(searchLabel)
+        searchContainer.addSubview(searchTextField)
+        view.addSubview(collectionView)
+        
+        setupConstraints()
+    }
+    
+    private func  setupConstraints() {
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        searchContainer.translatesAutoresizingMaskIntoConstraints = false
+        searchLabel.translatesAutoresizingMaskIntoConstraints = false
+        searchTextField.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
+            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
+            
+            searchContainer.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6),
+            searchContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18),
+            searchContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -18),
+            searchContainer.heightAnchor.constraint(equalToConstant: 36),
+            
+            searchLabel.topAnchor.constraint(equalTo: searchContainer.topAnchor, constant: 9),
+            searchLabel.leadingAnchor.constraint(equalTo: searchContainer.leadingAnchor, constant: 22),
+            searchLabel.widthAnchor.constraint(equalToConstant: 60),
+            
+            searchTextField.topAnchor.constraint(equalTo: searchContainer.topAnchor),
+            searchTextField.leadingAnchor.constraint(equalTo: searchLabel.trailingAnchor, constant: 10),
+            searchTextField.heightAnchor.constraint(equalToConstant: 36),
+            searchTextField.trailingAnchor.constraint(equalTo: searchContainer.trailingAnchor),
+            
+            collectionView.topAnchor.constraint(equalTo: searchContainer.bottomAnchor, constant: 11),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+        ])
+    }
+}
 
+//MARK: - UICollectionViewDataSource
+extension WishlistViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 4
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WishlistViewCell", for: indexPath) as! WishlistViewCell
+        
+        return cell
+    }
+}
+
+//MARK: - UICollectionViewDelegate
+extension WishlistViewController: UICollectionViewDelegate {
+    
+}
+
+//MARK: -  UICollectionViewDelegateFlowLayout
+extension WishlistViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = (UIScreen.main.bounds.size.width - 51) / 2
+        return CGSize(width: width, height: 282)
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension WishlistViewController: UITextFieldDelegate {
+    func setupKeyboardHandling() {
+        searchTextField.delegate = self
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    @objc private func dismissKeyboard() {
+        searchTextField.endEditing(true)
+    }
 }

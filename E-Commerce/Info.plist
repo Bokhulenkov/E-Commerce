@@ -2,6 +2,38 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Местоположение необходимо для определения города доставки</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Местоположение необходимо для определения города доставки</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>NunitoSans-Black.ttf</string>
+		<string>NunitoSans-BlackItalic.ttf</string>
+		<string>NunitoSans-Bold.ttf</string>
+		<string>NunitoSans-BoldItalic.ttf</string>
+		<string>NunitoSans-Italic.ttf</string>
+		<string>NunitoSans-Light.ttf</string>
+		<string>NunitoSans-LightItalic.ttf</string>
+		<string>NunitoSans-Regular.ttf</string>
+		<string>NunitoSans-SemiBold.ttf</string>
+		<string>NunitoSans-SemiBoldItalic.ttf</string>
+		<string>Raleway-Italic.ttf</string>
+		<string>Raleway-v4020-Black.otf</string>
+		<string>Raleway-v4020-BlackItalic.otf</string>
+		<string>Raleway-v4020-Bold.otf</string>
+		<string>Raleway-v4020-BoldItalic.otf</string>
+		<string>Raleway-v4020-Light.otf</string>
+		<string>Raleway-v4020-LightItalic.otf</string>
+		<string>Raleway-v4020-Medium.otf</string>
+		<string>Raleway-v4020-MediumItalic.otf</string>
+		<string>Raleway-v4020-Regular.otf</string>
+		<string>Raleway-v4020-RegularItalic.otf</string>
+		<string>Raleway-v4020-SemiBold.otf</string>
+		<string>Raleway-v4020-SemiBoldItalic.otf</string>
+		<string>Raleway-v4020-Thin.otf</string>
+		<string>Raleway-v4020-ThinItalic.otf</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
