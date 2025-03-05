@@ -80,7 +80,10 @@ private extension OnboardingViewController {
                 imageView.topAnchor.constraint(equalTo: view.topAnchor),
                 imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+                imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                
+                pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+                pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             ])
             
             let views = [view1, view2, view3, view4]
@@ -97,16 +100,6 @@ private extension OnboardingViewController {
             
             view1.isHidden = false
             
-            NSLayoutConstraint.activate([
-                startButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
-                startButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
-                startButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
-                startButton.heightAnchor.constraint(equalToConstant: 50),
-    
-                pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-                pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-              
-            ])
     }
     
     @objc func startPressed() {

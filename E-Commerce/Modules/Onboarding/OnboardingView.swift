@@ -32,15 +32,17 @@ final class OnboardingView: UIView {
             label.font = .custom(font: CustomFont.nunito, size: 15)
             label.textColor = .darkGray
             label.numberOfLines = 3
+            label.textAlignment = .center
             label.adjustsFontSizeToFitWidth = true
             label.minimumScaleFactor = 0.8
             label.translatesAutoresizingMaskIntoConstraints = false
             return label
         }()
     
-    private lazy var startButton = UIButton()
+    private var startButton: UIButton?
         
     init(image: UIImage?, title: String, description: String, button: UIButton? = nil) {
+        self.startButton = button
             super.init(frame: .zero)
             
             setupView()
@@ -63,32 +65,43 @@ private extension OnboardingView {
         backgroundColor = .white
         layer.cornerRadius = 20
         layer.shadowColor = UIColor(named: "DeliveryAddressTextColor")?.cgColor
-        layer.shadowOpacity = 0.2
-        layer.shadowOffset = CGSize(width: 0, height: 5)
-        layer.shadowRadius = 10
+        layer.shadowOpacity = 0.4
+        layer.shadowOffset = CGSize(width: 0, height: 7)
+        layer.shadowRadius = 15
         translatesAutoresizingMaskIntoConstraints = false
-        startButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, descriptionLabel])
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.spacing = 8
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         
         addSubview(imageView)
-        addSubview(stackView)
+        addSubview(titleLabel)
+        addSubview(descriptionLabel)
+        
         
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: topAnchor),
             imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            imageView.heightAnchor.constraint(equalToConstant: 200),
+            imageView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.4),
             
-            stackView.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 10),
-            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16)
-
+            titleLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 50),
+            titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            titleLabel.heightAnchor.constraint(equalToConstant: 70),
+            
+            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 15),
+            descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            descriptionLabel.heightAnchor.constraint(equalToConstant: 80)
         ])
+        
+        if let button = startButton {
+            addSubview(button)
+            translatesAutoresizingMaskIntoConstraints = false
+
+            NSLayoutConstraint.activate([
+                button.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -15),
+                button.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 40),
+                button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -40),
+                button.heightAnchor.constraint(equalToConstant: 50)
+            ])
+        }
     }
 }
 
