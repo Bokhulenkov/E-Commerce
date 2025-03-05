@@ -41,10 +41,8 @@ final class OnboardingView: UIView {
             return label
         }()
     
-    private var startButton: UIButton?
         
-    init(image: UIImage?, title: String, description: String, button: UIButton? = nil) {
-        self.startButton = button
+    init(image: UIImage?, title: String, description: String) {
             super.init(frame: .zero)
             
             setupView()
@@ -91,8 +89,6 @@ private extension OnboardingView {
             descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
             descriptionLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
-        
-     
     }
 }
 

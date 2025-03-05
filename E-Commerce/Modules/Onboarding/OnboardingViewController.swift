@@ -75,7 +75,6 @@ private extension OnboardingViewController {
         view.addSubview(view4)
         
         setupConstraints()
-        
         view.bringSubviewToFront(startButton)
     }
     
@@ -123,7 +122,6 @@ private extension OnboardingViewController {
                 view.isHidden = index != currentPage
             }
         startButton.isHidden = currentPage == 3 ? false : true
-
     }
     
     @objc private func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
@@ -132,7 +130,6 @@ private extension OnboardingViewController {
         } else if gesture.direction == .right && currentPage > 0 {
             currentPage -= 1
         }
-        
         pageControl.currentPage = currentPage
         updateUI()
     }
@@ -144,4 +141,4 @@ private extension OnboardingViewController {
     }
 }
 
-#Preview { OnboardingViewController() }
+//#Preview { OnboardingViewController() }
