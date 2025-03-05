@@ -11,6 +11,7 @@ class TabBarViewController: UITabBarController {
 
     let homeVC = HomeViewController()
     let wishlistVC = WishlistViewController()
+    let categoryVC = CategoryViewController()
     let cartVC = CartViewController()
     let settingsVC = SettingsViewController()
 
@@ -29,6 +30,12 @@ class TabBarViewController: UITabBarController {
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
         updateIndicatorPosition(for: item)
     }
+    
+    override var selectedIndex: Int {
+        didSet {
+            updateIndicatorPosition(for: tabBar.items?[selectedIndex])
+        }
+    }
 
     private func setupViewControllers() {
         tabBar.backgroundColor = .white
@@ -44,13 +51,18 @@ class TabBarViewController: UITabBarController {
         wishlistVC.tabBarItem.image = UIImage(resource: .wishlistTab)
         wishlistVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         
+        categoryVC.tabBarItem.image = UIImage(resource: .categories)
+        categoryVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
+        categoryVC.tabBarItem.setTitleTextAttributes([.foregroundColor: UIColor.clear], for: .selected)
+        categoryVC.tabBarItem.setTitleTextAttributes([.foregroundColor: UIColor.clear], for: .normal)
+
         cartVC.tabBarItem.image = UIImage(resource: .cartTab)
         cartVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         
         settingsVC.tabBarItem.image = UIImage(resource: .settingsTab)
         settingsVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         
-        viewControllers = [homeVC, wishlistVC, cartVC, settingsVC]
+        viewControllers = [homeVC, wishlistVC, categoryVC, cartVC, settingsVC]
         
         guard let tabBarItems = tabBar.items else { return }
         

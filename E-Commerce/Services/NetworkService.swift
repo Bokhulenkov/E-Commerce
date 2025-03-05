@@ -53,7 +53,10 @@ struct NetworkService {
                     price: product.price,
                     description: product.description,
                     category: product.category,
-                    image: product.image
+
+                    image: product.image,
+                    rate: product.rating.rate
+
                 )
             }
             return productModels
