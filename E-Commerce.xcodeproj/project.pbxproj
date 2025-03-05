@@ -8,16 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		11BF98852D75D0BB0012D5A0 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 11BF98842D75D0BB0012D5A0 /* Kingfisher */; };
-		F398B18A2D77BB1D003B20C1 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F398B1892D77BB15003B20C1 /* NetworkService.swift */; };
-		F398B18D2D77BCA7003B20C1 /* ProductModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F398B18C2D77BCA0003B20C1 /* ProductModel.swift */; };
-		F398B18F2D77BCAF003B20C1 /* ProductData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F398B18E2D77BCAA003B20C1 /* ProductData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		11BF980C2D75A8520012D5A0 /* E-Commerce.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "E-Commerce.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F398B1892D77BB15003B20C1 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
-		F398B18C2D77BCA0003B20C1 /* ProductModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductModel.swift; sourceTree = "<group>"; };
-		F398B18E2D77BCAA003B20C1 /* ProductData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -58,7 +52,6 @@
 			children = (
 				11BF980E2D75A8520012D5A0 /* E-Commerce */,
 				11BF980D2D75A8520012D5A0 /* Products */,
-				F398B18B2D77BB26003B20C1 /* Services */,
 			);
 			sourceTree = "<group>";
 		};
@@ -68,16 +61,6 @@
 				11BF980C2D75A8520012D5A0 /* E-Commerce.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		F398B18B2D77BB26003B20C1 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				F398B1892D77BB15003B20C1 /* NetworkService.swift */,
-				F398B18C2D77BCA0003B20C1 /* ProductModel.swift */,
-				F398B18E2D77BCAA003B20C1 /* ProductData.swift */,
-			);
-			path = Services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -158,9 +141,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F398B18D2D77BCA7003B20C1 /* ProductModel.swift in Sources */,
-				F398B18F2D77BCAF003B20C1 /* ProductData.swift in Sources */,
-				F398B18A2D77BB1D003B20C1 /* NetworkService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
