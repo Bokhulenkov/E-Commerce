@@ -43,6 +43,7 @@ final class CategoryCell: UITableViewCell {
         selectedView.layer.cornerRadius = 7
         selectedView.layer.masksToBounds = true
         selectedView.layer.cornerCurve = .continuous
+        selectedView.translatesAutoresizingMaskIntoConstraints = false
         self.selectedBackgroundView = selectedView
     }
 }
