@@ -11,7 +11,9 @@ final class OnboardingView: UIView {
         
     private lazy var imageView: UIImageView = {
             let imageView = UIImageView()
-            imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.cornerRadius = 20
+        imageView.clipsToBounds = true
             imageView.translatesAutoresizingMaskIntoConstraints = false
             return imageView
         }()
@@ -74,21 +76,20 @@ private extension OnboardingView {
         addSubview(titleLabel)
         addSubview(descriptionLabel)
         
-        
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: topAnchor),
             imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            imageView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.4),
+            imageView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.6),
             
-            titleLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 50),
+            titleLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 2),
             titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            titleLabel.heightAnchor.constraint(equalToConstant: 70),
+            titleLabel.heightAnchor.constraint(equalToConstant: 40),
             
-            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 15),
+            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
             descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
-            descriptionLabel.heightAnchor.constraint(equalToConstant: 80)
+            descriptionLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -100)
         ])
         
         if let button = startButton {
@@ -99,7 +100,7 @@ private extension OnboardingView {
                 button.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -15),
                 button.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 40),
                 button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -40),
-                button.heightAnchor.constraint(equalToConstant: 50)
+                button.heightAnchor.constraint(equalToConstant: 10)
             ])
         }
     }
