@@ -20,7 +20,7 @@ final class OnboardingView: UIView {
         
         private lazy var titleLabel: UILabel = {
             let label = UILabel()
-            label.font = .custom(font: CustomFont.ralewayBlack, size: 20)
+            label.font = .custom(font: CustomFont.ralewayBold, size: 20)
             label.textColor = .black
             label.numberOfLines = 1
             label.adjustsFontSizeToFitWidth = true
@@ -89,20 +89,10 @@ private extension OnboardingView {
             descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
             descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
-            descriptionLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -100)
+            descriptionLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
         
-        if let button = startButton {
-            addSubview(button)
-            translatesAutoresizingMaskIntoConstraints = false
-
-            NSLayoutConstraint.activate([
-                button.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -15),
-                button.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 40),
-                button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -40),
-                button.heightAnchor.constraint(equalToConstant: 10)
-            ])
-        }
+     
     }
 }
 
