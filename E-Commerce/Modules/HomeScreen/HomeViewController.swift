@@ -17,7 +17,12 @@ final class HomeViewController: UIViewController {
     private var popularProducts: [ProductModel] = []
     private var justForYouProducts: [ProductModel] = []
     private var uniqueCategories: [String] = []
-    private var currency: String = "$"
+    private var currency: String = "$" {
+        didSet {
+            collectionPopularView.reloadData()
+            collectionProductsView.reloadData()
+        }
+    }
     private var cartCount: Int {
         get {
             return Int(cartCountLabel.text ?? "0") ?? 0
@@ -415,11 +420,16 @@ extension HomeViewController: CLLocationManagerDelegate {
                     }
                     
                     if let country = placemark.country {
+                        var newCurrency = ""
                         switch country {
-                            case "Америка": return currency = "$"
-                            case "Европа": return currency = "€"
-                            case "Россия": return currency = "₽"
-                            default: return currency = "$"
+                            case "Америка": newCurrency = "$"
+                            case "Европа": newCurrency = "€"
+                            case "Россия": newCurrency = "₽"
+                            default: newCurrency = "$"
+                        }
+                        
+                        if newCurrency != currency {
+                            currency = newCurrency
                         }
                     } else {
                         print("Страна не найдена")
