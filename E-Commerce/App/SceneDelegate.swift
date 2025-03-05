@@ -17,7 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         let vc = OnboardingViewController()
         let navVC = UINavigationController(rootViewController: vc)
-        window?.rootViewController = navVC
+        window?.rootViewController = vc
         window?.makeKeyAndVisible()
     }
 
