@@ -12,15 +12,15 @@ class AddressView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Shipping Address"
-        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.font = UIFont.custom(font: .ralewayBold, size: 18)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private let addressLabel: UILabel = {
         let label = UILabel()
-        label.text = "Your address here"  // Можно обновлять через метод
-        label.font = UIFont.systemFont(ofSize: 16)
+        label.text = "Your address here"
+        label.font = UIFont.custom(font: .nunitoLight, size: 13)
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -30,8 +30,8 @@ class AddressView: UIView {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "pencil"), for: .normal)
         button.tintColor = .white
-        button.backgroundColor = .blue
-        button.layer.cornerRadius = 20  // круглая кнопка
+        button.backgroundColor = UIColor(named: "ButtonColor")
+        button.layer.cornerRadius = 20
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(editTapped), for: .touchUpInside)
         return button
@@ -57,7 +57,7 @@ class AddressView: UIView {
         
         translatesAutoresizingMaskIntoConstraints = false
         
-        backgroundColor = UIColor(white: 0.95, alpha: 1)
+        backgroundColor = UIColor(named: "SearchFieldBackGroundColor")
         layer.cornerRadius = 12
         translatesAutoresizingMaskIntoConstraints = false
         

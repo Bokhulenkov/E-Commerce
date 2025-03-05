@@ -9,8 +9,8 @@ import UIKit
 
 final class CartView {
     private var items: [CartItem] = [
-        CartItem(id: UUID(), image: UIImage(named: "placeholder"), title: "Item 1", size: "M", price: 18.00, quantity: 1),
-        CartItem(id: UUID(), image: UIImage(named: "placeholder"), title: "Item 2", size: "M", price: 17.00, quantity: 1)
+        CartItem(id: UUID(), image: UIImage(named: "bags01"), title: "Item 1", size: "M", price: 18.00, quantity: 1),
+        CartItem(id: UUID(), image: UIImage(named: "bags02"), title: "Item 2", size: "M", price: 17.00, quantity: 1)
     ]
     
     func getItems() -> [CartItem] {

@@ -72,14 +72,14 @@ class CartItemCell: UITableViewCell {
         itemImageView.layer.cornerRadius = 8
         itemImageView.layer.masksToBounds = true
         
-        titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
-        sizeLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
-        priceLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        titleLabel.font = UIFont.custom(font: .nunitoLight, size: 12)
+        sizeLabel.font = UIFont.custom(font: .ralewayMedium, size: 14)
+        priceLabel.font = UIFont.custom(font: .ralewayBold, size: 18)
         
         deleteButton.setImage(UIImage(systemName: "trash"), for: .normal)
         deleteButton.tintColor = .red
         deleteButton.backgroundColor = .white
-        deleteButton.layer.cornerRadius = 20
+        deleteButton.layer.cornerRadius = 15
         deleteButton.addTarget(self, action: #selector(deleteTapped), for: .touchUpInside)
         
         [minusButton, plusButton].forEach {
@@ -98,15 +98,14 @@ class CartItemCell: UITableViewCell {
         minusButton.addTarget(self, action: #selector(minusTapped), for: .touchUpInside)
         plusButton.addTarget(self, action: #selector(plusTapped), for: .touchUpInside)
         
-        // Настройка серого контейнера для счетчика
-        counterContainerView.backgroundColor = UIColor.systemGray5
+        counterContainerView.backgroundColor = UIColor(named: "QuantityBackgroundColor")
         counterContainerView.layer.cornerRadius = 10
         counterContainerView.translatesAutoresizingMaskIntoConstraints = false
         counterContainerView.addSubview(counterLabel)
         
         counterLabel.translatesAutoresizingMaskIntoConstraints = false
         counterLabel.textAlignment = .center
-        counterLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        counterLabel.font = UIFont.custom(font: .ralewayMedium, size: 16)
         
         NSLayoutConstraint.activate([
             counterLabel.centerXAnchor.constraint(equalTo: counterContainerView.centerXAnchor),
@@ -116,15 +115,15 @@ class CartItemCell: UITableViewCell {
         ])
         
         NSLayoutConstraint.activate([
-            itemImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            itemImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             itemImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             itemImageView.widthAnchor.constraint(equalToConstant: 90),
             itemImageView.heightAnchor.constraint(equalToConstant: 90),
             
-            deleteButton.leadingAnchor.constraint(equalTo: itemImageView.trailingAnchor, constant: -50),
+            deleteButton.leadingAnchor.constraint(equalTo: itemImageView.leadingAnchor, constant: 5),
             deleteButton.bottomAnchor.constraint(equalTo: itemImageView.bottomAnchor, constant: -5),
-            deleteButton.widthAnchor.constraint(equalToConstant: 40),
-            deleteButton.heightAnchor.constraint(equalToConstant: 40),
+            deleteButton.widthAnchor.constraint(equalToConstant: 30),
+            deleteButton.heightAnchor.constraint(equalToConstant: 30),
             
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             titleLabel.leadingAnchor.constraint(equalTo: itemImageView.trailingAnchor, constant: 16),
@@ -138,7 +137,7 @@ class CartItemCell: UITableViewCell {
             priceLabel.trailingAnchor.constraint(lessThanOrEqualTo: plusButton.leadingAnchor, constant: -16),
             priceLabel.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -16),
             
-            plusButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            plusButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             plusButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             
             counterContainerView.trailingAnchor.constraint(equalTo: plusButton.leadingAnchor, constant: -8),

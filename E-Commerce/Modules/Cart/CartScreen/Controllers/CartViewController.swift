@@ -12,7 +12,7 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Cart"
-        label.font = UIFont.boldSystemFont(ofSize: 28)
+        label.font = UIFont.custom(font: .ralewayBold, size: 28)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -20,10 +20,10 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
     private let cartCountLabel: UILabel = {
         let label = UILabel()
         label.text = "0"
-        label.textColor = .white
-        label.backgroundColor = .lightGray
+        label.textColor = .black
+        label.backgroundColor = UIColor(named: "QuantityBackgroundColor")
         label.textAlignment = .center
-        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.font = UIFont.custom(font: .ralewayBold, size: 18)
         label.layer.cornerRadius = 12
         label.layer.masksToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -61,7 +61,7 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
     
     private let bottomContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(white: 0.95, alpha: 1)
+        view.backgroundColor = UIColor(named: "SearchHistoryBackgroundColor")
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -69,7 +69,7 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
     private let totalLabel: UILabel = {
         let label = UILabel()
         label.text = "Total $00.00"
-        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.font = UIFont.custom(font: .ralewaySemiBold, size: 20)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -77,14 +77,14 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
     private let checkoutButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Checkout", for: .normal)
-        button.backgroundColor = .blue
+        button.titleLabel?.font = UIFont.custom(font: .nunitoLight, size: 16)
+        button.backgroundColor = UIColor(named: "ButtonColor")
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 10
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
-    // Новый объект CartView для управления корзиной
     private var cartView = CartView()
     
     override func viewDidLoad() {
@@ -94,6 +94,9 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(CartItemCell.self, forCellReuseIdentifier: "CartCell")
+        tableView.allowsSelection = false
+        tableView.separatorStyle = .none
+
         
         setupUI()
         updateCartInfo()
@@ -109,14 +112,14 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         bottomContainerView.addSubview(totalLabel)
         bottomContainerView.addSubview(checkoutButton)
         
-        addressView.updateAddress("Default Test Address Moscow, Red Square, 1")
+        addressView.updateAddress("Default Test Address Russian Federation, Moscow, Red Square, 1")
         
         addressView.onEditTapped = { [weak self] in
             self?.showAddressInput()
         }
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -20),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             
             cartCountLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 8),
@@ -127,7 +130,7 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
             addressView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
             addressView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             addressView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            addressView.heightAnchor.constraint(equalToConstant: 100),
+            addressView.heightAnchor.constraint(equalToConstant: 85),
             
             tableView.topAnchor.constraint(equalTo: addressView.bottomAnchor, constant: 16),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -168,14 +171,12 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
     
     private func updateQuantity(for itemID: UUID, newQuantity: Int) {
         cartView.updateQuantity(for: itemID, quantity: newQuantity)
-        updateCartInfo()  // Пересчитываем и обновляем информацию
+        updateCartInfo()
     }
     
     private func removeItem(at indexPath: IndexPath) {
         cartView.removeItem(at: indexPath.row)
-        updateCartInfo()  // Обновляем информацию о корзине
-        
-        // Перезагружаем таблицу
+        updateCartInfo()
         tableView.reloadData()
     }
     
