@@ -34,7 +34,7 @@ class HomeProductViewCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "Lorem ipsum dolor sit amet consectetur"
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.font = UIFont.custom(font: .nunito, size: 12)
         label.textColor = .black
         label.textAlignment = .left
         label.numberOfLines = 2
@@ -46,7 +46,7 @@ class HomeProductViewCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "$17,00"
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 17, weight: .medium)
+        label.font = UIFont.custom(font: .ralewayBold, size: 17)
         label.textColor = .black
         label.textAlignment = .left
         label.numberOfLines = 2

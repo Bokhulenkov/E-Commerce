@@ -13,7 +13,7 @@ class HeaderWithButtonView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = ""
-        label.font = UIFont.systemFont(ofSize: 21, weight: .bold)
+        label.font = UIFont.custom(font: .ralewayBold, size: 21)
         label.textColor = .black
         return label
     }()
@@ -23,7 +23,7 @@ class HeaderWithButtonView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = ""
         label.textAlignment = .right
-        label.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        label.font = UIFont.custom(font: .ralewayBold, size: 15)
         label.textColor = .black
         return label
     }()

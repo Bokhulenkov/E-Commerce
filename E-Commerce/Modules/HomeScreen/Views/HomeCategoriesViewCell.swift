@@ -14,7 +14,7 @@ class HomeCategoriesViewCell: UICollectionViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.font = UIFont.custom(font: .ralewayBold, size: 17)
         label.textColor = .black
         return label
     }()
@@ -22,7 +22,7 @@ class HomeCategoriesViewCell: UICollectionViewCell {
     private let countLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 12, weight: .medium)
+        label.font = UIFont.custom(font: .ralewayBold, size: 12)
         label.textColor = .black
         label.textAlignment = .center
         return label

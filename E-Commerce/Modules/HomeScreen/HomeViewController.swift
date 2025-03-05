@@ -59,7 +59,7 @@ final class HomeViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Just For You"
-        label.font = UIFont.systemFont(ofSize: 21, weight: .bold)
+        label.font = UIFont.custom(font: .ralewayBold, size: 21)
         label.textColor = .black
         return label
     }()
