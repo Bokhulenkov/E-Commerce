@@ -6,14 +6,23 @@
 //
 
 import UIKit
+import CoreLocation
 
 final class HomeViewController: UIViewController {
     
+    private let locationManager = CLLocationManager()
+    private let geocoder = CLGeocoder()
     private var networkService = NetworkService()
     private var allProducts: [ProductModel] = []
     private var popularProducts: [ProductModel] = []
     private var justForYouProducts: [ProductModel] = []
     private var uniqueCategories: [String] = []
+    private var currency: String = "$" {
+        didSet {
+            collectionPopularView.reloadData()
+            collectionProductsView.reloadData()
+        }
+    }
     private var cartCount: Int {
         get {
             return Int(cartCountLabel.text ?? "0") ?? 0
@@ -43,6 +52,26 @@ final class HomeViewController: UIViewController {
         label.clipsToBounds = true
         label.isHidden = true
         return label
+    }()
+    
+    private let deliveryAdressTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Delivery adress"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.custom(font: .nunito, size: 10)
+        label.textColor = .deliveryAddressText
+        label.textAlignment = .left
+        return label
+    }()
+    
+    private let deliveryAdressButton: UIButton = {
+        let button = UIButton()
+        button.titleLabel?.font = UIFont(name: "Inter-Medium", size: 12)
+        button.setTitle("", for: .normal)
+        button.setTitleColor(.addressText, for: .normal)
+        button.contentHorizontalAlignment = .left
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
     
     private let shopTitle: UILabel = {
@@ -142,7 +171,14 @@ final class HomeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         cartButton.addTarget(self, action: #selector(openCartButtonAction), for: .touchUpInside)
+        
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+        
         networkService.delegate = self
         networkService.performRequest()
     }
@@ -153,6 +189,18 @@ final class HomeViewController: UIViewController {
         cartButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 11).isActive = true
         cartButton.heightAnchor.constraint(equalToConstant: 28).isActive = true
         cartButton.widthAnchor.constraint(equalToConstant: 31).isActive = true
+        
+        view.addSubview(deliveryAdressTitle)
+        deliveryAdressTitle.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 21).isActive = true
+        deliveryAdressTitle.topAnchor.constraint(equalTo: cartButton.topAnchor, constant: 0).isActive = true
+        deliveryAdressTitle.heightAnchor.constraint(equalToConstant: 12).isActive = true
+        deliveryAdressTitle.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        
+        view.addSubview(deliveryAdressButton)
+        deliveryAdressButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 21).isActive = true
+        deliveryAdressButton.topAnchor.constraint(equalTo: deliveryAdressTitle.bottomAnchor, constant: 0).isActive = true
+        deliveryAdressButton.heightAnchor.constraint(equalToConstant: 15).isActive = true
+        deliveryAdressButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
         
         view.addSubview(cartCountLabel)
         cartCountLabel.leftAnchor.constraint(equalTo: cartButton.centerXAnchor, constant: 4).isActive = true
@@ -276,13 +324,13 @@ extension HomeViewController: UICollectionViewDataSource {
         } else if collectionView == collectionPopularView {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomePopularViewCell", for: indexPath) as! HomePopularViewCell
-            cell.configure(popularProducts[indexPath.row].image, popularProducts[indexPath.row].title, popularProducts[indexPath.row].price)
+            cell.configure(popularProducts[indexPath.row].image, popularProducts[indexPath.row].title, "\(currency)\(popularProducts[indexPath.row].price)" )
             return cell
             
         } else if collectionView == collectionProductsView {
 
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
-            cell.configure(justForYouProducts[indexPath.row].image, justForYouProducts[indexPath.row].title, justForYouProducts[indexPath.row].price)
+            cell.configure(justForYouProducts[indexPath.row].image, justForYouProducts[indexPath.row].title, "\(currency)\(justForYouProducts[indexPath.row].price)")
             
             cell.addButtonAction = {
                 print("Add to cart: \(self.justForYouProducts[indexPath.item].title)")
@@ -349,5 +397,49 @@ extension HomeViewController: NetworkServiceDelegate {
     
     func didFailWithError(error: any Error) {
         print("didFailWithError: \(error)")
+    }
+}
+
+extension HomeViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            geocoder.reverseGeocodeLocation(location) { [weak self] (placemarks, error) in
+                guard let self = self else { return }
+                            
+                if let error = error {
+                    print("Ошибка геокодирования: \(error.localizedDescription)")
+                    return
+                }
+                            
+                if let placemark = placemarks?.first {
+                    
+                    if let city = placemark.locality {
+                        deliveryAdressButton.setTitle("\(city)", for: .normal)
+                    } else {
+                        print("Город не найден")
+                    }
+                    
+                    if let country = placemark.country {
+                        var newCurrency = ""
+                        switch country {
+                            case "Америка": newCurrency = "$"
+                            case "Европа": newCurrency = "€"
+                            case "Россия": newCurrency = "₽"
+                            default: newCurrency = "$"
+                        }
+                        
+                        if newCurrency != currency {
+                            currency = newCurrency
+                        }
+                    } else {
+                        print("Страна не найдена")
+                    }
+                }
+            }
+        }
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Ошибка при получении местоположения: \(error.localizedDescription)")
     }
 }
