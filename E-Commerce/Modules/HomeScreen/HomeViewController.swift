@@ -166,12 +166,12 @@ final class HomeViewController: UIViewController {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(HomeProductViewCell.self, forCellWithReuseIdentifier: "HomeProductViewCell")
+        collectionView.isUserInteractionEnabled = true
         return collectionView
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         cartButton.addTarget(self, action: #selector(openCartButtonAction), for: .touchUpInside)
         
         locationManager.delegate = self
@@ -288,7 +288,17 @@ final class HomeViewController: UIViewController {
 //MARK: UICollectionViewDelegate
 
 extension HomeViewController: UICollectionViewDelegate {
-
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView == collectionProductsView {
+            let vc = DetailViewController()
+            vc.configure(for: justForYouProducts[indexPath.row])
+            vc.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(vc, animated: true)
+            navigationController?.isNavigationBarHidden = false
+            navigationItem.backButtonTitle = ""
+            return
+        }
+    }
 }
 
 //MARK: UICollectionViewDataSource
@@ -330,6 +340,8 @@ extension HomeViewController: UICollectionViewDataSource {
         } else if collectionView == collectionProductsView {
 
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
+            cell.isUserInteractionEnabled = true
+            
             cell.configure(justForYouProducts[indexPath.row].image, justForYouProducts[indexPath.row].title, "\(currency)\(justForYouProducts[indexPath.row].price)")
             
             cell.addButtonAction = {
