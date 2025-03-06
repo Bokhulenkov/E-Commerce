@@ -288,7 +288,18 @@ final class HomeViewController: UIViewController {
 //MARK: UICollectionViewDelegate
 
 extension HomeViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView == collectionCategoriesView {
+            let selectedCategory = uniqueCategories[indexPath.row]
+            let uniqueProducts = allProducts.filter { $0.category == selectedCategory }
 
+            let vc = ShopViewController()
+            vc.modalPresentationStyle = .fullScreen
+            vc.products = uniqueProducts
+            vc.currency = currency
+            present(vc, animated: true)
+        }
+    }
 }
 
 //MARK: UICollectionViewDataSource
@@ -348,6 +359,8 @@ extension HomeViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
     }
+    
+    
 }
 
 //MARK: UICollectionViewDelegateFlowLayout
