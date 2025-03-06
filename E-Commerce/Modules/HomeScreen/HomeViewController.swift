@@ -167,12 +167,12 @@ final class HomeViewController: UIViewController {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(HomeProductViewCell.self, forCellWithReuseIdentifier: "HomeProductViewCell")
+        collectionView.isUserInteractionEnabled = true
         return collectionView
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         cartButton.addTarget(self, action: #selector(openCartButtonAction), for: .touchUpInside)
         
         locationManager.delegate = self
@@ -184,7 +184,6 @@ final class HomeViewController: UIViewController {
         networkService.performRequest()
         
         searchTextField.delegate = self
-
     }
     
     // текст филд не активен,если не пользуемся, надо доработать
@@ -305,13 +304,21 @@ extension HomeViewController: UICollectionViewDelegate {
         if collectionView == collectionCategoriesView {
             let selectedCategory = uniqueCategories[indexPath.row]
             let uniqueProducts = allProducts.filter { $0.category == selectedCategory }
-
+            
             let vc = ShopViewController()
             vc.modalPresentationStyle = .fullScreen
             vc.products = uniqueProducts
             vc.currency = currency
             present(vc, animated: true)
         }
+        if collectionView == collectionProductsView {
+            let vc = DetailViewController()
+            vc.configure(for: justForYouProducts[indexPath.row])
+            vc.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(vc, animated: true)
+            navigationController?.isNavigationBarHidden = false
+            navigationItem.backButtonTitle = ""
+            return
     }
 }
 
@@ -354,6 +361,8 @@ extension HomeViewController: UICollectionViewDataSource {
         } else if collectionView == collectionProductsView {
 
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
+            cell.isUserInteractionEnabled = true
+            
             cell.configure(justForYouProducts[indexPath.row].image, justForYouProducts[indexPath.row].title, "\(currency)\(justForYouProducts[indexPath.row].price)")
             
             cell.addButtonAction = {
@@ -372,8 +381,6 @@ extension HomeViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
     }
-    
-    
 }
 
 //MARK: UICollectionViewDelegateFlowLayout

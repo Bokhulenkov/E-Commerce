@@ -48,11 +48,13 @@ class TabBarViewController: UITabBarController {
         tabBar.layer.shadowOpacity = 1
         tabBar.layer.masksToBounds = false
         
-        homeVC.tabBarItem.image = UIImage(resource: .homeTab)
-        homeVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
+        let homeNav = UINavigationController(rootViewController: homeVC)
+        homeNav.tabBarItem.image = UIImage(resource: .homeTab)
+        homeNav.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         
-        wishlistVC.tabBarItem.image = UIImage(resource: .wishlistTab)
-        wishlistVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
+        let wishlistNav = UINavigationController(rootViewController: wishlistVC)
+        wishlistNav.tabBarItem.image = UIImage(resource: .wishlistTab)
+        wishlistNav.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         
         categoryVC.tabBarItem.image = UIImage(resource: .categories)
         categoryVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
@@ -65,7 +67,7 @@ class TabBarViewController: UITabBarController {
         settingsVC.tabBarItem.image = UIImage(resource: .settingsTab)
         settingsVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         
-        viewControllers = [homeVC, wishlistVC, categoryVC, cartVC, settingsVC]
+        viewControllers = [homeNav, wishlistNav, categoryVC, cartVC, settingsVC]
         
         guard let tabBarItems = tabBar.items else { return }
         
