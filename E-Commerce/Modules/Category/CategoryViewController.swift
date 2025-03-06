@@ -95,7 +95,38 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
         }
         cell.textLabel?.text = data[indexPath.section].subType[indexPath.row]
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        let title = data[indexPath.section].headerName
+        print(title)
+        
+        if let tabBarController = self.tabBarController as? TabBarViewController {
+            let products = tabBarController.allProducts
+            var productsCategorised:[ProductModel] = []
+            
+            switch title {
+            case "Men":
+                productsCategorised = products.filter { $0.category == "men's clothing" }
+            case "Women":
+                productsCategorised = products.filter { $0.category == "women's clothing" }
+            case "Electronics":
+                productsCategorised = products.filter { $0.category == "electronics" }
+            case "Jewelry":
+                productsCategorised = products.filter { $0.category == "jewelry" }
+            default:
+                print("no category")
+            }
+            
+            let vc = ShopViewController()
+            vc.modalPresentationStyle = .fullScreen
+            vc.products = productsCategorised
+            vc.currency = tabBarController.currency
+            present(vc, animated: true)
+        }
+
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
