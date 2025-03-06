@@ -10,7 +10,7 @@ final class ShopViewController: UIViewController {
     
     var products: [ProductModel] = []
     var currency: String = ""
-
+    var searchedText = ""
     
     private let shopTitle: UILabel = {
         let label = UILabel()
@@ -22,16 +22,27 @@ final class ShopViewController: UIViewController {
         return label
     }()
     
-    private let searchTextField: UITextField = {
+    private lazy var searchTextField: UITextField = {
         let textField = UITextField()
         textField.backgroundColor = .searchFieldBackGround
         textField.layer.cornerRadius = 18
-        textField.placeholder = "Search"
+        if searchedText.isEmpty {
+            textField.placeholder = "Search" } else {
+                textField.text = searchedText
+            }
         textField.translatesAutoresizingMaskIntoConstraints = false
         let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftView = leftPaddingView
         textField.leftViewMode = .always
         return textField
+    }()
+    
+    private lazy var closeButton: UIButton = {
+        let button = UIButton()
+           button.setImage(UIImage(named: "close"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(closeVC), for: .touchUpInside)
+        return button
     }()
     
     lazy var collectionProductsView: UICollectionView = {
@@ -68,16 +79,22 @@ private extension ShopViewController {
     func setupUI() {
         view.backgroundColor = .white
         
+        view.addSubview(closeButton)
+        closeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15).isActive = true
+        closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -5).isActive = true
+        closeButton.heightAnchor.constraint(equalToConstant: 15).isActive = true
+        closeButton.widthAnchor.constraint(equalToConstant: 15).isActive = true
+        
         view.addSubview(shopTitle)
         shopTitle.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 21).isActive = true
-        shopTitle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        shopTitle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         shopTitle.heightAnchor.constraint(equalToConstant: 36).isActive = true
         shopTitle.widthAnchor.constraint(equalToConstant: 70).isActive = true
         
         view.addSubview(searchTextField)
         searchTextField.leftAnchor.constraint(equalTo: shopTitle.rightAnchor, constant: 19).isActive = true
         searchTextField.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -21).isActive = true
-        searchTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        searchTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,constant: 20).isActive = true
         searchTextField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
         view.addSubview(collectionProductsView)
@@ -87,12 +104,14 @@ private extension ShopViewController {
         collectionProductsView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
     }
 
+    @objc func closeVC() {
+        dismiss(animated: true)
+    }
 }
 
 //MARK: UICollectionViewDelegate
 
 extension ShopViewController: UICollectionViewDelegate {
-
 }
 
 //MARK: UICollectionViewDataSource

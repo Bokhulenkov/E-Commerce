@@ -95,7 +95,15 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
         }
         cell.textLabel?.text = data[indexPath.section].subType[indexPath.row]
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+    let vc = ShopViewController()
+    vc.modalPresentationStyle = .fullScreen
+//    vc.products = uniqueProducts
+//    vc.currency = currency
+    present(vc, animated: true)
     }
 }
 

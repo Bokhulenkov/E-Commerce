@@ -93,6 +93,7 @@ final class HomeViewController: UIViewController {
         let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftView = leftPaddingView
         textField.leftViewMode = .always
+        textField.clearButtonMode = .always
         return textField
     }()
     
@@ -181,6 +182,14 @@ final class HomeViewController: UIViewController {
         
         networkService.delegate = self
         networkService.performRequest()
+        
+        searchTextField.delegate = self
+
+    }
+    
+    // текст филд не активен,если не пользуемся
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
     }
     
     private func configureUI() {
@@ -277,7 +286,11 @@ final class HomeViewController: UIViewController {
     }
     
     @objc func openPopularButtonAction(_ button: UIButton) {
-        print("openPopularButtonAction")
+        let vc = ShopViewController()
+        vc.modalPresentationStyle = .fullScreen
+        vc.products = popularProducts
+        vc.currency = currency
+        present(vc, animated: true)
     }
     
     @objc func openCartButtonAction(_ button: UIButton) {
@@ -455,4 +468,25 @@ extension HomeViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Ошибка при получении местоположения: \(error.localizedDescription)")
     }
+}
+
+//MARK: UITextFieldDelegate
+
+extension HomeViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        guard let text = textField.text, !text.isEmpty else {
+                return false
+            }
+        
+        let vc = ShopViewController()
+        vc.searchedText = text
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true, completion: nil)
+        
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    
 }
