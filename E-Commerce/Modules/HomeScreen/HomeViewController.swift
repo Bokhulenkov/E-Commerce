@@ -187,7 +187,7 @@ final class HomeViewController: UIViewController {
 
     }
     
-    // текст филд не активен,если не пользуемся
+    // текст филд не активен,если не пользуемся, надо доработать
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
     }
@@ -419,6 +419,11 @@ extension HomeViewController: NetworkServiceDelegate {
         collectionPopularView.reloadData()
         collectionProductsView.reloadData()
         collectionCategoriesView.reloadData()
+        
+        if let tabBarController = self.tabBarController as? TabBarViewController {
+            tabBarController.allProducts = self.allProducts
+            tabBarController.currency = self.currency
+        }
     }
     
     func didFailWithError(error: any Error) {
@@ -474,7 +479,6 @@ extension HomeViewController: CLLocationManagerDelegate {
 
 extension HomeViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        
         guard let text = textField.text, !text.isEmpty else {
                 return false
             }
@@ -487,6 +491,4 @@ extension HomeViewController: UITextFieldDelegate {
         textField.resignFirstResponder()
         return true
     }
-    
-    
 }
