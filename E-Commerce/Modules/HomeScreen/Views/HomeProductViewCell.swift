@@ -117,7 +117,7 @@ class HomeProductViewCell: UICollectionViewCell {
         addButton.heightAnchor.constraint(equalToConstant: 31).isActive = true
     }
     
-    public func configure(_ image: String?, _ title: String, _ price: String) {
+    public func configure(_ image: String?, _ title: String, _ price: String, _ isFavorite: Bool) {
         productTitle.text = "\(title)"
         productPrice.text = "\(price)"
         
@@ -125,6 +125,9 @@ class HomeProductViewCell: UICollectionViewCell {
             productImageView.kf.setImage(with: url)
             productImageView.layer.cornerRadius = 5
         }
+        
+        let buttonImage = isFavorite ? UIImage.heartRedFull : UIImage.heartRed
+        likeButton.setImage(buttonImage, for: .normal)
     }
     
     @objc private func addButtonTapped() {

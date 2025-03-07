@@ -152,8 +152,8 @@ final class DetailViewController: UIViewController {
     }
     
     //MARK: - Methods
-    func configure(for product: ProductModel) {
-        descriptionLabel.text = "\(product.description)"
+    func configure(for product: ProductRealmModel) {
+        descriptionLabel.text = "\(product.specification)"
         priceLabel.text = "\(product.price)"
         firstVariationLabel.text = "\(product.category)"
         secondVariationLabel.text = "\(product.rate)"

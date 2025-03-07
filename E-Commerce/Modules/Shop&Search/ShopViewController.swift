@@ -8,7 +8,7 @@ import UIKit
 
 final class ShopViewController: UIViewController {
     
-    var products: [ProductModel] = []
+    var products: [ProductRealmModel] = []
     var currency: String = ""
     var searchedText = ""
     
@@ -119,7 +119,7 @@ extension ShopViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
-        cell.configure(products[indexPath.row].image, products[indexPath.row].title, "\(currency)\(products[indexPath.row].price)")
+        cell.configure(products[indexPath.row].image, products[indexPath.row].title, "\(currency)\(products[indexPath.row].price)", products[indexPath.row].isFavorite)
         cell.addButtonAction = {
             print("Add to cart: \(self.products[indexPath.item].title)")
         }
