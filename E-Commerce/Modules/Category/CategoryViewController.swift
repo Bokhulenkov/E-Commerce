@@ -104,7 +104,7 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
         
         if let tabBarController = self.tabBarController as? TabBarViewController {
             let products = tabBarController.allProducts
-            var productsCategorised:[ProductModel] = []
+            var productsCategorised:[ProductRealmModel] = []
             
             switch title {
             case "Men":
