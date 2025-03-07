@@ -17,7 +17,7 @@ class TabBarViewController: UITabBarController {
 
     private let indicatorView = UIView()
     
-    var allProducts: [ProductModel] = []
+    var allProducts: [ProductRealmModel] = []
     var currency: String = ""
     
     override func viewDidLoad() {
