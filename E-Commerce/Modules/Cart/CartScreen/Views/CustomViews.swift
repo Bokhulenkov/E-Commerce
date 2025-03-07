@@ -33,7 +33,6 @@ class AddressView: UIView {
         button.backgroundColor = UIColor(named: "ButtonColor")
         button.layer.cornerRadius = 20
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(editTapped), for: .touchUpInside)
         return button
     }()
     
@@ -56,6 +55,8 @@ class AddressView: UIView {
     private func setupUI() {
         
         translatesAutoresizingMaskIntoConstraints = false
+        
+        editButton.addTarget(self, action: #selector(editTapped), for: .touchUpInside)
         
         backgroundColor = UIColor(named: "SearchFieldBackGroundColor")
         layer.cornerRadius = 12
