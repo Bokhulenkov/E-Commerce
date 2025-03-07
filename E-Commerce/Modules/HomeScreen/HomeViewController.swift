@@ -10,12 +10,13 @@ import CoreLocation
 
 final class HomeViewController: UIViewController {
     
+    private let storageService = StorageService()
     private let locationManager = CLLocationManager()
     private let geocoder = CLGeocoder()
     private var networkService = NetworkService()
-    private var allProducts: [ProductModel] = []
-    private var popularProducts: [ProductModel] = []
-    private var justForYouProducts: [ProductModel] = []
+    private var allProducts: [ProductRealmModel] = []
+    private var popularProducts: [ProductRealmModel] = []
+    private var justForYouProducts: [ProductRealmModel] = []
     private var uniqueCategories: [String] = []
     private var currency: String = "$" {
         didSet {
@@ -265,9 +266,8 @@ final class HomeViewController: UIViewController {
     
     //MARK: Func
     
-    private func changeCountCart(add: Int) {
-        cartCount += add
-        cartCountLabel.text = "\(cartCount)"
+    private func setCountCart() {
+        cartCount = storageService.getAllCartProducts().count
     }
     
     //MARK: Action
@@ -330,15 +330,18 @@ extension HomeViewController: UICollectionViewDataSource {
         } else if collectionView == collectionProductsView {
 
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
-            cell.configure(justForYouProducts[indexPath.row].image, justForYouProducts[indexPath.row].title, "\(currency)\(justForYouProducts[indexPath.row].price)")
+            cell.configure(justForYouProducts[indexPath.row].image,
+                           justForYouProducts[indexPath.row].title,
+                           "\(currency)\(justForYouProducts[indexPath.row].price)",
+                           justForYouProducts[indexPath.row].isFavorite)
             
             cell.addButtonAction = {
-                print("Add to cart: \(self.justForYouProducts[indexPath.item].title)")
-                self.changeCountCart(add: 1)
+                self.storageService.setCart(productId: self.justForYouProducts[indexPath.item].id, isCart: true)
+                self.setCountCart()
             }
             
             cell.likeButtonAction = { liked in
-                print("like state \(liked) for \(self.justForYouProducts[indexPath.item].title)")
+                self.storageService.setFavorite(productId: self.justForYouProducts[indexPath.item].id, isFavorite: liked)
             }
             
             return cell
@@ -383,11 +386,15 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
 extension HomeViewController: NetworkServiceDelegate {
     func didUpdateData(products: [ProductModel]) {
         
-        allProducts = products
-        popularProducts = products.sorted { $0.rate > $1.rate }
-        justForYouProducts = Array(products.shuffled().prefix(4))
-        uniqueCategories = Array(Set(products.map { $0.category }))
+        storageService.saveProducts(products)
 
+        allProducts = storageService.getAllProducts()
+        popularProducts = allProducts.sorted { $0.rate > $1.rate }
+        justForYouProducts = Array(allProducts.shuffled().prefix(4))
+        uniqueCategories = Array(Set(allProducts.map { $0.category }))
+
+        setCountCart()
+        
         configureUI()
 
         collectionPopularView.reloadData()
@@ -402,6 +409,9 @@ extension HomeViewController: NetworkServiceDelegate {
 
 extension HomeViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let europeanCountries = [ "Австрия", "Албания", "Андорра", "Бельгия", "Болгария", "Босния и Герцеговина", "Ватикан", "Великобритания", "Венгрия", "Германия", "Греция", "Дания", "Ирландия", "Исландия", "Испания", "Италия", "Кипр", "Латвия", "Литва", "Лихтенштейн", "Люксембург", "Македония", "Мальта", "Молдавия", "Монако", "Нидерланды", "Норвегия", "Польша", "Португалия", "Румыния", "Сан-Марино", "Сербия", "Словакия", "Словения", "Украина", "Финляндия", "Франция", "Хорватия", "Черногория", "Чехия", "Швейцария", "Швеция", "Эстония"]
+        let americanCountries = ["США", "Канада", "Мексика", "Аргентина", "Бразилия", "Чили", "Колумбия", "Венесуэла", "Перу", "Парагвай", "Уругвай", "Боливия", "Эквадор", "Гватемала", "Гондурас", "Куба", "Доминиканская Республика", "Панама", "Коста-Рика", "Ямайка", "Сальвадор", "Никарагуа", "Гаити", "Тринидад и Тобаго", "Барбадос", "Белиз", "Багамы", "Суринам", "Гайана"]
+
         if let location = locations.last {
             geocoder.reverseGeocodeLocation(location) { [weak self] (placemarks, error) in
                 guard let self = self else { return }
@@ -421,11 +431,15 @@ extension HomeViewController: CLLocationManagerDelegate {
                     
                     if let country = placemark.country {
                         var newCurrency = ""
-                        switch country {
-                            case "Америка": newCurrency = "$"
-                            case "Европа": newCurrency = "€"
-                            case "Россия": newCurrency = "₽"
-                            default: newCurrency = "$"
+                        print("Страна: \(country)")
+                        if americanCountries.contains(country) {
+                            newCurrency = "$"
+                        } else if europeanCountries.contains(country) {
+                            newCurrency = "€"
+                        } else if country == "Россия" {
+                            newCurrency = "₽"
+                        } else {
+                            newCurrency = "$"
                         }
                         
                         if newCurrency != currency {
