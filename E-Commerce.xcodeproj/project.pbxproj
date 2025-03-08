@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		11BF98852D75D0BB0012D5A0 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 11BF98842D75D0BB0012D5A0 /* Kingfisher */; };
-		F39598C82D7C69160071FD14 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F39598C72D7C69160071FD14 /* Realm */; };
-		F39598CA2D7C69160071FD14 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F39598C92D7C69160071FD14 /* RealmSwift */; settings = {ATTRIBUTES = (Required, ); }; };
 		F3FE3E2F2D7C6D0700A4D8DE /* Realm in Embed Frameworks */ = {isa = PBXBuildFile; productRef = F39598C72D7C69160071FD14 /* Realm */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F3FE3E312D7C6D0800A4D8DE /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = F39598C92D7C69160071FD14 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -59,8 +57,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F39598CA2D7C69160071FD14 /* RealmSwift in Frameworks */,
-				F39598C82D7C69160071FD14 /* Realm in Frameworks */,
 				11BF98852D75D0BB0012D5A0 /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -72,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				11BF980E2D75A8520012D5A0 /* E-Commerce */,
+				F38BEA5B2D7C737F007DA57E /* Frameworks */,
 				11BF980D2D75A8520012D5A0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -82,6 +79,13 @@
 				11BF980C2D75A8520012D5A0 /* E-Commerce.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F38BEA5B2D7C737F007DA57E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
