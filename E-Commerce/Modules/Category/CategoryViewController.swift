@@ -11,15 +11,25 @@ final class CategoryViewController: UIViewController {
     
     private lazy var tblView = UITableView()
     
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "All categories"
+        label.font =  .custom(font: CustomFont.ralewayBold, size: 28)
+        label.textColor = .black
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
     var data = categories
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupUI()
         
         tblView.delegate = self
         tblView.dataSource = self
         setupTableView()
-        setupUI()
+        
     }
 }
 
@@ -30,7 +40,7 @@ private extension CategoryViewController {
         tblView.register(CategoryCell.self, forCellReuseIdentifier: "CategoryCell")
         tblView.separatorStyle = .none
         NSLayoutConstraint.activate([
-            tblView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tblView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
             tblView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             tblView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             tblView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
@@ -39,8 +49,14 @@ private extension CategoryViewController {
     
     func setupUI(){
         view.backgroundColor = .white
-        title = "All categories"
-        navigationController?.navigationBar.prefersLargeTitles = true
+      
+        view.addSubview(titleLabel)
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            titleLabel.heightAnchor.constraint(equalToConstant: 50),
+            titleLabel.widthAnchor.constraint(equalToConstant: 200)
+        ])
     }
 }
 
@@ -79,7 +95,38 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
         }
         cell.textLabel?.text = data[indexPath.section].subType[indexPath.row]
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        let title = data[indexPath.section].headerName
+        print(title)
+        
+        if let tabBarController = self.tabBarController as? TabBarViewController {
+            let products = tabBarController.allProducts
+            var productsCategorised:[ProductRealmModel] = []
+            
+            switch title {
+            case "Men":
+                productsCategorised = products.filter { $0.category == "men's clothing" }
+            case "Women":
+                productsCategorised = products.filter { $0.category == "women's clothing" }
+            case "Electronics":
+                productsCategorised = products.filter { $0.category == "electronics" }
+            case "Jewelry":
+                productsCategorised = products.filter { $0.category == "jewelry" }
+            default:
+                print("no category")
+            }
+            
+            let vc = ShopViewController()
+            vc.modalPresentationStyle = .fullScreen
+            vc.products = productsCategorised
+            vc.currency = tabBarController.currency
+            present(vc, animated: true)
+        }
+
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
