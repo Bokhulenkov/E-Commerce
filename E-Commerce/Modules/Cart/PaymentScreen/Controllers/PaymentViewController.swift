@@ -8,7 +8,12 @@
 import UIKit
 
 final class PaymentViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-
+    
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    private var tableViewHeightConstraint: NSLayoutConstraint?
+    
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Payment"
@@ -51,34 +56,17 @@ final class PaymentViewController: UIViewController, UITableViewDataSource, UITa
         return label
     }()
     
+    private var paymentView = PaymentView()
     private let addressView = AddressView()
     private let contactInfoView = AddressView()
+    private let shippingOptionsView = ShippingOptionsView()
+    private let paymentMethodView = PatView()
     
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.rowHeight = 80
         return tableView
-    }()
-    
-    private let emptyStateView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        
-        let label = UILabel()
-        label.text = "Корзина пуста"
-        label.textColor = .gray
-        label.font = UIFont.systemFont(ofSize: 25, weight: .medium)
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(label)
-        NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
-        
-        return view
     }()
     
     private let bottomContainerView: UIView = {
@@ -107,8 +95,6 @@ final class PaymentViewController: UIViewController, UITableViewDataSource, UITa
         return button
     }()
     
-    private var cartView = CartView()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -118,97 +104,167 @@ final class PaymentViewController: UIViewController, UITableViewDataSource, UITa
         tableView.register(PaymentItemCell.self, forCellReuseIdentifier: "PaymentCell")
         tableView.allowsSelection = false
         tableView.separatorStyle = .none
-
         
         setupUI()
         updateCartInfo()
+        
+        checkoutButton.addTarget(self, action: #selector(showSuccessAlert), for: .touchUpInside)
+        addVoucherButton.addTarget(self, action: #selector(addVoucherTapped), for: .touchUpInside)
+    }
+    
+    private func updateTableViewHeight() {
+        tableView.layoutIfNeeded()
+        let height = tableView.contentSize.height
+        tableViewHeightConstraint?.constant = height
     }
     
     private func setupUI() {
-        view.addSubview(titleLabel)
-        view.addSubview(addressView)
-        view.addSubview(contactInfoView)
-        view.addSubview(titleLabel2)
-        view.addSubview(addVoucherButton)
-        view.addSubview(cartCountLabel)
-        view.addSubview(tableView)
-        view.addSubview(emptyStateView)
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(scrollView)
         view.addSubview(bottomContainerView)
+        
+        scrollView.addSubview(contentView)
+        
+        [
+            titleLabel,
+            addressView,
+            contactInfoView,
+            titleLabel2,
+            addVoucherButton,
+            cartCountLabel,
+            tableView,
+            shippingOptionsView,
+            paymentMethodView
+        ].forEach {
+            contentView.addSubview($0)
+        }
+        
         bottomContainerView.addSubview(totalLabel)
         bottomContainerView.addSubview(checkoutButton)
         
-        addressView.updateAddress("Default Test Address Russian Federation, Moscow, Red Square, 1", title: "Shipping Address")
+        addressView.updateAddress("Default Test Address: Montenegro, Cetinje, Petra Lubard, 3A", title: "Shipping Address")
         contactInfoView.updateAddress("Default Test Info: +37469873414", title: "Contact Information")
-        
         
         addressView.onEditTapped = { [weak self] in
             self?.showAddressInput()
         }
         
         contactInfoView.onEditTapped = { [weak self] in
-            self?.showContactInfoInput()
+            self?.showPaymentMethodSelection()
         }
         
+        paymentMethodView.onEditTapped = { [weak self] in
+            self?.showPaymentMethodSelection()
+                }
+        
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: bottomContainerView.topAnchor),
+
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+
             addressView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
-            addressView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            addressView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            addressView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            addressView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             addressView.heightAnchor.constraint(equalToConstant: 85),
-            
+
             contactInfoView.topAnchor.constraint(equalTo: addressView.bottomAnchor, constant: 10),
-            contactInfoView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            contactInfoView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            contactInfoView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            contactInfoView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             contactInfoView.heightAnchor.constraint(equalToConstant: 85),
-            
+
             titleLabel2.topAnchor.constraint(equalTo: contactInfoView.bottomAnchor, constant: 15),
-            titleLabel2.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            
+            titleLabel2.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+
             addVoucherButton.centerYAnchor.constraint(equalTo: titleLabel2.centerYAnchor),
-            addVoucherButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            
+            addVoucherButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+
             cartCountLabel.leadingAnchor.constraint(equalTo: titleLabel2.trailingAnchor, constant: 8),
             cartCountLabel.centerYAnchor.constraint(equalTo: titleLabel2.centerYAnchor),
             cartCountLabel.widthAnchor.constraint(equalToConstant: 24),
             cartCountLabel.heightAnchor.constraint(equalToConstant: 24),
-            
+
             tableView.topAnchor.constraint(equalTo: cartCountLabel.bottomAnchor, constant: 16),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: bottomContainerView.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+
+            shippingOptionsView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 16),
+            shippingOptionsView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            shippingOptionsView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+
+            paymentMethodView.topAnchor.constraint(equalTo: shippingOptionsView.bottomAnchor, constant: 20),
+            paymentMethodView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            paymentMethodView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            paymentMethodView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            emptyStateView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
+
             bottomContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomContainerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             bottomContainerView.heightAnchor.constraint(equalToConstant: 80),
-            
+
             totalLabel.leadingAnchor.constraint(equalTo: bottomContainerView.leadingAnchor, constant: 20),
             totalLabel.centerYAnchor.constraint(equalTo: bottomContainerView.centerYAnchor),
-            
+
             checkoutButton.trailingAnchor.constraint(equalTo: bottomContainerView.trailingAnchor, constant: -20),
             checkoutButton.centerYAnchor.constraint(equalTo: bottomContainerView.centerYAnchor),
             checkoutButton.widthAnchor.constraint(equalToConstant: 120),
             checkoutButton.heightAnchor.constraint(equalToConstant: 40)
         ])
+        
+        tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 0)
+        tableViewHeightConstraint?.isActive = true
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
+    }
+
+    private func dismissAndReturnToCart() {
+        dismiss(animated: true, completion: nil)
     }
     
+    @objc private func addVoucherTapped() {
+        let alert = UIAlertController(title: "Sorry", message: "You don`t have any avaliable vouchers.", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alert.addAction(okAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    @objc private func showSuccessAlert() {
+            let alert = UIAlertController(title: "Done!", message: "Your card has been successfully charged", preferredStyle: .alert)
+
+            let trackOrderAction = UIAlertAction(title: "Track My Order", style: .default) { _ in
+                self.dismissAndReturnToCart()
+            }
+
+            alert.addAction(trackOrderAction)
+
+            present(alert, animated: true, completion: nil)
+        }
+    
     private func updateCartInfo() {
-        let cartItems = cartView.getItems()
-        let itemCount = cartItems.reduce(0) { $0 + $1.quantity }
+        
+        let paymentItems = paymentView.getItems()
+        let itemCount = paymentItems.reduce(0) { $0 + $1.quantity }
         cartCountLabel.text = "\(itemCount)"
         
-        let totalPrice = cartView.calculateTotal()
+        let totalPrice = paymentView.calculateTotal()
         totalLabel.text = String(format: "Total $%.2f", totalPrice)
         
-        let isEmpty = cartItems.isEmpty
-        tableView.isHidden = isEmpty
-        emptyStateView.isHidden = !isEmpty
-        bottomContainerView.isHidden = isEmpty
+        let rowHeight: CGFloat = 80
+        tableViewHeightConstraint?.constant = CGFloat(itemCount) * rowHeight
+        
     }
     
     private func showAddressInput() {
@@ -251,13 +307,32 @@ final class PaymentViewController: UIViewController, UITableViewDataSource, UITa
         present(alert, animated: true)
     }
     
+    private func showPaymentMethodSelection() {
+        
+            let alert = UIAlertController(title: "Select Payment Method", message: nil, preferredStyle: .actionSheet)
+
+            let cardAction = UIAlertAction(title: "Card", style: .default) { [weak self] _ in
+                self?.paymentMethodView.updatePaymentMethod("Card")
+            }
+
+            let applePayAction = UIAlertAction(title: "Apple Pay", style: .default) { [weak self] _ in
+                self?.paymentMethodView.updatePaymentMethod("Apple Pay")
+            }
+
+            alert.addAction(cardAction)
+            alert.addAction(applePayAction)
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+            present(alert, animated: true)
+        }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return cartView.getItems().count
+        return paymentView.getItems().count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PaymentCell", for: indexPath) as! PaymentItemCell
-        let item = cartView.getItems()[indexPath.row]
+        let item = paymentView.getItems()[indexPath.row]
         cell.configure(image: item.image, title: item.title,price: item.price, quantity: item.quantity)
         
         return cell

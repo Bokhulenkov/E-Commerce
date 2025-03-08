@@ -26,7 +26,9 @@ class AddressView: UIView {
     
     private let editButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "pencil"), for: .normal)
+        let pencilImage = UIImage(systemName: "pencil")
+        let config = UIImage.SymbolConfiguration(weight: .heavy) // Make the icon bolder
+        button.setImage(pencilImage?.withConfiguration(config), for: .normal)
         button.tintColor = .white
         button.backgroundColor = UIColor(named: "ButtonColor")
         button.layer.cornerRadius = 20
@@ -82,6 +84,7 @@ class AddressView: UIView {
     }
     
     @objc private func editTapped() {
+        print("Edit button tapped!")
         onEditTapped?()
     }
     

@@ -113,7 +113,7 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         bottomContainerView.addSubview(checkoutButton)
         checkoutButton.addTarget(self, action: #selector(checkoutTapped), for: .touchUpInside)
         
-        addressView.updateAddress("Default Test Address Russian Federation, Moscow, Red Square, 1", title: "Shipping Address")
+        addressView.updateAddress("Default Test Address: Montenegro, Cetinje, Petra Lubard, 3A", title: "Shipping Address")
         
         addressView.onEditTapped = { [weak self] in
             self?.showAddressInput()
@@ -203,13 +203,11 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
     
     @objc private func checkoutTapped() {
         proceedToPayment()
-        print("checkoutTapped")
     }
     
     private func proceedToPayment() {
         let paymentVC = PaymentViewController()
         present(paymentVC, animated: true)
-        print("checkoutTapped_PROCEEEEEEEEEEEEEEEED")
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

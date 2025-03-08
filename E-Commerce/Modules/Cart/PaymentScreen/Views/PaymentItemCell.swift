@@ -10,12 +10,11 @@ import UIKit
 class PaymentItemCell: UITableViewCell {
     
     private let itemImageView = UIImageView()
+    private let shadowContainerView = UIView()
     private let titleLabel = UILabel()
     private let priceLabel = UILabel()
     private let counterLabel = UILabel()
-    
     private let counterContainerView = UIView()
-    
     var itemID: UUID?
     
     private var quantity = 1 {
@@ -41,61 +40,73 @@ class PaymentItemCell: UITableViewCell {
     }
     
     private func setupUI() {
-        [itemImageView, counterContainerView, titleLabel, priceLabel].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            contentView.addSubview($0)
-        }
-        
+        contentView.addSubview(shadowContainerView)
+        shadowContainerView.addSubview(itemImageView)
+        contentView.addSubview(counterContainerView)
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(priceLabel)
+
+        // Настройка тени
+        shadowContainerView.translatesAutoresizingMaskIntoConstraints = false
+        shadowContainerView.layer.shadowColor = UIColor.black.cgColor
+        shadowContainerView.layer.shadowOpacity = 0.2
+        shadowContainerView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        shadowContainerView.layer.shadowRadius = 4
+
         // Настройка изображения
+        itemImageView.translatesAutoresizingMaskIntoConstraints = false
         itemImageView.contentMode = .scaleAspectFill
         itemImageView.clipsToBounds = true
         itemImageView.layer.cornerRadius = 35
-        itemImageView.layer.masksToBounds = true
-        itemImageView.layer.borderWidth = 1
+        itemImageView.layer.borderWidth = 5
         itemImageView.layer.borderColor = UIColor.white.cgColor
-        
+
         // Настройка счётчика
+        counterContainerView.translatesAutoresizingMaskIntoConstraints = false
         counterContainerView.backgroundColor = UIColor(named: "QuantityBackgroundColor")
         counterContainerView.layer.borderWidth = 1
         counterContainerView.layer.borderColor = UIColor.white.cgColor
-        counterContainerView.clipsToBounds = true
         counterContainerView.layer.cornerRadius = 10
+        counterContainerView.clipsToBounds = true
         counterContainerView.addSubview(counterLabel)
+
+        // Настройка текста
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.font = UIFont.custom(font: .nunitoLight, size: 12)
+        titleLabel.numberOfLines = 2
         
+        priceLabel.translatesAutoresizingMaskIntoConstraints = false
+        priceLabel.font = UIFont.custom(font: .ralewayBold, size: 18)
+
         counterLabel.translatesAutoresizingMaskIntoConstraints = false
         counterLabel.textAlignment = .center
         counterLabel.font = UIFont.custom(font: .ralewayMedium, size: 13)
-        
-        // Настройка текста
-        
-        titleLabel.font = UIFont.custom(font: .nunitoLight, size: 12)
-        priceLabel.font = UIFont.custom(font: .ralewayBold, size: 18)
-        titleLabel.numberOfLines = 2
-        
+
         NSLayoutConstraint.activate([
-            // Картинка слева
-            itemImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            itemImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+
+            shadowContainerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            shadowContainerView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            shadowContainerView.widthAnchor.constraint(equalToConstant: 70),
+            shadowContainerView.heightAnchor.constraint(equalToConstant: 70),
+
+            itemImageView.centerXAnchor.constraint(equalTo: shadowContainerView.centerXAnchor),
+            itemImageView.centerYAnchor.constraint(equalTo: shadowContainerView.centerYAnchor),
             itemImageView.widthAnchor.constraint(equalToConstant: 70),
             itemImageView.heightAnchor.constraint(equalToConstant: 70),
-            
-            // Счётчик (поверх картинки, в верхнем левом углу)
+
             counterContainerView.widthAnchor.constraint(equalToConstant: 20),
             counterContainerView.heightAnchor.constraint(equalToConstant: 20),
             counterContainerView.topAnchor.constraint(equalTo: itemImageView.topAnchor, constant: -5),
             counterContainerView.trailingAnchor.constraint(equalTo: itemImageView.trailingAnchor, constant: 0),
-            
-            // Центрируем цифру внутри счётчика
+
             counterLabel.centerXAnchor.constraint(equalTo: counterContainerView.centerXAnchor),
             counterLabel.centerYAnchor.constraint(equalTo: counterContainerView.centerYAnchor),
-            
-            // Текст справа от картинки
-            titleLabel.leadingAnchor.constraint(equalTo: itemImageView.trailingAnchor, constant: 12),
+
+            titleLabel.leadingAnchor.constraint(equalTo: shadowContainerView.trailingAnchor, constant: 12),
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: priceLabel.leadingAnchor, constant: -12),
-            
-            // Цена справа
-            priceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            titleLabel.widthAnchor.constraint(equalToConstant: 160),
+
+            priceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -18),
             priceLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
