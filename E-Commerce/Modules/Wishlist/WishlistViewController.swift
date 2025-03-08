@@ -70,6 +70,7 @@ final class WishlistViewController: UIViewController {
         collectionView.delegate = self
         collectionView.register(WishlistViewCell.self, forCellWithReuseIdentifier: "WishlistViewCell")
         collectionView.allowsMultipleSelection = true
+        collectionView.isUserInteractionEnabled = true
         
         return collectionView
     }()
@@ -83,6 +84,11 @@ final class WishlistViewController: UIViewController {
         
         setupUI()
         setupKeyboardHandling()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.isNavigationBarHidden = true
     }
     
     //MARK: - Private methods
@@ -139,13 +145,21 @@ extension WishlistViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WishlistViewCell", for: indexPath) as! WishlistViewCell
         
+        cell.isUserInteractionEnabled = true
+        
         return cell
     }
 }
 
 //MARK: - UICollectionViewDelegate
 extension WishlistViewController: UICollectionViewDelegate {
-    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let vc = DetailViewController()
+        vc.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(vc, animated: true)
+        navigationController?.isNavigationBarHidden = false
+        navigationItem.backButtonTitle = ""
+    }
 }
 
 //MARK: -  UICollectionViewDelegateFlowLayout
