@@ -11,6 +11,7 @@ final class ShopViewController: UIViewController {
     var products: [ProductRealmModel] = []
     var currency: String = ""
     var searchedText = ""
+    var filteredProducts: [ProductRealmModel] = []
     
     private let shopTitle: UILabel = {
         let label = UILabel()
@@ -34,6 +35,7 @@ final class ShopViewController: UIViewController {
         let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftView = leftPaddingView
         textField.leftViewMode = .always
+        textField.clearButtonMode = .always
         return textField
     }()
     
@@ -65,8 +67,13 @@ final class ShopViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        if let tabBarController = self.tabBarController as? TabBarViewController {
+            currency = tabBarController.currency
+        }
+        filteredProducts = products
+
         setupUI()
+        searchTextField.delegate = self
     }
 }
 
@@ -114,19 +121,37 @@ extension ShopViewController: UICollectionViewDelegate {
 
 extension ShopViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return products.count
+        
+        return !searchedText.isEmpty ? filteredProducts.count : products.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
-        cell.configure(products[indexPath.row].image, products[indexPath.row].title, "\(currency)\(products[indexPath.row].price)", products[indexPath.row].isFavorite)
-        cell.addButtonAction = {
-            print("Add to cart: \(self.products[indexPath.item].title)")
-        }
-        cell.likeButtonAction = { liked in
-            print("like state \(liked) for \(self.products[indexPath.item].title)")
-        }
+        
+        let dataSource = !searchedText.isEmpty ? filteredProducts : products
+                let product = dataSource[indexPath.row]
+                
+                cell.configure(product.image, product.title, "\(currency)\(product.price)", product.isFavorite)
+                
+                cell.addButtonAction = {
+                    print("Add to cart: \(product.title)")
+                }
+                
+                cell.likeButtonAction = { liked in
+                    print("like state \(liked) for \(product.title)")
+                }
+        
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    
+        // без навбара нет выхода с экрана!
+        
+        let vc = DetailViewController()
+        vc.configure(for: products[indexPath.row])
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
     }
 }
 
@@ -139,6 +164,22 @@ extension ShopViewController: UICollectionViewDelegateFlowLayout {
             let width = (collectionProductsView.frame.width - 13) / 2
             let height = width * 1.75
             return CGSize(width: width, height: height)
+    }
+}
+
+extension ShopViewController: UITextFieldDelegate {
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        searchedText = textField.text?.lowercased() ?? ""
+                
+                if searchedText.isEmpty {
+                    filteredProducts = products
+                } else {
+                    filteredProducts = products.filter {
+                        $0.title.lowercased().contains(searchedText)
+                    }
+                }
+
+                collectionProductsView.reloadData()
     }
 }
     
