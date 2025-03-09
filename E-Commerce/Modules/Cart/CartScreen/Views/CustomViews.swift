@@ -11,7 +11,6 @@ class AddressView: UIView {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Shipping Address"
         label.font = UIFont.custom(font: .ralewayBold, size: 18)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -19,7 +18,6 @@ class AddressView: UIView {
     
     private let addressLabel: UILabel = {
         let label = UILabel()
-        label.text = "Your address here"
         label.font = UIFont.custom(font: .nunitoLight, size: 13)
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -28,11 +26,14 @@ class AddressView: UIView {
     
     private let editButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "pencil"), for: .normal)
+        let pencilImage = UIImage(systemName: "pencil")
+        let config = UIImage.SymbolConfiguration(weight: .heavy) // Make the icon bolder
+        button.setImage(pencilImage?.withConfiguration(config), for: .normal)
         button.tintColor = .white
         button.backgroundColor = UIColor(named: "ButtonColor")
         button.layer.cornerRadius = 20
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(editTapped), for: .touchUpInside)
         return button
     }()
     
@@ -55,8 +56,6 @@ class AddressView: UIView {
     private func setupUI() {
         
         translatesAutoresizingMaskIntoConstraints = false
-        
-        editButton.addTarget(self, action: #selector(editTapped), for: .touchUpInside)
         
         backgroundColor = UIColor(named: "SearchFieldBackGroundColor")
         layer.cornerRadius = 12
@@ -85,11 +84,13 @@ class AddressView: UIView {
     }
     
     @objc private func editTapped() {
+        print("Edit button tapped!")
         onEditTapped?()
     }
     
-    func updateAddress(_ address: String) {
+    func updateAddress(_ address: String, title: String) {
         addressLabel.text = address
+        titleLabel.text = title
     }
 }
 
