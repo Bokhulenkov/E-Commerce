@@ -438,7 +438,7 @@ final class HomeViewController: UIViewController {
             
             if let tabBarController = self.tabBarController as? TabBarViewController {
                 tabBarController.allProducts = self.allProducts
-                tabBarController.currency = self.currency
+                
             }
         }
         
@@ -449,7 +449,7 @@ final class HomeViewController: UIViewController {
     
     extension HomeViewController: CLLocationManagerDelegate {
         func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-            let europeanCountries = [ "Австрия", "Албания", "Андорра", "Бельгия", "Болгария", "Босния и Герцеговина", "Ватикан", "Великобритания", "Венгрия", "Германия", "Греция", "Дания", "Ирландия", "Исландия", "Испания", "Италия", "Кипр", "Латвия", "Литва", "Лихтенштейн", "Люксембург", "Македония", "Мальта", "Молдавия", "Монако", "Нидерланды", "Норвегия", "Польша", "Португалия", "Румыния", "Сан-Марино", "Сербия", "Словакия", "Словения", "Украина", "Финляндия", "Франция", "Хорватия", "Черногория", "Чехия", "Швейцария", "Швеция", "Эстония"]
+            let europeanCountries = [ "Австрия", "Албания", "Андорра", "Бельгия", "Болгария", "Босния и Герцеговина", "Ватикан", "Великобритания", "Венгрия", "Германия", "Греция", "Дания", "Ирландия", "Исландия", "Испания", "Италия", "Кипр", "Латвия", "Литва", "Лихтенштейн", "Люксембург", "Македония", "Мальта", "Молдавия", "Монако", "Нидерланды", "Норвегия", "Польша", "Португалия", "Румыния", "Сан-Марино", "Сербия", "Словакия", "Словения", "Украина", "Финляндия", "France", "Хорватия", "Черногория", "Чехия", "Швейцария", "Швеция", "Эстония"]
             let americanCountries = ["США", "Канада", "Мексика", "Аргентина", "Бразилия", "Чили", "Колумбия", "Венесуэла", "Перу", "Парагвай", "Уругвай", "Боливия", "Эквадор", "Гватемала", "Гондурас", "Куба", "Доминиканская Республика", "Панама", "Коста-Рика", "Ямайка", "Сальвадор", "Никарагуа", "Гаити", "Тринидад и Тобаго", "Барбадос", "Белиз", "Багамы", "Суринам", "Гайана"]
 
             if let location = locations.last {
@@ -483,6 +483,11 @@ final class HomeViewController: UIViewController {
                                 
                             if newCurrency != currency {
                                 currency = newCurrency
+                                
+                                if let tabBarController = self.tabBarController as? TabBarViewController {
+                                    tabBarController.currency = self.currency
+                                    }
+
                             }
                         } else {
                             print("Страна не найдена")

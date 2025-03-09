@@ -100,7 +100,7 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let title = data[indexPath.section].headerName
-        print(title)
+        
         
         if let tabBarController = self.tabBarController as? TabBarViewController {
             let products = tabBarController.allProducts
@@ -114,7 +114,7 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
             case "Electronics":
                 productsCategorised = products.filter { $0.category == "electronics" }
             case "Jewelry":
-                productsCategorised = products.filter { $0.category == "jewelry" }
+                productsCategorised = products.filter { $0.category == "jewelery" }
             default:
                 print("no category")
             }
