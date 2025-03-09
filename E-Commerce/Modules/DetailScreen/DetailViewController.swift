@@ -135,6 +135,7 @@ final class DetailViewController: UIViewController {
     var likeButtonAction: ((Bool) -> Void)?
     var networkService = NetworkService()
     var product: ProductModel?
+    var images: [String] = []
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -157,11 +158,14 @@ final class DetailViewController: UIViewController {
         priceLabel.text = "\(product.price)"
         firstVariationLabel.text = "\(product.category)"
         secondVariationLabel.text = "\(product.rate)"
-        
+        images = (1...3).map { "\(product.id).\($0)" }
+
         if let url = URL(string: product.image) {
             mainImageView.kf.setImage(with: url)
             mainImageView.layer.cornerRadius = 5
         }
+        
+        collectionView.reloadData()
     }
     
     //MARK: - Private methods
@@ -273,11 +277,13 @@ final class DetailViewController: UIViewController {
 //MARK: - UICollectionViewDataSource
 extension DetailViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 7
+        return images.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DetailViewCell", for: indexPath) as! DetailViewCell
+        
+        cell.configure(for: images[indexPath.row])
         
         return cell
     }

@@ -30,6 +30,10 @@ class DetailViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func configure(for image: String) {
+        imageView.image = UIImage(named: image)
+    }
+    
     // MARK: - Private Methods
     private func setupUI() {
         addSubview(imageView)
