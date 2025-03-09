@@ -13,13 +13,24 @@ final class ShopViewController: UIViewController {
     var searchedText = ""
     var filteredProducts: [ProductRealmModel] = []
     
-    private let shopTitle: UILabel = {
+    private lazy var shopTitle: UILabel = {
         let label = UILabel()
         label.text = "Shop"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.custom(font: .ralewayBold, size: 28)
         label.textColor = .text
         label.textAlignment = .left
+        return label
+    }()
+    
+    private lazy var historyLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Search history"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.custom(font: .ralewayMedium, size: 18)
+        label.textColor = .text
+        label.textAlignment = .left
+        label.isHidden = true
         return label
     }()
     
@@ -44,6 +55,15 @@ final class ShopViewController: UIViewController {
            button.setImage(UIImage(named: "close"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(closeVC), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var deleteButton: UIButton = {
+        let button = UIButton()
+           button.setImage(UIImage(named: "basketIcon"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isHidden = true
+        button.addTarget(self, action: #selector(deleteHistory), for: .touchUpInside)
         return button
     }()
     
@@ -105,10 +125,35 @@ private extension ShopViewController {
         collectionProductsView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -21).isActive = true
         collectionProductsView.topAnchor.constraint(equalTo: shopTitle.bottomAnchor, constant: 10).isActive = true
         collectionProductsView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
+        
+        view.addSubview(historyLabel)
+        view.addSubview(deleteButton)
+        
+        historyLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 21).isActive = true
+        historyLabel.topAnchor.constraint(equalTo: shopTitle.bottomAnchor, constant: 10).isActive = true
+        historyLabel.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        historyLabel.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        
+        deleteButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -21).isActive = true
+        deleteButton.topAnchor.constraint(equalTo: shopTitle.bottomAnchor, constant: 10).isActive = true
+        deleteButton.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        deleteButton.widthAnchor.constraint(equalToConstant: 36).isActive = true
+
+    }
+    
+    func updateUIWhenEmpty() {
+        collectionProductsView.isHidden = true
+        historyLabel.isHidden = false
+        deleteButton.isHidden = false
+        
     }
 
     @objc func closeVC() {
         dismiss(animated: true)
+    }
+    
+    @objc func deleteHistory() {
+        
     }
 }
 
@@ -168,18 +213,29 @@ extension ShopViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension ShopViewController: UITextFieldDelegate {
-    func textFieldDidChangeSelection(_ textField: UITextField) {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
         searchedText = textField.text?.lowercased() ?? ""
-                
-                if searchedText.isEmpty {
-                    filteredProducts = products
-                } else {
-                    filteredProducts = products.filter {
-                        $0.title.lowercased().contains(searchedText)
-                    }
-                }
-
-                collectionProductsView.reloadData()
+        
+        if searchedText.isEmpty {
+            filteredProducts = products
+        } else {
+            filteredProducts = products.filter {
+                $0.title.lowercased().contains(searchedText)
+            }
+        }
+        
+        if filteredProducts.isEmpty {
+            updateUIWhenEmpty()
+        } else {
+            collectionProductsView.isHidden = false
+            historyLabel.isHidden = true
+            deleteButton.isHidden = true
+        }
+        
+        collectionProductsView.reloadData()
+        return true
+        
     }
 }
-    
+
