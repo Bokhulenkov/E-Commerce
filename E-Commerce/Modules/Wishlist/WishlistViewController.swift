@@ -13,7 +13,7 @@ final class WishlistViewController: UIViewController {
         let label = UILabel()
         
         label.text = "Wishlist"
-        label.font = .systemFont(ofSize: 28, weight: .bold)
+        label.font = .custom(font: .ralewayBold, size: 28)
         label.textAlignment = .center
         label.textColor = .black
         
@@ -32,9 +32,9 @@ final class WishlistViewController: UIViewController {
         let label = UILabel()
         
         label.text = "Search"
-        label.font = .systemFont(ofSize: 16, weight: .regular)
+        label.font = .custom(font: .ralewayMedium, size: 16)
         label.textAlignment = .left
-        label.textColor = UIColor(red: 199 / 255.0, green: 199 / 255.0, blue: 199 / 255.0, alpha: 1.0)
+        label.textColor = .deliveryAddressText
         
         return label
     }()
@@ -42,11 +42,11 @@ final class WishlistViewController: UIViewController {
     private lazy var searchTextField: UITextField = {
         let textField = UITextField()
         
-        textField.backgroundColor = UIColor(red: 248 / 255.0, green: 248 / 255.0, blue: 248 / 255.0, alpha: 1.0)
+        textField.backgroundColor = .searchFieldBackGround
         textField.layer.cornerRadius = 18
         textField.borderStyle = .none
         textField.placeholder = ""
-        textField.font = UIFont.systemFont(ofSize: 16)
+        textField.font = .custom(font: .ralewayMedium, size: 16)
         textField.clearButtonMode = .whileEditing
         
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 8, height: textField.frame.height))
