@@ -276,7 +276,7 @@ final class HomeViewController: UIViewController {
     //MARK: Func
     
     private func setCountCart() {
-        cartCount = storageService.getAllCartProducts().count
+        cartCount = storageService.getCartCountProducts()
     }
     
     //MARK: Action
@@ -312,6 +312,15 @@ final class HomeViewController: UIViewController {
                 vc.products = uniqueProducts
                 vc.currency = currency
                 present(vc, animated: true)
+            }
+            if collectionView == collectionPopularView {
+                let vc = DetailViewController()
+                vc.configure(for: popularProducts[indexPath.row])
+                vc.hidesBottomBarWhenPushed = true
+                navigationController?.pushViewController(vc, animated: true)
+                navigationController?.isNavigationBarHidden = false
+                navigationItem.backButtonTitle = ""
+                return
             }
             if collectionView == collectionProductsView {
                 let vc = DetailViewController()
@@ -371,7 +380,9 @@ final class HomeViewController: UIViewController {
                                            "\(currency)\(justForYouProducts[indexPath.row].price)",
                                            justForYouProducts[indexPath.row].isFavorite)
                 cell.addButtonAction = {
-                    self.storageService.setCart(productId: self.justForYouProducts[indexPath.item].id, isCart: true)
+                    var currentCount = self.justForYouProducts[indexPath.item].cartCount
+                    currentCount += 1
+                    self.storageService.setCart(productId: self.justForYouProducts[indexPath.item].id, cartCount: currentCount)
                     self.setCountCart()
                 }
                 
