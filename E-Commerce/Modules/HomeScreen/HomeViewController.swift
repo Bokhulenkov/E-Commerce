@@ -189,6 +189,9 @@ final class HomeViewController: UIViewController {
         networkService.performRequest()
         
         searchTextField.delegate = self
+        
+        currencyManager.saveCurrency(currency)
+        NotificationCenter.default.post(name: .currencyDidChange, object: nil)
     }
     
     // текст филд не активен,если не пользуемся, надо доработать
