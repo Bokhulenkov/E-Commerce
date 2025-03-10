@@ -4,10 +4,14 @@
 //
 //  Created by Alexander Bokhulenkov on 03.03.2025.
 //
-
 import UIKit
 
-final class CartViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+final class CartViewController: UIViewController {
+    
+    // MARK: - Properties
+    
+    private var cartView = CartView()
+    private let addressView = AddressView()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -29,8 +33,6 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
-    private let addressView = AddressView()
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -85,7 +87,7 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         return button
     }()
     
-    private var cartView = CartView()
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -96,11 +98,11 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         tableView.register(CartItemCell.self, forCellReuseIdentifier: "CartCell")
         tableView.allowsSelection = false
         tableView.separatorStyle = .none
-
-        
         setupUI()
         updateCartInfo()
     }
+    
+    // MARK: - UI Setup
     
     private func setupUI() {
         view.addSubview(titleLabel)
@@ -112,7 +114,6 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         bottomContainerView.addSubview(totalLabel)
         bottomContainerView.addSubview(checkoutButton)
         checkoutButton.addTarget(self, action: #selector(checkoutTapped), for: .touchUpInside)
-        
         addressView.updateAddress("Default Test Address: Montenegro, Cetinje, Petra Lubard, 3A", title: "Shipping Address")
         
         addressView.onEditTapped = { [weak self] in
@@ -156,10 +157,12 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         ])
     }
     
+    // MARK: - Cart Management
+    
     private func updateCartInfo() {
         let cartItems = cartView.getItems()
-        let itemCount = cartItems.reduce(0) { $0 + $1.quantity }
-        cartCountLabel.text = "\(itemCount)"
+        let cartCount = cartView.calculateCartCount()
+        cartCountLabel.text = "\(cartCount)"
         
         let totalPrice = cartView.calculateTotal()
         totalLabel.text = String(format: "Total $%.2f", totalPrice)
@@ -170,7 +173,7 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         bottomContainerView.isHidden = isEmpty
     }
     
-    private func updateQuantity(for itemID: UUID, newQuantity: Int) {
+    private func updateQuantity(for itemID: Int, newQuantity: Int) {
         cartView.updateQuantity(for: itemID, quantity: newQuantity)
         updateCartInfo()
     }
@@ -209,6 +212,11 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         let paymentVC = PaymentViewController()
         present(paymentVC, animated: true)
     }
+}
+
+// MARK: - UITableViewDataSource
+
+extension CartViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return cartView.getItems().count
@@ -217,7 +225,13 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CartCell", for: indexPath) as! CartItemCell
         let item = cartView.getItems()[indexPath.row]
-        cell.configure(image: item.image, title: item.title, size: item.size, price: item.price, quantity: item.quantity)
+        cell.configure(
+            image: item.image,
+            title: item.title,
+            size: "M",
+            price: item.price,
+            quantity: item.cartCount
+        )
         
         cell.onDelete = { [weak self] in
             self?.removeItem(at: indexPath)
@@ -230,6 +244,13 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         return cell
     }
 }
+
+// MARK: - UITableViewDelegate
+
+extension CartViewController: UITableViewDelegate {
+    // Implement delegate methods if needed
+}
+
 
 
 
