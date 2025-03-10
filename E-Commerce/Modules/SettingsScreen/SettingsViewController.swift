@@ -8,7 +8,8 @@
 import UIKit
 
 final class SettingsViewController: UIViewController {
-
+    
+    private var userID: String? = nil
     private let settingsTitle: UILabel = {
         let label = UILabel()
         label.text = "Settings"
@@ -121,6 +122,24 @@ final class SettingsViewController: UIViewController {
         
         saveButton.addTarget(self, action: #selector(saveChangesButtonAction(_:)), for: .touchUpInside)
         changeAvatarButton.addTarget(self, action: #selector(changeAvatarButtonAction(_:)), for: .touchUpInside)
+        
+        FirebaseService.shared.signIn() { result in
+            switch result {
+            case .success(let user):
+                self.userID = user.uid
+                FirebaseService.shared.getUserData(userId: user.uid) { result in
+                    switch result {
+                    case .success(let data):
+                        self.setupData(userData: data)
+                    case .failure(let error):
+                        print("Ошибка получения даных: \(error.localizedDescription)")
+                    }
+                }
+                
+            case .failure(let error):
+                print("Ошибка авторизации: \(error.localizedDescription)")
+            }
+        }
     }
 
     private func configureUI() {
@@ -178,11 +197,28 @@ final class SettingsViewController: UIViewController {
         saveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
         saveButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
+    //MARK: Func
+    
+    private func setupData(userData: [String: Any]) {
+        nameTextField.text = userData["name"] as? String
+        emailTextField.text = userData["email"] as? String
+        passTextField.text = userData["password"] as? String
+    }
     
     //MARK: Action
     
     @objc func saveChangesButtonAction(_ button: UIButton) {
-        print("saveChangesButtonAction")
+        guard let userID = self.userID else { return }
+        FirebaseService.shared.saveUserData(userId: userID, userData: ["name": "\(nameTextField.text ?? "")",
+                                                                       "email": "\(emailTextField.text ?? "")",
+                                                                       "password": "\(passTextField.text ?? "")"]) { result in
+            switch result {
+            case .success():
+                print("Данные успешно сохранены")
+            case .failure(let error):
+                print("Ошибка сохранения: \(error.localizedDescription)")
+            }
+        }
     }
     
     @objc func changeAvatarButtonAction(_ button: UIButton) {
