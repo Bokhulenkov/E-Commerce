@@ -498,7 +498,9 @@ final class HomeViewController: UIViewController {
                                 
                             if newCurrency != currency {
                                 currency = newCurrency
-                                currencyManager.saveCurrency(currency)
+                                print(newCurrency)
+                                currencyManager.saveCurrency(newCurrency)
+                                NotificationCenter.default.post(name: .currencyDidChange, object: nil)
                             }
                         } else {
                             print("Страна не найдена")
