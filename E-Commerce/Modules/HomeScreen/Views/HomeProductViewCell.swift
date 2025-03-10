@@ -28,7 +28,7 @@ class HomeProductViewCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.image = .productTest
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         imageView.layer.cornerRadius = 5
         imageView.clipsToBounds = true
         return imageView
