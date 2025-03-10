@@ -7,13 +7,19 @@
 
 import UIKit
 
-final class PaymentViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+final class PaymentViewController: UIViewController {
     
+    // MARK: - Properties
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     private var tableViewHeightConstraint: NSLayoutConstraint?
+    private var cartView = CartView()
+    private let addressView = AddressView()
+    private let contactInfoView = AddressView()
+    private let shippingOptionsView = ShippingOptionsView()
+    private let paymentMethodView = PatView()
     
-    
+    // MARK: - UI Elements
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Payment"
@@ -56,12 +62,6 @@ final class PaymentViewController: UIViewController, UITableViewDataSource, UITa
         return label
     }()
     
-    private var paymentView = PaymentView()
-    private let addressView = AddressView()
-    private let contactInfoView = AddressView()
-    private let shippingOptionsView = ShippingOptionsView()
-    private let paymentMethodView = PatView()
-    
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -95,6 +95,7 @@ final class PaymentViewController: UIViewController, UITableViewDataSource, UITa
         return button
     }()
     
+    // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -112,6 +113,7 @@ final class PaymentViewController: UIViewController, UITableViewDataSource, UITa
         addVoucherButton.addTarget(self, action: #selector(addVoucherTapped), for: .touchUpInside)
     }
     
+    // MARK: - Private Methods
     private func updateTableViewHeight() {
         tableView.layoutIfNeeded()
         let height = tableView.contentSize.height
@@ -157,67 +159,70 @@ final class PaymentViewController: UIViewController, UITableViewDataSource, UITa
         
         paymentMethodView.onEditTapped = { [weak self] in
             self?.showPaymentMethodSelection()
-                }
+        }
         
         NSLayoutConstraint.activate([
+            // MARK: - ScrollView and ContentView Constraints
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: bottomContainerView.topAnchor),
-
+            
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-
+            
+            // MARK: - Title Labels Constraints
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-
+            
             addressView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
             addressView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             addressView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             addressView.heightAnchor.constraint(equalToConstant: 85),
-
+            
             contactInfoView.topAnchor.constraint(equalTo: addressView.bottomAnchor, constant: 10),
             contactInfoView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             contactInfoView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             contactInfoView.heightAnchor.constraint(equalToConstant: 85),
-
+            
             titleLabel2.topAnchor.constraint(equalTo: contactInfoView.bottomAnchor, constant: 15),
             titleLabel2.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-
+            
             addVoucherButton.centerYAnchor.constraint(equalTo: titleLabel2.centerYAnchor),
             addVoucherButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-
+            
             cartCountLabel.leadingAnchor.constraint(equalTo: titleLabel2.trailingAnchor, constant: 8),
             cartCountLabel.centerYAnchor.constraint(equalTo: titleLabel2.centerYAnchor),
             cartCountLabel.widthAnchor.constraint(equalToConstant: 24),
             cartCountLabel.heightAnchor.constraint(equalToConstant: 24),
-
+            
+            // MARK: - TableView Constraints
             tableView.topAnchor.constraint(equalTo: cartCountLabel.bottomAnchor, constant: 16),
             tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-
+            
+            // MARK: - Shipping Options & Payment Method Constraints
             shippingOptionsView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 16),
             shippingOptionsView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             shippingOptionsView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-
+            
             paymentMethodView.topAnchor.constraint(equalTo: shippingOptionsView.bottomAnchor, constant: 20),
             paymentMethodView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             paymentMethodView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             paymentMethodView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            
-
+            // MARK: - Bottom Container View Constraints
             bottomContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomContainerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             bottomContainerView.heightAnchor.constraint(equalToConstant: 80),
-
+            
             totalLabel.leadingAnchor.constraint(equalTo: bottomContainerView.leadingAnchor, constant: 20),
             totalLabel.centerYAnchor.constraint(equalTo: bottomContainerView.centerYAnchor),
-
+            
             checkoutButton.trailingAnchor.constraint(equalTo: bottomContainerView.trailingAnchor, constant: -20),
             checkoutButton.centerYAnchor.constraint(equalTo: bottomContainerView.centerYAnchor),
             checkoutButton.widthAnchor.constraint(equalToConstant: 120),
@@ -228,9 +233,11 @@ final class PaymentViewController: UIViewController, UITableViewDataSource, UITa
         tableViewHeightConstraint?.isActive = true
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
     }
-
+    
+    // MARK: - Action Methods
     private func dismissAndReturnToCart() {
         dismiss(animated: true, completion: nil)
+        cartView.removeAll()
     }
     
     @objc private func addVoucherTapped() {
@@ -242,29 +249,25 @@ final class PaymentViewController: UIViewController, UITableViewDataSource, UITa
     }
     
     @objc private func showSuccessAlert() {
-            let alert = UIAlertController(title: "Done!", message: "Your card has been successfully charged", preferredStyle: .alert)
-
-            let trackOrderAction = UIAlertAction(title: "Track My Order", style: .default) { _ in
-                self.dismissAndReturnToCart()
-            }
-
-            alert.addAction(trackOrderAction)
-
-            present(alert, animated: true, completion: nil)
+        let alert = UIAlertController(title: "Done!", message: "Your card has been successfully charged", preferredStyle: .alert)
+        
+        let trackOrderAction = UIAlertAction(title: "Track My Order", style: .default) { _ in
+            self.dismissAndReturnToCart()
         }
+        
+        alert.addAction(trackOrderAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
     
     private func updateCartInfo() {
         
-        let paymentItems = paymentView.getItems()
-        let itemCount = paymentItems.reduce(0) { $0 + $1.quantity }
-        cartCountLabel.text = "\(itemCount)"
+        let cartItems = cartView.getItems()
+        let cartCount = cartView.calculateCartCount()
+        cartCountLabel.text = "\(cartCount)"
         
-        let totalPrice = paymentView.calculateTotal()
+        let totalPrice = cartView.calculateTotal()
         totalLabel.text = String(format: "Total $%.2f", totalPrice)
-        
-        let rowHeight: CGFloat = 80
-        tableViewHeightConstraint?.constant = CGFloat(itemCount) * rowHeight
-        
     }
     
     private func showAddressInput() {
@@ -309,32 +312,42 @@ final class PaymentViewController: UIViewController, UITableViewDataSource, UITa
     
     private func showPaymentMethodSelection() {
         
-            let alert = UIAlertController(title: "Select Payment Method", message: nil, preferredStyle: .actionSheet)
-
-            let cardAction = UIAlertAction(title: "Card", style: .default) { [weak self] _ in
-                self?.paymentMethodView.updatePaymentMethod("Card")
-            }
-
-            let applePayAction = UIAlertAction(title: "Apple Pay", style: .default) { [weak self] _ in
-                self?.paymentMethodView.updatePaymentMethod("Apple Pay")
-            }
-
-            alert.addAction(cardAction)
-            alert.addAction(applePayAction)
-            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-
-            present(alert, animated: true)
+        let alert = UIAlertController(title: "Select Payment Method", message: nil, preferredStyle: .actionSheet)
+        
+        let cardAction = UIAlertAction(title: "Card", style: .default) { [weak self] _ in
+            self?.paymentMethodView.updatePaymentMethod("Card")
         }
+        
+        let applePayAction = UIAlertAction(title: "Apple Pay", style: .default) { [weak self] _ in
+            self?.paymentMethodView.updatePaymentMethod("Apple Pay")
+        }
+        
+        alert.addAction(cardAction)
+        alert.addAction(applePayAction)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        present(alert, animated: true)
+    }
+}
+
+// MARK: - TableView Methods
+extension PaymentViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return paymentView.getItems().count
+        return cartView.getItems().count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PaymentCell", for: indexPath) as! PaymentItemCell
-        let item = paymentView.getItems()[indexPath.row]
-        cell.configure(image: item.image, title: item.title,price: item.price, quantity: item.quantity)
+        let item = cartView.getItems()[indexPath.row]
+        cell.configure(
+            image: item.image,
+            title: item.title,
+            price: item.price,
+            quantity: item.cartCount
+        )
         
         return cell
     }
 }
+

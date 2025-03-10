@@ -7,8 +7,9 @@
 
 import UIKit
 
+// MARK: - ShippingOptionsView
+
 class ShippingOptionsView: UIView {
-    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Shipping Options"
@@ -17,18 +18,8 @@ class ShippingOptionsView: UIView {
         return label
     }()
 
-    private let standardOptionView = ShippingOptionView(
-        title: "Standard",
-        deliveryTime: "5-7 days",
-        price: "FREE"
-    )
-
-    private let expressOptionView = ShippingOptionView(
-        title: "Express",
-        deliveryTime: "1-2 days",
-        price: "$12.00"
-    )
-
+    private let standardOptionView = ShippingOptionView(title: "Standard", deliveryTime: "5-7 days", price: "FREE")
+    private let expressOptionView = ShippingOptionView(title: "Express", deliveryTime: "1-2 days", price: "$12.00")
     private let deliveryDateLabel: UILabel = {
         let label = UILabel()
         label.text = "Delivered on or before Thursday, 23 April 2020"
@@ -40,6 +31,8 @@ class ShippingOptionsView: UIView {
 
     private var selectedOption: ShippingOptionView?
 
+    // MARK: - Initializer
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -50,15 +43,15 @@ class ShippingOptionsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: - Setup UI
+
     private func setupUI() {
         translatesAutoresizingMaskIntoConstraints = false
-        
         addSubview(titleLabel)
         addSubview(standardOptionView)
         addSubview(expressOptionView)
         addSubview(deliveryDateLabel)
 
-        // Касания
         let standardTap = UITapGestureRecognizer(target: self, action: #selector(optionTapped(_:)))
         let expressTap = UITapGestureRecognizer(target: self, action: #selector(optionTapped(_:)))
         standardOptionView.addGestureRecognizer(standardTap)
@@ -68,17 +61,14 @@ class ShippingOptionsView: UIView {
             titleLabel.topAnchor.constraint(equalTo: topAnchor),
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
             titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-
             standardOptionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
             standardOptionView.leadingAnchor.constraint(equalTo: leadingAnchor),
             standardOptionView.trailingAnchor.constraint(equalTo: trailingAnchor),
             standardOptionView.heightAnchor.constraint(equalToConstant: 40),
-
             expressOptionView.topAnchor.constraint(equalTo: standardOptionView.bottomAnchor, constant: 8),
             expressOptionView.leadingAnchor.constraint(equalTo: leadingAnchor),
             expressOptionView.trailingAnchor.constraint(equalTo: trailingAnchor),
             expressOptionView.heightAnchor.constraint(equalToConstant: 40),
-
             deliveryDateLabel.topAnchor.constraint(equalTo: expressOptionView.bottomAnchor, constant: 8),
             deliveryDateLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
             deliveryDateLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -86,22 +76,22 @@ class ShippingOptionsView: UIView {
         ])
     }
 
+    // MARK: - Actions
+
     @objc private func optionTapped(_ gesture: UITapGestureRecognizer) {
         guard let selectedView = gesture.view as? ShippingOptionView else { return }
         selectOption(selectedView)
     }
 
+    // MARK: - Private Methods
+
     private func selectOption(_ option: ShippingOptionView) {
         selectedOption?.isSelected = false
         option.isSelected = true
         selectedOption = option
-        
-        // Обновляем дату внизу
-        if option === expressOptionView {
-            deliveryDateLabel.text = "Delivered on or before Monday, 13 April 2020"
-        } else {
-            deliveryDateLabel.text = "Delivered on or before Thursday, 23 April 2020"
-        }
+
+        deliveryDateLabel.text = option === expressOptionView ?
+            "Delivered on or before Monday, 13 April 2020" : "Delivered on or before Thursday, 23 April 2020"
     }
 
     func getSelectedOption() -> String {
@@ -112,7 +102,6 @@ class ShippingOptionsView: UIView {
 // MARK: - ShippingOptionView
 
 class ShippingOptionView: UIView {
-    
     private let checkmarkImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "circle")
@@ -155,14 +144,14 @@ class ShippingOptionView: UIView {
         }
     }
 
+    // MARK: - Initializer
+
     init(title: String, deliveryTime: String, price: String) {
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
-        
         titleLabel.text = title
         deliveryTimeLabel.text = deliveryTime
         priceLabel.text = price
-
         setupUI()
     }
 
@@ -170,14 +159,10 @@ class ShippingOptionView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: - Setup UI
+
     private func setupUI() {
-        
         translatesAutoresizingMaskIntoConstraints = false
-        
-        layer.cornerRadius = 8
-        layer.backgroundColor = UIColor(named: "SearchFieldBackGroundColor")?.cgColor
-
-
         addSubview(checkmarkImageView)
         addSubview(titleLabel)
         addSubview(deliveryTimeLabel)
@@ -188,14 +173,12 @@ class ShippingOptionView: UIView {
             checkmarkImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
             checkmarkImageView.widthAnchor.constraint(equalToConstant: 24),
             checkmarkImageView.heightAnchor.constraint(equalToConstant: 24),
-
             titleLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
             titleLabel.leadingAnchor.constraint(equalTo: checkmarkImageView.trailingAnchor, constant: 12),
-            
             deliveryTimeLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-            deliveryTimeLabel.centerXAnchor.constraint(equalTo: centerXAnchor),    deliveryTimeLabel.widthAnchor.constraint(equalToConstant: 80),
+            deliveryTimeLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            deliveryTimeLabel.widthAnchor.constraint(equalToConstant: 80),
             deliveryTimeLabel.heightAnchor.constraint(equalToConstant: 24),
-            
             priceLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
             priceLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12)
         ])
@@ -300,3 +283,4 @@ class PatView: UIView {
         methodLabel.text = method
     }
 }
+
