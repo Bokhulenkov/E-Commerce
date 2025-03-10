@@ -44,10 +44,18 @@ final class StorageService {
     }
     
     func getAllCartProducts() -> [ProductRealmModel] {
-        let cartProducts = realm.objects(ProductRealmModel.self).filter("isCart == true")
+        let cartProducts = realm.objects(ProductRealmModel.self).filter("cartCount > 0")
         return Array(cartProducts)
     }
     
+    func getCartCountProducts() -> Int {
+        var count = 0
+        let cartProducts = realm.objects(ProductRealmModel.self).filter("cartCount > 0")
+        for product in cartProducts {
+            count += product.cartCount
+        }
+        return count
+    }
     
     func clearAllProducts() {
         do {
@@ -73,11 +81,11 @@ final class StorageService {
         }
     }
     
-    func setCart(productId: Int, isCart: Bool) {
+    func setCart(productId: Int, cartCount: Int) {
         do {
             try realm.write {
                 if let product = realm.object(ofType: ProductRealmModel.self, forPrimaryKey: productId) {
-                    product.isCart = isCart
+                    product.cartCount = cartCount
                 } else {
                     print("Продукт с id \(productId) не найден")
                 }
