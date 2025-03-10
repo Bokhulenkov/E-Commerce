@@ -460,8 +460,8 @@ final class HomeViewController: UIViewController {
     
     extension HomeViewController: CLLocationManagerDelegate {
         func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-            let europeanCountries = [ "Австрия", "Албания", "Андорра", "Бельгия", "Болгария", "Босния и Герцеговина", "Ватикан", "Великобритания", "Венгрия", "Германия", "Греция", "Дания", "Ирландия", "Исландия", "Испания", "Италия", "Кипр", "Латвия", "Литва", "Лихтенштейн", "Люксембург", "Македония", "Мальта", "Молдавия", "Монако", "Нидерланды", "Норвегия", "Польша", "Португалия", "Румыния", "Сан-Марино", "Сербия", "Словакия", "Словения", "Украина", "Финляндия", "Франция", "Хорватия", "Черногория", "Чехия", "Швейцария", "Швеция", "Эстония"]
-            let americanCountries = ["США", "Канада", "Мексика", "Аргентина", "Бразилия", "Чили", "Колумбия", "Венесуэла", "Перу", "Парагвай", "Уругвай", "Боливия", "Эквадор", "Гватемала", "Гондурас", "Куба", "Доминиканская Республика", "Панама", "Коста-Рика", "Ямайка", "Сальвадор", "Никарагуа", "Гаити", "Тринидад и Тобаго", "Барбадос", "Белиз", "Багамы", "Суринам", "Гайана"]
+            let europeanCountries = ["AT", "AL", "AD", "BE", "BG", "BA", "VA", "GB", "HU", "DE", "GR", "DK", "IE", "IS", "ES", "IT", "CY", "LV", "LT", "LI", "LU", "MK", "MT", "MD", "MC", "NL", "NO", "PL", "PT", "RO", "SM", "RS", "SK", "SI", "UA", "FI", "FR", "HR", "ME", "CZ", "CH", "SE", "EE"]
+            let americanCountries = ["US", "CA", "MX", "AR", "BR", "CL", "CO", "VE", "PE", "PY", "UY", "BO", "EC", "GT", "HN", "CU", "DO", "PA", "CR", "JM", "SV", "NI", "HT", "TT", "BB", "BZ", "BS", "SR", "GY"]
 
             if let location = locations.last {
                 geocoder.reverseGeocodeLocation(location) { [weak self] (placemarks, error) in
@@ -479,14 +479,13 @@ final class HomeViewController: UIViewController {
                             print("Город не найден")
                         }
                             
-                        if let country = placemark.country {
+                        if let country = placemark.isoCountryCode {
                             var newCurrency = ""
-                            print("Страна: \(country)")
                             if americanCountries.contains(country) {
                                 newCurrency = "$"
                             } else if europeanCountries.contains(country) {
                                 newCurrency = "€"
-                            } else if country == "Россия" {
+                            } else if country == "RU" {
                                 newCurrency = "₽"
                             } else {
                                 newCurrency = "$"
