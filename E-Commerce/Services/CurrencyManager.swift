@@ -19,3 +19,7 @@ class CurrencyManager {
         UserDefaults.standard.set(currency, forKey: currencyKey)
     }
 }
+
+extension Notification.Name {
+    static let currencyDidChange = Notification.Name("currencyDidChange")
+}

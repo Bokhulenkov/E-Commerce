@@ -102,6 +102,7 @@ final class ShopViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        NotificationCenter.default.addObserver(self, selector: #selector(currencyDidChange), name: .currencyDidChange, object: nil)
         searchHistory = historyManager.getAllSearchHistory()
         currency = currencyManager.getCurrency()
         
@@ -137,6 +138,10 @@ final class ShopViewController: UIViewController {
         
             collectionProductsView.reloadData()
         }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 }
 
 //MARK: Private methods
@@ -210,6 +215,11 @@ private extension ShopViewController {
         historyManager.clearSearchHistory()
         searchHistory = []
         historyCollectionView.reloadData()
+    }
+    
+    // Обновляем валюту, если изменилась
+    @objc func currencyDidChange() {
+        currency = currencyManager.getCurrency()
     }
 }
 

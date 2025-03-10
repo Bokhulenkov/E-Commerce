@@ -189,6 +189,9 @@ final class HomeViewController: UIViewController {
         networkService.performRequest()
         
         searchTextField.delegate = self
+        
+        currencyManager.saveCurrency(currency)
+        NotificationCenter.default.post(name: .currencyDidChange, object: nil)
     }
     
     // текст филд не активен,если не пользуемся, надо доработать
@@ -499,7 +502,9 @@ final class HomeViewController: UIViewController {
                                 
                             if newCurrency != currency {
                                 currency = newCurrency
-                                currencyManager.saveCurrency(currency)
+                                print(newCurrency)
+                                currencyManager.saveCurrency(newCurrency)
+                                NotificationCenter.default.post(name: .currencyDidChange, object: nil)
                             }
                         } else {
                             print("Страна не найдена")
