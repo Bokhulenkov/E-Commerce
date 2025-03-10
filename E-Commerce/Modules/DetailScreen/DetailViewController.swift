@@ -175,7 +175,12 @@ final class DetailViewController: UIViewController {
     }
     
     @objc private func backButtonTapped() {
-        navigationController?.popViewController(animated: true)
+        if navigationController != nil {
+            navigationController?.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
+        
     }
     
     private func setupUI() {

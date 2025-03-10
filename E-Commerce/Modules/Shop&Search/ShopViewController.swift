@@ -55,7 +55,7 @@ final class ShopViewController: UIViewController {
     
     private lazy var closeButton: UIButton = {
         let button = UIButton()
-           button.setImage(UIImage(named: "close"), for: .normal)
+        button.setImage(UIImage(named: "close"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(closeVC), for: .touchUpInside)
         return button
@@ -63,7 +63,7 @@ final class ShopViewController: UIViewController {
     
     private lazy var deleteButton: UIButton = {
         let button = UIButton()
-           button.setImage(UIImage(named: "basketIcon"), for: .normal)
+        button.setImage(UIImage(named: "basketIcon"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isHidden = true
         button.addTarget(self, action: #selector(deleteHistory), for: .touchUpInside)
@@ -85,31 +85,28 @@ final class ShopViewController: UIViewController {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(HomeProductViewCell.self, forCellWithReuseIdentifier: "HomeProductViewCell")
-        collectionView.isHidden = true
         return collectionView
     }()
     
     lazy var historyCollectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 8
-        layout.minimumLineSpacing = 8
-        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        layout.sectionInset = .zero
+        let layout = CustomLayout()
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(SearchHistoryCell.self, forCellWithReuseIdentifier: "SearchHistoryCell")
         collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.isHidden = true
         return collectionView
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+        
         if filteredProducts.isEmpty {
-                 filteredProducts = products
-             }
+            filteredProducts = products
+        }
         
         setupUI()
         searchTextField.delegate = self
@@ -172,23 +169,21 @@ private extension ShopViewController {
         collectionProductsView.isHidden = true
         historyLabel.isHidden = false
         deleteButton.isHidden = false
-        
         historyCollectionView.isHidden = false
-        
     }
     
     func updateCurrency() {
-            if let tabBarController = self.tabBarController as? TabBarViewController {
-                currency = tabBarController.currency
-            }
+        if let tabBarController = self.tabBarController as? TabBarViewController {
+            currency = tabBarController.currency
+        }
         print(currency)
     }
     
     private func removeQuery(at index: Int) {
-            searchHistory.remove(at: index)
+        searchHistory.remove(at: index)
         historyCollectionView.reloadData()
-        }
-
+    }
+    
     @objc func closeVC() {
         dismiss(animated: true)
     }
@@ -211,7 +206,7 @@ extension ShopViewController: UICollectionViewDataSource {
             return !searchedText.isEmpty ? filteredProducts.count : products.count
         }
         if collectionView == historyCollectionView {
-          return searchHistory.count
+            return searchHistory.count
         }
         return 0
     }
@@ -239,17 +234,17 @@ extension ShopViewController: UICollectionViewDataSource {
         
         if collectionView == historyCollectionView {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SearchHistoryCell", for: indexPath) as! SearchHistoryCell
-                    let query = searchHistory[indexPath.item]
-                    cell.configure(text: query) { [weak self] in
-                        self?.removeQuery(at: indexPath.item)
-                    }
-                    return cell
+            let query = searchHistory[indexPath.item]
+            cell.configure(text: query) { [weak self] in
+                self?.removeQuery(at: indexPath.item)
+            }
+            return cell
         }
         return UICollectionViewCell()
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    
+        
         let selectedProduct: ProductRealmModel
         if filteredProducts.isEmpty {
             selectedProduct = products[indexPath.row]
@@ -270,10 +265,10 @@ extension ShopViewController: UICollectionViewDataSource {
 extension ShopViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-       
-            let width = (collectionProductsView.frame.width - 13) / 2
-            let height = width * 1.75
-            return CGSize(width: width, height: height)
+        
+        let width = (collectionProductsView.frame.width - 13) / 2
+        let height = width * 1.75
+        return CGSize(width: width, height: height)
     }
 }
 
@@ -296,6 +291,7 @@ extension ShopViewController: UITextFieldDelegate {
             collectionProductsView.isHidden = false
             historyLabel.isHidden = true
             deleteButton.isHidden = true
+            historyCollectionView.isHidden = false
         }
         
         collectionProductsView.reloadData()
@@ -303,17 +299,20 @@ extension ShopViewController: UITextFieldDelegate {
     }
     
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
-           searchedText = ""
-           filteredProducts = products
-           
-           textField.resignFirstResponder()
-           
-           collectionProductsView.isHidden = false
-           historyLabel.isHidden = true
-           deleteButton.isHidden = true
-           
-           collectionProductsView.reloadData()
-           return true
-       }
+        searchedText = ""
+        filteredProducts = products
+        
+        textField.resignFirstResponder()
+        
+        collectionProductsView.isHidden = false
+        historyLabel.isHidden = true
+        deleteButton.isHidden = true
+        historyCollectionView.isHidden = true
+        
+        collectionProductsView.reloadData()
+        return true
+    }
 }
+
+
 
