@@ -185,3 +185,102 @@ class ShippingOptionView: UIView {
     }
 }
 
+class PatView: UIView {
+    
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Payment Method"
+        label.font = UIFont.custom(font: .ralewayBold, size: 21)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let methodLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Card"
+        label.font = UIFont.custom(font: .ralewaySemiBold, size: 18)
+        label.textColor = UIColor(named: "ButtonColor")
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let methodContainerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(named: "QuantityBackgroundColor")
+        view.layer.cornerRadius = 15
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private let editButton: UIButton = {
+        let button = UIButton(type: .system)
+        let pencilImage = UIImage(systemName: "pencil")
+        let config = UIImage.SymbolConfiguration(weight: .heavy)
+        button.setImage(pencilImage?.withConfiguration(config), for: .normal)
+        button.tintColor = .white
+        button.backgroundColor = UIColor(named: "ButtonColor")
+        button.layer.cornerRadius = 20
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(editTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    var onEditTapped: (() -> Void)?
+    
+    var currentAddress: String {
+        return methodLabel.text ?? ""
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupUI()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupUI()
+    }
+    
+    private func setupUI() {
+        
+        translatesAutoresizingMaskIntoConstraints = false
+
+        [titleLabel, methodContainerView, editButton].forEach { addSubview($0) }
+        methodContainerView.addSubview(methodLabel)
+        
+        NSLayoutConstraint.activate([
+            // Title
+            titleLabel.topAnchor.constraint(equalTo: topAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+            
+            // Method Container
+            methodContainerView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            methodContainerView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            methodContainerView.trailingAnchor.constraint(lessThanOrEqualTo: editButton.leadingAnchor, constant: -8),
+            methodContainerView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -12),
+            
+            // Method Label внутри контейнера
+            methodLabel.topAnchor.constraint(equalTo: methodContainerView.topAnchor, constant: 6),
+            methodLabel.bottomAnchor.constraint(equalTo: methodContainerView.bottomAnchor, constant: -6),
+            methodLabel.leadingAnchor.constraint(equalTo: methodContainerView.leadingAnchor, constant: 16),
+            methodLabel.trailingAnchor.constraint(equalTo: methodContainerView.trailingAnchor, constant: -16),
+
+            // Edit Button
+            editButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
+            editButton.trailingAnchor.constraint(equalTo: trailingAnchor),
+            editButton.widthAnchor.constraint(equalToConstant: 40),
+            editButton.heightAnchor.constraint(equalToConstant: 40),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: editButton.leadingAnchor, constant: -8)
+        ])
+    }
+    
+    @objc private func editTapped() {
+        onEditTapped?()
+    }
+    
+    func updatePaymentMethod(_ method: String) {
+        methodLabel.text = method
+    }
+}
+
