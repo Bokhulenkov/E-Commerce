@@ -73,8 +73,11 @@ class CartItemCell: UITableViewCell {
         itemImageView.layer.masksToBounds = true
         
         titleLabel.font = UIFont.custom(font: .nunitoLight, size: 12)
+        titleLabel.numberOfLines = 2
+        
         sizeLabel.font = UIFont.custom(font: .ralewayMedium, size: 14)
         priceLabel.font = UIFont.custom(font: .ralewayBold, size: 18)
+        
         
         deleteButton.setImage(UIImage(systemName: "trash"), for: .normal)
         deleteButton.tintColor = .red

@@ -40,7 +40,7 @@ class WishlistViewCell: UICollectionViewCell {
         label.text = "Lorem ipsum dolor sit amet consectetur"
         label.textAlignment = .left
         label.numberOfLines = 2
-        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.font = .custom(font: .nunito, size: 12)
         
         return label
     }()
@@ -50,16 +50,30 @@ class WishlistViewCell: UICollectionViewCell {
         
         label.text = "$17,00"
         label.textAlignment = .left
-        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.font = .custom(font: .ralewayBlack, size: 17)
         
         return label
+    }()
+    
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView()
+   
+        stackView.backgroundColor = .white
+        stackView.axis = .horizontal
+        stackView.spacing = 18
+        stackView.distribution = .fillProportionally
+        stackView.alignment = .center
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 5)
+        stackView.isLayoutMarginsRelativeArrangement = true
+        
+        return stackView
     }()
     
     private lazy var cartButton: UIButton = {
         let button = UIButton()
         
         button.setTitle("Add to cart", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 10, weight: .regular)
+        button.titleLabel?.font = .custom(font: .nunito, size: 10)
         button.layer.cornerRadius = 4
         button.backgroundColor = .blue
         button.setTitleColor(.white, for: .normal)
@@ -67,19 +81,24 @@ class WishlistViewCell: UICollectionViewCell {
         return button
     }()
     
-    private lazy var likeImage: UIImageView = {
-        let imageView = UIImageView()
+    private let likeButton: UIButton = {
+        let button = UIButton()
         
-        imageView.image = UIImage(named: "likeImage")
-        imageView.contentMode = .scaleAspectFill
+        button.setImage(.heartRedFull, for: .normal)
         
-        return imageView
+        return button
     }()
+    
+    //MARK: - Properties
+    var likeButtonAction: ((Bool) -> Void)?
     
     // MARK: - Initialization
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        
+        
+        likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -87,13 +106,19 @@ class WishlistViewCell: UICollectionViewCell {
     }
     
     // MARK: - Private Methods
+    @objc private func likeButtonTapped() {
+        likeButtonAction?(likeButton.currentImage == .heartRed)
+        likeButton.currentImage == .heartRedFull ? likeButton.setImage(.heartRed, for: .normal) : likeButton.setImage(.heartRedFull, for: .normal)
+    }
+    
     private func setupUI() {
         addSubview(shadowView)
         addSubview(photoImageView)
         addSubview(descriptionLabel)
         addSubview(priceLabel)
-        addSubview(cartButton)
-        addSubview(likeImage)
+        addSubview(stackView)
+        stackView.addArrangedSubview(cartButton)
+        stackView.addArrangedSubview(likeButton)
         
         setupConstraints()
     }
@@ -103,8 +128,9 @@ class WishlistViewCell: UICollectionViewCell {
         photoImageView.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
+        stackView.translatesAutoresizingMaskIntoConstraints = false
         cartButton.translatesAutoresizingMaskIntoConstraints = false
-        likeImage.translatesAutoresizingMaskIntoConstraints = false
+        likeButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             shadowView.topAnchor.constraint(equalTo: topAnchor),
@@ -124,17 +150,15 @@ class WishlistViewCell: UICollectionViewCell {
             priceLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 1),
             priceLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
             
-            cartButton.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 6),
-            cartButton.leadingAnchor.constraint(equalTo: leadingAnchor),
-            cartButton.heightAnchor.constraint(equalToConstant: 31),
-            cartButton.widthAnchor.constraint(equalToConstant: 120),
-            cartButton.trailingAnchor.constraint(equalTo: likeImage.leadingAnchor, constant: -18),
+            stackView.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 6),
+            stackView.heightAnchor.constraint(equalToConstant: 31),
+            stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
             
-            likeImage.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 12),
-            likeImage.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -5),
-            likeImage.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5),
-            likeImage.heightAnchor.constraint(equalToConstant: 20),
-            likeImage.widthAnchor.constraint(equalToConstant: 22),
+            cartButton.heightAnchor.constraint(equalToConstant: 31),
+
+            likeButton.heightAnchor.constraint(equalToConstant: 20),
+            likeButton.widthAnchor.constraint(equalToConstant: 22),
         ])
     }
 }
