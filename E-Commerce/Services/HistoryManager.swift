@@ -9,7 +9,7 @@ import Foundation
 
 class HistoryManager {
 
-    private let maxSearchHistoryCount = 10
+    private let maxSearchHistoryCount = 15
     private let searchHistoryKey = "searchHistory"
 
     private func getSearchHistory() -> [String] {

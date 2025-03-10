@@ -13,8 +13,9 @@ final class ShopViewController: UIViewController {
     var searchedText = ""
     var filteredProducts: [ProductRealmModel] = []
     let historyManager = HistoryManager()
+    let currencyManager = CurrencyManager()
     
-    private var searchHistory: [String] = ["Socks", "1", "k", "Red", "Sunglasses", "Mustard Pants", "80-s Skirt"]
+    private var searchHistory: [String] = []
     
     private lazy var shopTitle: UILabel = {
         let label = UILabel()
@@ -103,6 +104,8 @@ final class ShopViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        searchHistory = historyManager.getAllSearchHistory()
+        currency = currencyManager.getCurrency()
         
         if filteredProducts.isEmpty {
             filteredProducts = products
@@ -160,7 +163,7 @@ private extension ShopViewController {
             historyCollectionView.topAnchor.constraint(equalTo: historyLabel.bottomAnchor, constant: 20),
             historyCollectionView.leadingAnchor.constraint(equalTo: shopTitle.leadingAnchor, constant: 10),
             historyCollectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -21),
-            historyCollectionView.heightAnchor.constraint(equalToConstant: 400)
+            historyCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
         ])
         
     }
@@ -172,12 +175,6 @@ private extension ShopViewController {
         historyCollectionView.isHidden = false
     }
     
-    func updateCurrency() {
-        if let tabBarController = self.tabBarController as? TabBarViewController {
-            currency = tabBarController.currency
-        }
-        print(currency)
-    }
     
     private func removeQuery(at index: Int) {
         searchHistory.remove(at: index)
@@ -190,6 +187,8 @@ private extension ShopViewController {
     
     @objc func deleteHistory() {
         historyManager.clearSearchHistory()
+        searchHistory = []
+        historyCollectionView.reloadData()
     }
 }
 
@@ -215,12 +214,11 @@ extension ShopViewController: UICollectionViewDataSource {
         if collectionView == collectionProductsView {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
-            
             let dataSource = !searchedText.isEmpty ? filteredProducts : products
             let product = dataSource[indexPath.row]
             
             cell.configure(product.image, product.title, "\(currency)\(product.price)", product.isFavorite)
-            
+    
             cell.addButtonAction = {
                 print("Add to cart: \(product.title)")
             }
@@ -252,7 +250,6 @@ extension ShopViewController: UICollectionViewDataSource {
             selectedProduct = filteredProducts[indexPath.row]
         }
         
-        // без навбара нет выхода с экрана!
         let vc = DetailViewController()
         vc.configure(for: selectedProduct)
         vc.modalPresentationStyle = .fullScreen
@@ -277,6 +274,12 @@ extension ShopViewController: UITextFieldDelegate {
         textField.resignFirstResponder()
         searchedText = textField.text?.lowercased() ?? ""
         
+        if !searchedText.isEmpty {
+                   historyManager.addSearchQuery(searchedText)
+                   searchHistory = historyManager.getAllSearchHistory()
+                   historyCollectionView.reloadData()
+               }
+        
         if searchedText.isEmpty {
             filteredProducts = products
         } else {
@@ -291,7 +294,7 @@ extension ShopViewController: UITextFieldDelegate {
             collectionProductsView.isHidden = false
             historyLabel.isHidden = true
             deleteButton.isHidden = true
-            historyCollectionView.isHidden = false
+            historyCollectionView.isHidden = true
         }
         
         collectionProductsView.reloadData()
@@ -300,8 +303,9 @@ extension ShopViewController: UITextFieldDelegate {
     
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         searchedText = ""
-        filteredProducts = products
-        
+        if let tabBarController = self.tabBarController as? TabBarViewController {
+            filteredProducts = tabBarController.allProducts
+        }
         textField.resignFirstResponder()
         
         collectionProductsView.isHidden = false
