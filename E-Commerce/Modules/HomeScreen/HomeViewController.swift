@@ -520,6 +520,7 @@ final class HomeViewController: UIViewController {
             
             let vc = ShopViewController()
             vc.searchedText = text
+            vc.products = allProducts
             vc.filteredProducts = filtered
             vc.modalPresentationStyle = .fullScreen
             present(vc, animated: true, completion: nil)
