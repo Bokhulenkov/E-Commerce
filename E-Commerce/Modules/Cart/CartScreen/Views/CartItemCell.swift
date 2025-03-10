@@ -6,8 +6,11 @@
 //
 
 import UIKit
+import Kingfisher
 
 class CartItemCell: UITableViewCell {
+    
+    // MARK: - Properties
     
     private let itemImageView = UIImageView()
     private let titleLabel = UILabel()
@@ -19,7 +22,6 @@ class CartItemCell: UITableViewCell {
     private let deleteButton = UIButton(type: .custom)
     private let counterContainerView = UIView()
     
-    var itemID: UUID?
     var onDelete: (() -> Void)?
     var onQuantityChanged: ((Int) -> Void)?
     
@@ -31,6 +33,8 @@ class CartItemCell: UITableViewCell {
         }
     }
     
+    // MARK: - Initialization
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
@@ -39,6 +43,8 @@ class CartItemCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // MARK: - Helper Methods
     
     private func updateMinusButtonState() {
         if quantity <= 1 {
@@ -52,14 +58,21 @@ class CartItemCell: UITableViewCell {
         }
     }
     
-    func configure(image: UIImage?, title: String, size: String, price: Double, quantity: Int) {
-        itemImageView.image = image
+    // MARK: - Configuration
+    
+    func configure(image: String?, title: String, size: String, price: Double, quantity: Int) {
+        if let imageUrl = image, let url = URL(string: imageUrl) {
+            itemImageView.kf.setImage(with: url)
+        }
+
         titleLabel.text = title
         sizeLabel.text = "Size: \(size)"
         priceLabel.text = String(format: "$%.2f", price)
         self.quantity = quantity
         updateMinusButtonState()
     }
+    
+    // MARK: - UI Setup
     
     private func setupUI() {
         [itemImageView, titleLabel, sizeLabel, priceLabel, deleteButton, minusButton, counterContainerView, plusButton].forEach {
@@ -152,6 +165,8 @@ class CartItemCell: UITableViewCell {
             minusButton.centerYAnchor.constraint(equalTo: plusButton.centerYAnchor)
         ])
     }
+    
+    // MARK: - Actions
     
     @objc private func deleteTapped() {
         onDelete?()

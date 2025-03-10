@@ -9,6 +9,8 @@ import UIKit
 
 class AddressView: UIView {
     
+    // MARK: - Properties
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.custom(font: .ralewayBold, size: 18)
@@ -24,7 +26,7 @@ class AddressView: UIView {
         return label
     }()
     
-    private let editButton: UIButton = {
+    private lazy var editButton: UIButton = {
         let button = UIButton(type: .system)
         let pencilImage = UIImage(systemName: "pencil")
         let config = UIImage.SymbolConfiguration(weight: .heavy) // Make the icon bolder
@@ -33,7 +35,6 @@ class AddressView: UIView {
         button.backgroundColor = UIColor(named: "ButtonColor")
         button.layer.cornerRadius = 20
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(editTapped), for: .touchUpInside)
         return button
     }()
     
@@ -42,6 +43,8 @@ class AddressView: UIView {
     var currentAddress: String {
         return addressLabel.text ?? ""
     }
+    
+    // MARK: - Initialization
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -53,8 +56,9 @@ class AddressView: UIView {
         setupUI()
     }
     
+    // MARK: - UI Setup
+    
     private func setupUI() {
-        
         translatesAutoresizingMaskIntoConstraints = false
         
         backgroundColor = UIColor(named: "SearchFieldBackGroundColor")
@@ -62,6 +66,8 @@ class AddressView: UIView {
         translatesAutoresizingMaskIntoConstraints = false
         
         [titleLabel, addressLabel, editButton].forEach { addSubview($0) }
+        
+        setupEditButton()
         
         NSLayoutConstraint.activate([
             // Title
@@ -83,14 +89,23 @@ class AddressView: UIView {
         ])
     }
     
+    // MARK: - Edit Button Setup
+    
+    private func setupEditButton() {
+        editButton.addTarget(self, action: #selector(editTapped), for: .touchUpInside)
+    }
+    
+    // MARK: - Actions
+    
     @objc private func editTapped() {
         print("Edit button tapped!")
         onEditTapped?()
     }
+    
+    // MARK: - Update Method
     
     func updateAddress(_ address: String, title: String) {
         addressLabel.text = address
         titleLabel.text = title
     }
 }
-
