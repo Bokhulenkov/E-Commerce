@@ -194,6 +194,8 @@ final class HomeViewController: UIViewController {
     
     
     private func configureUI() {
+        navigationController?.navigationBar.isHidden = true
+
         view.addSubview(cartButton)
         cartButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -21).isActive = true
         cartButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 11).isActive = true
@@ -509,9 +511,14 @@ final class HomeViewController: UIViewController {
             guard let text = textField.text, !text.isEmpty else {
                 return false
             }
+
+            let filtered = allProducts.filter {
+                        $0.title.lowercased().contains(text.lowercased())
+                    }
             
             let vc = ShopViewController()
             vc.searchedText = text
+            vc.filteredProducts = filtered
             vc.modalPresentationStyle = .fullScreen
             present(vc, animated: true, completion: nil)
             

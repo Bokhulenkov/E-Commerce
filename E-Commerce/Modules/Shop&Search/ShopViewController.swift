@@ -12,6 +12,9 @@ final class ShopViewController: UIViewController {
     var currency: String = ""
     var searchedText = ""
     var filteredProducts: [ProductRealmModel] = []
+    let historyManager = HistoryManager()
+    
+    private var searchHistory: [String] = ["Socks", "1", "k", "Red", "Sunglasses", "Mustard Pants", "80-s Skirt"]
     
     private lazy var shopTitle: UILabel = {
         let label = UILabel()
@@ -70,8 +73,8 @@ final class ShopViewController: UIViewController {
     lazy var collectionProductsView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        layout.minimumLineSpacing = 10
-        layout.minimumInteritemSpacing = 13
+        layout.minimumLineSpacing = 8
+        layout.minimumInteritemSpacing = 8
         layout.scrollDirection = .vertical
         let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -82,16 +85,32 @@ final class ShopViewController: UIViewController {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(HomeProductViewCell.self, forCellWithReuseIdentifier: "HomeProductViewCell")
+        collectionView.isHidden = true
+        return collectionView
+    }()
+    
+    lazy var historyCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumInteritemSpacing = 8
+        layout.minimumLineSpacing = 8
+        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        layout.sectionInset = .zero
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.register(SearchHistoryCell.self, forCellWithReuseIdentifier: "SearchHistoryCell")
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let tabBarController = self.tabBarController as? TabBarViewController {
-            currency = tabBarController.currency
-        }
-        filteredProducts = products
-
+       
+        if filteredProducts.isEmpty {
+                 filteredProducts = products
+             }
+        
         setupUI()
         searchTextField.delegate = self
     }
@@ -138,7 +157,15 @@ private extension ShopViewController {
         deleteButton.topAnchor.constraint(equalTo: shopTitle.bottomAnchor, constant: 10).isActive = true
         deleteButton.heightAnchor.constraint(equalToConstant: 36).isActive = true
         deleteButton.widthAnchor.constraint(equalToConstant: 36).isActive = true
-
+        
+        view.addSubview(historyCollectionView)
+        NSLayoutConstraint.activate([
+            historyCollectionView.topAnchor.constraint(equalTo: historyLabel.bottomAnchor, constant: 20),
+            historyCollectionView.leadingAnchor.constraint(equalTo: shopTitle.leadingAnchor, constant: 10),
+            historyCollectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -21),
+            historyCollectionView.heightAnchor.constraint(equalToConstant: 400)
+        ])
+        
     }
     
     func updateUIWhenEmpty() {
@@ -146,14 +173,28 @@ private extension ShopViewController {
         historyLabel.isHidden = false
         deleteButton.isHidden = false
         
+        historyCollectionView.isHidden = false
+        
     }
+    
+    func updateCurrency() {
+            if let tabBarController = self.tabBarController as? TabBarViewController {
+                currency = tabBarController.currency
+            }
+        print(currency)
+    }
+    
+    private func removeQuery(at index: Int) {
+            searchHistory.remove(at: index)
+        historyCollectionView.reloadData()
+        }
 
     @objc func closeVC() {
         dismiss(animated: true)
     }
     
     @objc func deleteHistory() {
-        
+        historyManager.clearSearchHistory()
     }
 }
 
@@ -166,35 +207,59 @@ extension ShopViewController: UICollectionViewDelegate {
 
 extension ShopViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        return !searchedText.isEmpty ? filteredProducts.count : products.count
+        if collectionView == collectionProductsView {
+            return !searchedText.isEmpty ? filteredProducts.count : products.count
+        }
+        if collectionView == historyCollectionView {
+          return searchHistory.count
+        }
+        return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
+        if collectionView == collectionProductsView {
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
+            
+            let dataSource = !searchedText.isEmpty ? filteredProducts : products
+            let product = dataSource[indexPath.row]
+            
+            cell.configure(product.image, product.title, "\(currency)\(product.price)", product.isFavorite)
+            
+            cell.addButtonAction = {
+                print("Add to cart: \(product.title)")
+            }
+            
+            cell.likeButtonAction = { liked in
+                print("like state \(liked) for \(product.title)")
+            }
+            
+            return cell
+        }
         
-        let dataSource = !searchedText.isEmpty ? filteredProducts : products
-                let product = dataSource[indexPath.row]
-                
-                cell.configure(product.image, product.title, "\(currency)\(product.price)", product.isFavorite)
-                
-                cell.addButtonAction = {
-                    print("Add to cart: \(product.title)")
-                }
-                
-                cell.likeButtonAction = { liked in
-                    print("like state \(liked) for \(product.title)")
-                }
-        
-        return cell
+        if collectionView == historyCollectionView {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SearchHistoryCell", for: indexPath) as! SearchHistoryCell
+                    let query = searchHistory[indexPath.item]
+                    cell.configure(text: query) { [weak self] in
+                        self?.removeQuery(at: indexPath.item)
+                    }
+                    return cell
+        }
+        return UICollectionViewCell()
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     
-        // без навбара нет выхода с экрана!
+        let selectedProduct: ProductRealmModel
+        if filteredProducts.isEmpty {
+            selectedProduct = products[indexPath.row]
+        } else {
+            selectedProduct = filteredProducts[indexPath.row]
+        }
         
+        // без навбара нет выхода с экрана!
         let vc = DetailViewController()
-        vc.configure(for: products[indexPath.row])
+        vc.configure(for: selectedProduct)
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }
@@ -235,7 +300,20 @@ extension ShopViewController: UITextFieldDelegate {
         
         collectionProductsView.reloadData()
         return true
-        
     }
+    
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+           searchedText = ""
+           filteredProducts = products
+           
+           textField.resignFirstResponder()
+           
+           collectionProductsView.isHidden = false
+           historyLabel.isHidden = true
+           deleteButton.isHidden = true
+           
+           collectionProductsView.reloadData()
+           return true
+       }
 }
 

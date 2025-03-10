@@ -101,7 +101,6 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
         
         let title = data[indexPath.section].headerName
         
-        
         if let tabBarController = self.tabBarController as? TabBarViewController {
             let products = tabBarController.allProducts
             var productsCategorised:[ProductRealmModel] = []
