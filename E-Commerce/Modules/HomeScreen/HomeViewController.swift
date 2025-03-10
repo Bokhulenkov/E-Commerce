@@ -31,6 +31,7 @@ final class HomeViewController: UIViewController {
         set {
             cartCountLabel.text = "\(newValue)"
             cartCountLabel.isHidden = newValue == 0
+            NotificationCenter.default.post(name: NSNotification.Name("UpdateCart"), object: nil, userInfo: nil)
         }
     }
     
