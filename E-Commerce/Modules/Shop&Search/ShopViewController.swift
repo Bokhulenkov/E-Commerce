@@ -108,12 +108,19 @@ final class ShopViewController: UIViewController {
         setupUI()
         searchTextField.delegate = self
         
-        if products == filteredProducts {
-            if filteredProducts.isEmpty {
+        if filteredProducts.isEmpty {
                 updateUIWhenEmpty()
+            } else {
+                collectionProductsView.isHidden = false
+                historyLabel.isHidden = true
+                deleteButton.isHidden = true
+                historyCollectionView.isHidden = true
             }
-        }
+            
+            collectionProductsView.reloadData()
+            historyCollectionView.reloadData()
     }
+    
     
     override func viewWillAppear(_ animated: Bool) {
             super.viewWillAppear(animated)
