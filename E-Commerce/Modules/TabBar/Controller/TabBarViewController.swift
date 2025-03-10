@@ -9,6 +9,8 @@ import UIKit
 
 class TabBarViewController: UITabBarController {
 
+    private let storageService = StorageService()
+    
     let homeVC = HomeViewController()
     let wishlistVC = WishlistViewController()
     let categoryVC = CategoryViewController()
@@ -16,6 +18,7 @@ class TabBarViewController: UITabBarController {
     let settingsVC = SettingsViewController()
 
     private let indicatorView = UIView()
+    private let cartCount = UILabel()
     
     var allProducts: [ProductRealmModel] = []
     var currency: String = ""
@@ -23,6 +26,7 @@ class TabBarViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViewControllers()
+        NotificationCenter.default.addObserver(self, selector: #selector(updateCartCount(_:)), name: NSNotification.Name("UpdateCart"), object: nil)
     }
     
     override func viewDidLayoutSubviews() {
@@ -69,6 +73,8 @@ class TabBarViewController: UITabBarController {
         
         viewControllers = [homeNav, wishlistNav, categoryVC, cartVC, settingsVC]
         
+        addCartCount()
+        
         guard let tabBarItems = tabBar.items else { return }
         
         indicatorView.backgroundColor = UIColor.black
@@ -93,6 +99,28 @@ class TabBarViewController: UITabBarController {
         UIView.animate(withDuration: 0.2) {
             self.indicatorView.frame = CGRect(x: itemXPosition, y: indicatorYPosition, width: indicatorWidth, height: indicatorHeight)
         }
+    }
+    
+    private func addCartCount() {
+        let tabBarItemCount = CGFloat(tabBar.items?.count ?? 1)
+        let itemWidth = tabBar.frame.width / tabBarItemCount
+        let itemXPosition = itemWidth*4 - itemWidth/2
+        
+        cartCount.text = "\(storageService.getCartCountProducts())"
+        cartCount.textAlignment = .center
+        cartCount.font = .custom(font: .ralewayMedium, size: 10)
+        cartCount.textColor = .white
+        cartCount.backgroundColor = .button
+        cartCount.layer.cornerRadius = 8
+        cartCount.layer.masksToBounds = true
+        cartCount.frame = CGRect(x: itemXPosition, y: 10, width: 16, height: 16)
+        tabBar.addSubview(cartCount)
+    }
+    
+    @objc public func updateCartCount(_ notification: Notification) {
+        let count = storageService.getCartCountProducts()
+        cartCount.isHidden = cartCount.text == "0"
+        cartCount.text = "\(count)"
     }
 
 }

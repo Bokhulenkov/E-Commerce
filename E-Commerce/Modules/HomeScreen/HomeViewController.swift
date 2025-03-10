@@ -31,6 +31,7 @@ final class HomeViewController: UIViewController {
         set {
             cartCountLabel.text = "\(newValue)"
             cartCountLabel.isHidden = newValue == 0
+            NotificationCenter.default.post(name: NSNotification.Name("UpdateCart"), object: nil, userInfo: nil)
         }
     }
     
@@ -172,6 +173,9 @@ final class HomeViewController: UIViewController {
         return collectionView
     }()
     
+    let historyManager = HistoryManager()
+    let currencyManager = CurrencyManager()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         cartButton.addTarget(self, action: #selector(openCartButtonAction), for: .touchUpInside)
@@ -194,6 +198,8 @@ final class HomeViewController: UIViewController {
     
     
     private func configureUI() {
+        navigationController?.navigationBar.isHidden = true
+
         view.addSubview(cartButton)
         cartButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -21).isActive = true
         cartButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 11).isActive = true
@@ -449,7 +455,7 @@ final class HomeViewController: UIViewController {
             
             if let tabBarController = self.tabBarController as? TabBarViewController {
                 tabBarController.allProducts = self.allProducts
-                tabBarController.currency = self.currency
+                
             }
         }
         
@@ -493,6 +499,7 @@ final class HomeViewController: UIViewController {
                                 
                             if newCurrency != currency {
                                 currency = newCurrency
+                                currencyManager.saveCurrency(currency)
                             }
                         } else {
                             print("Страна не найдена")
@@ -514,9 +521,18 @@ final class HomeViewController: UIViewController {
             guard let text = textField.text, !text.isEmpty else {
                 return false
             }
+
+            let filtered = allProducts.filter {
+                        $0.title.lowercased().contains(text.lowercased())
+                    }
+            
+            let historyManager = HistoryManager()
+            historyManager.addSearchQuery(text)
             
             let vc = ShopViewController()
             vc.searchedText = text
+            vc.products = allProducts
+            vc.filteredProducts = filtered
             vc.modalPresentationStyle = .fullScreen
             present(vc, animated: true, completion: nil)
             

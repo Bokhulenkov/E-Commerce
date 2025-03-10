@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import FirebaseCore
+import FirebaseAuth
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -18,6 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let appearance = UITabBar.appearance()
         appearance.tintColor = UIColor.black
         appearance.unselectedItemTintColor = .button
+        
+        FirebaseApp.configure()
         
         return true
     }
