@@ -104,11 +104,12 @@ final class ShopViewController: UIViewController {
         super.viewDidLoad()
         searchHistory = historyManager.getAllSearchHistory()
         currency = currencyManager.getCurrency()
-      
+        
         setupUI()
         searchTextField.delegate = self
         
-        if filteredProducts.isEmpty {
+        if products == filteredProducts {
+            if filteredProducts.isEmpty {
                 updateUIWhenEmpty()
             } else {
                 collectionProductsView.isHidden = false
@@ -119,6 +120,7 @@ final class ShopViewController: UIViewController {
             
             collectionProductsView.reloadData()
             historyCollectionView.reloadData()
+        }
     }
     
     
@@ -128,6 +130,11 @@ final class ShopViewController: UIViewController {
             if searchedText.isEmpty {
                 filteredProducts = products
             }
+        
+        if filteredProducts.isEmpty {
+                updateUIWhenEmpty()
+            }
+        
             collectionProductsView.reloadData()
         }
 }
