@@ -28,7 +28,6 @@ class DetailNavBarView: UIStackView {
         button.layer.cornerRadius = 11
         button.backgroundColor = .black
         button.setTitleColor(.white, for: .normal)
-        button.addTarget(self, action: #selector(saveToCartAction), for: .touchUpInside)
         
         return button
     }()
@@ -41,12 +40,12 @@ class DetailNavBarView: UIStackView {
         button.layer.cornerRadius = 11
         button.backgroundColor = .button
         button.setTitleColor(.white, for: .normal)
-        button.addTarget(self, action: #selector(buyNowAction), for: .touchUpInside)
         
         return button
     }()
     
     //MARK: - Properties
+    var addButtonAction: (() -> Void)?
     var likeButtonAction: ((Bool) -> Void)?
     
     // MARK: - Initialization
@@ -55,11 +54,19 @@ class DetailNavBarView: UIStackView {
         setupUI()
         setupView()
         
+        addToCartButton.addTarget(self, action: #selector(addToCartButtonTapped), for: .touchUpInside)
         likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
     }
     
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    //MARK: - Methods
+    func configure(_ target: Any?, _ action: Selector, _ isFavorite: Bool) {
+        buyButton.addTarget(target, action: action, for: .touchUpInside)
+        isFavorite ? likeButton.setImage(.heartRedFull, for: .normal) : likeButton.setImage(.heartRed, for: .normal)
     }
     
     // MARK: - Private Methods
@@ -76,6 +83,10 @@ class DetailNavBarView: UIStackView {
     @objc private func likeButtonTapped() {
         likeButtonAction?(likeButton.currentImage == .heartRed)
         likeButton.currentImage == .heartRed ? likeButton.setImage(.heartRedFull, for: .normal) : likeButton.setImage(.heartRed, for: .normal)
+    }
+    
+    @objc private func addToCartButtonTapped() {
+        addButtonAction?()
     }
     
     private func setupUI() {
@@ -99,13 +110,5 @@ class DetailNavBarView: UIStackView {
             
             buyButton.heightAnchor.constraint(equalToConstant: 40),
         ])
-    }
-    
-    @objc private func saveToCartAction(_ button: UIButton) {
-      //save to cart
-    }
-    
-    @objc private func buyNowAction(_ button: UIButton) {
-        //redirect to checkout screen
     }
 }

@@ -57,7 +57,7 @@ class WishlistViewCell: UICollectionViewCell {
     
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
-   
+        
         stackView.backgroundColor = .white
         stackView.axis = .horizontal
         stackView.spacing = 18
@@ -91,13 +91,14 @@ class WishlistViewCell: UICollectionViewCell {
     
     //MARK: - Properties
     var likeButtonAction: ((Bool) -> Void)?
+    var addButtonAction: (() -> Void)?
     
     // MARK: - Initialization
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
         
-        
+        cartButton.addTarget(self, action:  #selector(addButtonTapped), for: .touchUpInside)
         likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
     }
     
@@ -105,7 +106,25 @@ class WishlistViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func configure(_ image: String?, _ title: String, _ price: String, _ isFavorite: Bool) {
+        descriptionLabel.text = "\(title)"
+        priceLabel.text = "\(price)"
+        
+        if let imageUrl = image,
+           let url = URL(string: imageUrl) {
+            photoImageView.kf.setImage(with: url)
+            photoImageView.layer.cornerRadius = 5
+        }
+        
+        let buttonImage = isFavorite ? UIImage.heartRedFull : UIImage.heartRed
+        likeButton.setImage(buttonImage, for: .normal)
+    }
+    
     // MARK: - Private Methods
+    @objc private func addButtonTapped() {
+        addButtonAction?()
+    }
+    
     @objc private func likeButtonTapped() {
         likeButtonAction?(likeButton.currentImage == .heartRed)
         likeButton.currentImage == .heartRedFull ? likeButton.setImage(.heartRed, for: .normal) : likeButton.setImage(.heartRedFull, for: .normal)
@@ -156,7 +175,7 @@ class WishlistViewCell: UICollectionViewCell {
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
             
             cartButton.heightAnchor.constraint(equalToConstant: 31),
-
+            
             likeButton.heightAnchor.constraint(equalToConstant: 20),
             likeButton.widthAnchor.constraint(equalToConstant: 22),
         ])
