@@ -280,9 +280,14 @@ extension ShopViewController: UICollectionViewDataSource {
             } else {
                 selectedProduct = filteredProducts[indexPath.row]
             }
-            
+#warning("Временное решение нужно добавить обработку!!!")
             let vc = DetailViewController()
-            vc.configure(for: selectedProduct)
+            vc.configure(for: selectedProduct) {
+                
+            } likeButtonAction: { value in
+                
+            }
+
             vc.modalPresentationStyle = .fullScreen
             present(vc, animated: true)
         }
