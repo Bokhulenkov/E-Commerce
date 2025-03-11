@@ -117,6 +117,7 @@ final class PaymentViewController: UIViewController {
     private func updateTableViewHeight() {
         tableView.layoutIfNeeded()
         let height = tableView.contentSize.height
+        print("TableView height: \(height)")
         tableViewHeightConstraint?.constant = height
     }
     
@@ -262,7 +263,6 @@ final class PaymentViewController: UIViewController {
     
     private func updateCartInfo() {
         
-        let cartItems = cartView.getItems()
         let cartCount = cartView.calculateCartCount()
         cartCountLabel.text = "\(cartCount)"
         
@@ -331,15 +331,19 @@ final class PaymentViewController: UIViewController {
 }
 
 // MARK: - TableView Methods
-extension PaymentViewController: UITableViewDataSource, UITableViewDelegate {
+extension PaymentViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print("see here!!!!!!!!!!!!!")
+        print(cartView.getItems().count)
         return cartView.getItems().count
+        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PaymentCell", for: indexPath) as! PaymentItemCell
         let item = cartView.getItems()[indexPath.row]
+        print(cartView.getItems()[indexPath.row].title)
         cell.configure(
             image: item.image,
             title: item.title,
@@ -351,3 +355,6 @@ extension PaymentViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
+extension PaymentViewController: UITableViewDelegate {
+    // Implement delegate methods if needed
+}
