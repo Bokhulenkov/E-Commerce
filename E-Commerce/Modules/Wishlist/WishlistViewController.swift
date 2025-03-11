@@ -74,6 +74,10 @@ final class WishlistViewController: UIViewController {
         
         return collectionView
     }()
+    //MARK: - Properties
+    var likeButtonAction: ((Bool) -> Void)?
+    var storageService = StorageService()
+    var products: [ProductRealmModel] = []
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -81,14 +85,22 @@ final class WishlistViewController: UIViewController {
         
         navigationController?.isNavigationBarHidden = true
         view.backgroundColor = .white
-        
+     
         setupUI()
         setupKeyboardHandling()
+        loadWishlist()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
+        loadWishlist()
+    }
+    
+    //MARK: - Methods
+    private func loadWishlist() {
+        products = storageService.getAllFavoriteProducts()
+        collectionView.reloadData()
     }
     
     //MARK: - Private methods
@@ -139,11 +151,24 @@ final class WishlistViewController: UIViewController {
 //MARK: - UICollectionViewDataSource
 extension WishlistViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 4
+        return products.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WishlistViewCell", for: indexPath) as! WishlistViewCell
+        cell.configure(products[indexPath.row].image,
+                       products[indexPath.row].title,
+                       String(format: "%.2f", products[indexPath.row].price),
+                       products[indexPath.row].isFavorite)
+        cell.addButtonAction = {
+            var currentCount = self.products[indexPath.item].cartCount
+            currentCount += 1
+            self.storageService.setCart(productId: self.products[indexPath.item].id, cartCount: currentCount)
+        }
+        
+        cell.likeButtonAction = { liked in
+            self.storageService.setFavorite(productId: self.products[indexPath.item].id, isFavorite: liked)
+        }
         
         cell.isUserInteractionEnabled = true
         

@@ -324,16 +324,40 @@ final class HomeViewController: UIViewController {
             }
             if collectionView == collectionPopularView {
                 let vc = DetailViewController()
-                vc.configure(for: popularProducts[indexPath.row])
+                vc.configure(for: popularProducts[indexPath.row]) {
+                    let currentProduct = self.popularProducts[indexPath.row]
+                    var currentCount = currentProduct.cartCount
+                    currentCount += 1
+                    
+                    self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
+                    self.setCountCart()
+                } likeButtonAction: { liked in
+                    let currentProduct = self.popularProducts[indexPath.row]
+                    self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
+                }
+            
                 vc.hidesBottomBarWhenPushed = true
-                navigationController?.pushViewController(vc, animated: true)
-                navigationController?.isNavigationBarHidden = false
-                navigationItem.backButtonTitle = ""
+                    self.navigationController?.pushViewController(vc, animated: true)
+                    self.navigationController?.isNavigationBarHidden = false
+                    self.navigationItem.backButtonTitle = ""
                 return
             }
+            
             if collectionView == collectionProductsView {
                 let vc = DetailViewController()
-                vc.configure(for: justForYouProducts[indexPath.row])
+                vc.configure(for: justForYouProducts[indexPath.row]) {
+                    let currentProduct = self.justForYouProducts[indexPath.row]
+                    var currentCount = currentProduct.cartCount
+                    currentCount += 1
+                    
+                    self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
+                    self.setCountCart()
+                    
+                } likeButtonAction: { liked in
+                    let currentProduct = self.justForYouProducts[indexPath.row]
+                    self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
+                }
+                
                 vc.hidesBottomBarWhenPushed = true
                 navigationController?.pushViewController(vc, animated: true)
                 navigationController?.isNavigationBarHidden = false

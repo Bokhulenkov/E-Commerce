@@ -37,7 +37,7 @@ final class DetailViewController: UIViewController {
         let imageView = UIImageView()
         
         imageView.image = UIImage(named: "datailPhotoImage")
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         
         return imageView
@@ -136,6 +136,7 @@ final class DetailViewController: UIViewController {
     var networkService = NetworkService()
     var product: ProductModel?
     var images: [String] = []
+    var storageService = StorageService()
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -153,17 +154,23 @@ final class DetailViewController: UIViewController {
     }
     
     //MARK: - Methods
-    func configure(for product: ProductRealmModel) {
+    func configure(for product: ProductRealmModel, addButtonAction: @escaping (() -> Void), likeButtonAction: @escaping ((Bool) -> Void)) {
         descriptionLabel.text = "\(product.specification)"
         priceLabel.text = "\(product.price)"
         firstVariationLabel.text = "\(product.category)"
         secondVariationLabel.text = "\(product.rate)"
-        images = (1...3).map { "\(product.id).\($0)" }
+        images = (1...5).map { "\(product.id).\($0)" }
+        
+        product.isFavorite ? likeButton.setImage(.heartRedFull, for: .normal) : likeButton.setImage(.heartRed, for: .normal)
 
         if let url = URL(string: product.image) {
             mainImageView.kf.setImage(with: url)
             mainImageView.layer.cornerRadius = 5
         }
+        
+        detailNavBar.configure(self, #selector(buyNowAction), product.isFavorite)
+        detailNavBar.addButtonAction = addButtonAction
+        detailNavBar.likeButtonAction = likeButtonAction
         
         collectionView.reloadData()
     }
@@ -173,7 +180,7 @@ final class DetailViewController: UIViewController {
         likeButtonAction?(likeButton.currentImage == .heartRed)
         likeButton.currentImage == .heartRed ? likeButton.setImage(.heartRedFull, for: .normal) : likeButton.setImage(.heartRed, for: .normal)
     }
-    
+        
     @objc private func backButtonTapped() {
         if navigationController != nil {
             navigationController?.popViewController(animated: true)
@@ -181,6 +188,11 @@ final class DetailViewController: UIViewController {
             dismiss(animated: true)
         }
         
+    }
+    
+    @objc private func buyNowAction(_ button: UIButton) {
+       let paymentVC = PaymentViewController()
+        navigationController?.present(paymentVC, animated: true)
     }
     
     private func setupUI() {
@@ -236,8 +248,7 @@ final class DetailViewController: UIViewController {
             mainImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             mainImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             mainImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            mainImageView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            mainImageView.heightAnchor.constraint(equalTo: mainImageView.widthAnchor),
+            mainImageView.heightAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 1.1),
             
             priceLabel.topAnchor.constraint(equalTo: mainImageView.bottomAnchor, constant: 18),
             priceLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
