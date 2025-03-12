@@ -94,4 +94,17 @@ final class StorageService {
             print("Ошибка при изменении isCart: \(error)")
         }
     }
+    
+    func clearCart() {
+        do {
+            try realm.write {
+                let cartProducts = realm.objects(ProductRealmModel.self).filter("cartCount > 0")
+                for product in cartProducts {
+                    product.cartCount = 0
+                }
+            }
+        } catch {
+            print("Ошибка при очистке корзины: \(error)")
+        }
+    }
 }
