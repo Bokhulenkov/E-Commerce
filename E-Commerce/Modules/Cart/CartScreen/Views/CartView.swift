@@ -65,7 +65,7 @@ final class CartView {
 
     // Очищаем корзину
     func removeAll() {
-        storageService.clearAllProducts()
+        storageService.clearCart()
     }
 
     // Вычисляем общую сумму в корзине
