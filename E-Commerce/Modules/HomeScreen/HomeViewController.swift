@@ -192,6 +192,7 @@ final class HomeViewController: UIViewController {
         
         currencyManager.saveCurrency(currency)
         NotificationCenter.default.post(name: .currencyDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateFavoriteProducts(_:)), name: .updateFavoriteProducts, object: nil)
     }
     
     // текст филд не активен,если не пользуемся, надо доработать
@@ -286,6 +287,23 @@ final class HomeViewController: UIViewController {
     
     private func setCountCart() {
         cartCount = storageService.getCartCountProducts()
+    }
+    
+    @objc private func updateFavoriteProducts(_ notification: Notification) {
+        allProducts = storageService.getAllProducts()
+        
+        justForYouProducts = justForYouProducts.map { product in
+            if let updatedProduct = allProducts.first(where: { $0.id == product.id }) {
+                return updatedProduct
+            }
+            return product
+        }
+
+        collectionProductsView.reloadData()
+
+        if let tabBarController = self.tabBarController as? TabBarViewController {
+            tabBarController.allProducts = self.allProducts
+        }
     }
     
     //MARK: Action
@@ -482,7 +500,6 @@ final class HomeViewController: UIViewController {
             
             if let tabBarController = self.tabBarController as? TabBarViewController {
                 tabBarController.allProducts = self.allProducts
-                
             }
         }
         
