@@ -12,6 +12,7 @@ final class CartViewController: UIViewController {
     
     private var cartView = CartView()
     private let addressView = AddressView()
+    private var cartItems: [ProductRealmModel] = []
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -92,7 +93,7 @@ final class CartViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(cartUpdated), name: NSNotification.Name("CartUpdated"), object: nil)
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(CartItemCell.self, forCellReuseIdentifier: "CartCell")
@@ -100,6 +101,12 @@ final class CartViewController: UIViewController {
         tableView.separatorStyle = .none
         setupUI()
         updateCartInfo()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateCartInfo()
+        tableView.reloadData()
     }
     
     // MARK: - UI Setup
@@ -158,15 +165,32 @@ final class CartViewController: UIViewController {
     }
     
     // MARK: - Cart Management
+
+    @objc private func cartUpdated() {
+        print("Cart updated with \(cartView.getItems().count) items")
+
+        let oldItems = tableView.numberOfRows(inSection: 0)
+        let newItems = cartView.getItems().count
+        
+        updateCartInfo()
+        
+        if oldItems != newItems {
+            tableView.reloadData()
+        } else {
+            UIView.performWithoutAnimation {
+                tableView.reloadRows(at: tableView.indexPathsForVisibleRows ?? [], with: .none)
+            }
+        }
+    }
     
     private func updateCartInfo() {
-        let cartItems = cartView.getItems()
         let cartCount = cartView.calculateCartCount()
+        cartItems = cartView.getItems()
         cartCountLabel.text = "\(cartCount)"
-        
-        let totalPrice = cartView.calculateTotal()
+
+        let totalPrice = cartItems.reduce(0) { $0 + ($1.price * Double($1.cartCount)) }
         totalLabel.text = String(format: "Total $%.2f", totalPrice)
-        
+
         let isEmpty = cartItems.isEmpty
         tableView.isHidden = isEmpty
         emptyStateView.isHidden = !isEmpty
@@ -224,23 +248,26 @@ extension CartViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CartCell", for: indexPath) as! CartItemCell
-        let item = cartView.getItems()[indexPath.row]
+        let item = cartItems[indexPath.row]
+
         cell.configure(
+            productId: item.id,
             image: item.image,
             title: item.title,
             size: "M",
             price: item.price,
             quantity: item.cartCount
+            
         )
         
         cell.onDelete = { [weak self] in
             self?.removeItem(at: indexPath)
         }
-        
-        cell.onQuantityChanged = { [weak self] newQuantity in
-            self?.updateQuantity(for: item.id, newQuantity: newQuantity)
+
+        cell.onQuantityChanged = { [weak self] productId, newQuantity in
+            self?.cartView.updateQuantity(for: productId, quantity: newQuantity)
         }
-        
+
         return cell
     }
 }
