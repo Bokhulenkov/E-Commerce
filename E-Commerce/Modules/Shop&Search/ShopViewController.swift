@@ -202,8 +202,9 @@ private extension ShopViewController {
         historyCollectionView.isHidden = false
     }
     
-    private func removeQuery(at index: Int) {
+    func removeQuery(at index: Int) {
         searchHistory.remove(at: index)
+        historyManager.saveSearchHistory(searchHistory)
         historyCollectionView.reloadData()
     }
     
