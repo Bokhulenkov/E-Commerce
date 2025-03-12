@@ -205,18 +205,26 @@ final class SettingsViewController: UIViewController {
         passTextField.text = userData["password"] as? String
     }
     
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+        return email.firstMatch(of: emailRegex) != nil
+    }
+
+    
     //MARK: Action
     
     @objc func saveChangesButtonAction(_ button: UIButton) {
         guard let userID = self.userID else { return }
-        FirebaseService.shared.saveUserData(userId: userID, userData: ["name": "\(nameTextField.text ?? "")",
-                                                                       "email": "\(emailTextField.text ?? "")",
-                                                                       "password": "\(passTextField.text ?? "")"]) { result in
-            switch result {
-            case .success():
-                print("Данные успешно сохранены")
-            case .failure(let error):
-                print("Ошибка сохранения: \(error.localizedDescription)")
+        if isValidEmail(emailTextField.text ?? "") == true && (passTextField.text ?? "").count > 0 {
+            FirebaseService.shared.saveUserData(userId: userID, userData: ["name": "\(nameTextField.text ?? "")",
+                                                                           "email": "\(emailTextField.text ?? "")",
+                                                                           "password": "\(passTextField.text ?? "")"]) { result in
+                switch result {
+                case .success():
+                    print("Данные успешно сохранены")
+                case .failure(let error):
+                    print("Ошибка сохранения: \(error.localizedDescription)")
+                }
             }
         }
     }
