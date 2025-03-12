@@ -256,6 +256,7 @@ extension ShopViewController: UICollectionViewDataSource {
             
             cell.likeButtonAction = { liked in
                 print("like state \(liked) for \(product.title)")
+                self.storageService.setFavorite(productId: product.id, isFavorite: liked)
             }
             
             return cell
