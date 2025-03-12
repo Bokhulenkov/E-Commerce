@@ -202,8 +202,9 @@ private extension ShopViewController {
         historyCollectionView.isHidden = false
     }
     
-    private func removeQuery(at index: Int) {
+    func removeQuery(at index: Int) {
         searchHistory.remove(at: index)
+        historyManager.saveSearchHistory(searchHistory)
         historyCollectionView.reloadData()
     }
     
@@ -256,6 +257,7 @@ extension ShopViewController: UICollectionViewDataSource {
             
             cell.likeButtonAction = { liked in
                 print("like state \(liked) for \(product.title)")
+                self.storageService.setFavorite(productId: product.id, isFavorite: liked)
             }
             
             return cell
