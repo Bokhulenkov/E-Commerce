@@ -75,9 +75,11 @@ final class WishlistViewController: UIViewController {
         return collectionView
     }()
     //MARK: - Properties
-    var likeButtonAction: ((Bool) -> Void)?
     var storageService = StorageService()
     var products: [ProductRealmModel] = []
+    var currency: String = ""
+    var searchedText = ""
+    let currencyManager = CurrencyManager()
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -89,6 +91,10 @@ final class WishlistViewController: UIViewController {
         setupUI()
         setupKeyboardHandling()
         loadWishlist()
+        searchTextField.delegate = self
+        
+        NotificationCenter.default.post(name: .currencyDidChange, object: nil)
+        currency = currencyManager.getCurrency()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -99,6 +105,7 @@ final class WishlistViewController: UIViewController {
     
     //MARK: - Methods
     private func loadWishlist() {
+        currency = currencyManager.getCurrency()
         products = storageService.getAllFavoriteProducts()
         collectionView.reloadData()
     }
@@ -158,7 +165,7 @@ extension WishlistViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WishlistViewCell", for: indexPath) as! WishlistViewCell
         cell.configure(products[indexPath.row].image,
                        products[indexPath.row].title,
-                       String(format: "%.2f", products[indexPath.row].price),
+                       currency + String(format: "%.2f", products[indexPath.row].price),
                        products[indexPath.row].isFavorite)
         cell.addButtonAction = {
             var currentCount = self.products[indexPath.item].cartCount
@@ -180,6 +187,18 @@ extension WishlistViewController: UICollectionViewDataSource {
 extension WishlistViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let vc = DetailViewController()
+        vc.configure(for: products[indexPath.row]) {
+            let currentProduct = self.products[indexPath.row]
+            var currentCount = currentProduct.cartCount
+            currentCount += 1
+
+            self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
+            
+        } likeButtonAction: { liked in
+            let currentProduct = self.products[indexPath.row]
+            self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
+        }
+        
         vc.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(vc, animated: true)
         navigationController?.isNavigationBarHidden = false
@@ -209,6 +228,18 @@ extension WishlistViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        searchedText = textField.text?.lowercased() ?? ""
+        
+        if searchedText.isEmpty {
+            products = storageService.getAllFavoriteProducts()
+        }  else {
+            products = storageService.getAllFavoriteProducts().filter {
+                $0.title.lowercased().contains(searchedText.lowercased())
+            }
+        }
+        
+        collectionView.reloadData()
+        
         return true
     }
     

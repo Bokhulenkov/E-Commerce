@@ -133,6 +133,7 @@ final class DetailViewController: UIViewController {
     
     //MARK: - Properties
     var likeButtonAction: ((Bool) -> Void)?
+    private var currency: String = ""
     var networkService = NetworkService()
     var product: ProductModel?
     var currentProduct: ProductRealmModel?
@@ -152,16 +153,20 @@ final class DetailViewController: UIViewController {
         likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
         
         setupUI()
+        
+        NotificationCenter.default.post(name: .currencyDidChange, object: nil)
     }
     
     //MARK: - Methods
     func configure(for product: ProductRealmModel, addButtonAction: @escaping (() -> Void), likeButtonAction: @escaping ((Bool) -> Void)) {
+        currency = CurrencyManager.shared.getCurrency()
         self.currentProduct = product
+        
         descriptionLabel.text = "\(product.specification)"
-        priceLabel.text = "\(product.price)"
+        priceLabel.text = "\(currency)\(product.price)"
         firstVariationLabel.text = "\(product.category)"
         secondVariationLabel.text = "\(product.rate)"
-        images = (1...5).map { "\(product.id).\($0)" }
+        images = (1...6).map { "\(product.id).\($0)" }
         
         product.isFavorite ? likeButton.setImage(.heartRedFull, for: .normal) : likeButton.setImage(.heartRed, for: .normal)
 
