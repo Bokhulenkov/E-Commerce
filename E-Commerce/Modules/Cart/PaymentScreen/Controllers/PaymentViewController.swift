@@ -108,9 +108,14 @@ final class PaymentViewController: UIViewController {
         
         setupUI()
         updateCartInfo()
+        updateTableViewHeight()
         
         checkoutButton.addTarget(self, action: #selector(showSuccessAlert), for: .touchUpInside)
         addVoucherButton.addTarget(self, action: #selector(addVoucherTapped), for: .touchUpInside)
+        
+        shippingOptionsView.onShippingOptionChanged = { [weak self] isExpress in
+                    self?.updateTotalPrice(isExpress: isExpress)
+                }
     }
     
     // MARK: - Private Methods
@@ -270,6 +275,11 @@ final class PaymentViewController: UIViewController {
         totalLabel.text = String(format: "Total $%.2f", totalPrice)
     }
     
+    private func updateTotalPrice(isExpress: Bool) {
+            let finalTotal = isExpress ? cartView.calculateTotal() + 12.00 : cartView.calculateTotal()
+            totalLabel.text = String(format: "Total $%.2f", finalTotal)
+        }
+    
     private func showAddressInput() {
         let alert = UIAlertController(title: "Edit Address", message: nil, preferredStyle: .alert)
         
@@ -334,8 +344,6 @@ final class PaymentViewController: UIViewController {
 extension PaymentViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("see here!!!!!!!!!!!!!")
-        print(cartView.getItems().count)
         return cartView.getItems().count
         
     }

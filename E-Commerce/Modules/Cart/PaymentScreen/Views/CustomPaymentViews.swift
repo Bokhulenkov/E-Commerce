@@ -30,6 +30,7 @@ class ShippingOptionsView: UIView {
     }()
 
     private var selectedOption: ShippingOptionView?
+    var onShippingOptionChanged: ((Bool) -> Void)?
 
     // MARK: - Initializer
 
@@ -85,14 +86,26 @@ class ShippingOptionsView: UIView {
 
     // MARK: - Private Methods
 
+//    private func selectOption(_ option: ShippingOptionView) {
+//        selectedOption?.isSelected = false
+//        option.isSelected = true
+//        selectedOption = option
+//
+//        deliveryDateLabel.text = option === expressOptionView ?
+//            "Delivered on or before Monday, 13 April 2020" : "Delivered on or before Thursday, 23 April 2020"
+//    }
+    
     private func selectOption(_ option: ShippingOptionView) {
-        selectedOption?.isSelected = false
-        option.isSelected = true
-        selectedOption = option
+            selectedOption?.isSelected = false
+            option.isSelected = true
+            selectedOption = option
 
-        deliveryDateLabel.text = option === expressOptionView ?
-            "Delivered on or before Monday, 13 April 2020" : "Delivered on or before Thursday, 23 April 2020"
-    }
+            let isExpress = option === expressOptionView
+            deliveryDateLabel.text = isExpress ?
+                "Delivered on or before Monday, 13 April 2020" : "Delivered on or before Thursday, 23 April 2020"
+
+            onShippingOptionChanged?(isExpress) // Сообщаем контроллеру об изменении опции
+        }
 
     func getSelectedOption() -> String {
         return selectedOption === standardOptionView ? "Standard" : "Express"
