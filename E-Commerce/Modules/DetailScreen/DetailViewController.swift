@@ -135,6 +135,7 @@ final class DetailViewController: UIViewController {
     var likeButtonAction: ((Bool) -> Void)?
     var networkService = NetworkService()
     var product: ProductModel?
+    var currentProduct: ProductRealmModel?
     var images: [String] = []
     var storageService = StorageService()
     
@@ -155,6 +156,7 @@ final class DetailViewController: UIViewController {
     
     //MARK: - Methods
     func configure(for product: ProductRealmModel, addButtonAction: @escaping (() -> Void), likeButtonAction: @escaping ((Bool) -> Void)) {
+        self.currentProduct = product
         descriptionLabel.text = "\(product.specification)"
         priceLabel.text = "\(product.price)"
         firstVariationLabel.text = "\(product.category)"
@@ -179,6 +181,8 @@ final class DetailViewController: UIViewController {
     @objc private func likeButtonTapped() {
         likeButtonAction?(likeButton.currentImage == .heartRed)
         likeButton.currentImage == .heartRed ? likeButton.setImage(.heartRedFull, for: .normal) : likeButton.setImage(.heartRed, for: .normal)
+        storageService.setFavorite(productId: currentProduct?.id ?? 0, isFavorite: likeButton.currentImage == .heartRedFull)
+        NotificationCenter.default.post(name: .updateFavoriteProducts, object: nil, userInfo: nil)
     }
         
     @objc private func backButtonTapped() {
