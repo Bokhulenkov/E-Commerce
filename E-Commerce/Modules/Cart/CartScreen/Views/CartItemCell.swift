@@ -23,12 +23,12 @@ class CartItemCell: UITableViewCell {
     private let counterContainerView = UIView()
     
     var onDelete: (() -> Void)?
-    var onQuantityChanged: ((Int) -> Void)?
+    var onQuantityChanged: ((Int, Int) -> Void)? // Передаем (productId, quantity)
     
+    private var productId: Int?
     private var quantity = 1 {
         didSet {
             counterLabel.text = "\(quantity)"
-            onQuantityChanged?(quantity)
             updateMinusButtonState()
         }
     }
@@ -60,7 +60,12 @@ class CartItemCell: UITableViewCell {
     
     // MARK: - Configuration
     
-    func configure(image: String?, title: String, size: String, price: Double, quantity: Int) {
+    func configure(productId: Int, image: String?, title: String, size: String, price: Double, quantity: Int) {
+        self.productId = productId
+        self.quantity = quantity
+        counterLabel.text = "\(quantity)"
+        updateMinusButtonState()
+        
         if let imageUrl = image, let url = URL(string: imageUrl) {
             itemImageView.kf.setImage(with: url)
         }
@@ -68,8 +73,6 @@ class CartItemCell: UITableViewCell {
         titleLabel.text = title
         sizeLabel.text = "Size: \(size)"
         priceLabel.text = String(format: "$%.2f", price)
-        self.quantity = quantity
-        updateMinusButtonState()
     }
     
     // MARK: - UI Setup
@@ -85,12 +88,11 @@ class CartItemCell: UITableViewCell {
         itemImageView.layer.cornerRadius = 8
         itemImageView.layer.masksToBounds = true
         
-        titleLabel.font = UIFont.custom(font: .nunitoLight, size: 12)
+        titleLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         titleLabel.numberOfLines = 2
         
-        sizeLabel.font = UIFont.custom(font: .ralewayMedium, size: 14)
-        priceLabel.font = UIFont.custom(font: .ralewayBold, size: 18)
-        
+        sizeLabel.font = UIFont.systemFont(ofSize: 12, weight: .regular)
+        priceLabel.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         
         deleteButton.setImage(UIImage(systemName: "trash"), for: .normal)
         deleteButton.tintColor = .red
@@ -114,14 +116,14 @@ class CartItemCell: UITableViewCell {
         minusButton.addTarget(self, action: #selector(minusTapped), for: .touchUpInside)
         plusButton.addTarget(self, action: #selector(plusTapped), for: .touchUpInside)
         
-        counterContainerView.backgroundColor = UIColor(named: "QuantityBackgroundColor")
+        counterContainerView.backgroundColor = UIColor.systemGray5
         counterContainerView.layer.cornerRadius = 10
         counterContainerView.translatesAutoresizingMaskIntoConstraints = false
         counterContainerView.addSubview(counterLabel)
         
         counterLabel.translatesAutoresizingMaskIntoConstraints = false
         counterLabel.textAlignment = .center
-        counterLabel.font = UIFont.custom(font: .ralewayMedium, size: 16)
+        counterLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         
         NSLayoutConstraint.activate([
             counterLabel.centerXAnchor.constraint(equalTo: counterContainerView.centerXAnchor),
@@ -173,13 +175,16 @@ class CartItemCell: UITableViewCell {
     }
     
     @objc private func minusTapped() {
-        if quantity > 1 {
-            quantity -= 1
-        }
+        guard let productId = productId, quantity > 1 else { return }
+        quantity -= 1
+        counterLabel.text = "\(quantity)"
+        onQuantityChanged?(productId, quantity) // Передаем id товара + новое количество
     }
     
     @objc private func plusTapped() {
+        guard let productId = productId else { return }
         quantity += 1
+        counterLabel.text = "\(quantity)"
+        onQuantityChanged?(productId, quantity) // Передаем id товара + новое количество
     }
 }
-

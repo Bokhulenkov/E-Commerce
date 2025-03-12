@@ -7,7 +7,7 @@
 import UIKit
 
 final class ShopViewController: UIViewController {
-    
+    let storageService = StorageService()
     var products: [ProductRealmModel] = []
     var currency: String = ""
     var searchedText = ""
