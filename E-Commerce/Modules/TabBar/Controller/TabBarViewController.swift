@@ -60,10 +60,11 @@ class TabBarViewController: UITabBarController {
         wishlistNav.tabBarItem.image = UIImage(resource: .wishlistTab)
         wishlistNav.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         
-        categoryVC.tabBarItem.image = UIImage(resource: .categories)
-        categoryVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
-        categoryVC.tabBarItem.setTitleTextAttributes([.foregroundColor: UIColor.clear], for: .selected)
-        categoryVC.tabBarItem.setTitleTextAttributes([.foregroundColor: UIColor.clear], for: .normal)
+        let categoryNav = UINavigationController(rootViewController: categoryVC)
+        categoryNav.tabBarItem.image = UIImage(resource: .categories)
+        categoryNav.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
+        categoryNav.tabBarItem.setTitleTextAttributes([.foregroundColor: UIColor.clear], for: .selected)
+        categoryNav.tabBarItem.setTitleTextAttributes([.foregroundColor: UIColor.clear], for: .normal)
 
         cartVC.tabBarItem.image = UIImage(resource: .cartTab)
         cartVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
@@ -71,7 +72,7 @@ class TabBarViewController: UITabBarController {
         settingsVC.tabBarItem.image = UIImage(resource: .settingsTab)
         settingsVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         
-        viewControllers = [homeNav, wishlistNav, categoryVC, cartVC, settingsVC]
+        viewControllers = [homeNav, wishlistNav, categoryNav, cartVC, settingsVC]
         
         addCartCount()
         

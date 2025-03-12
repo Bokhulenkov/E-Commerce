@@ -119,10 +119,11 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
             }
             
             let vc = ShopViewController()
-            vc.modalPresentationStyle = .fullScreen
             vc.products = productsCategorised
-            vc.currency = tabBarController.currency
-            present(vc, animated: true)
+            vc.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(vc, animated: true)
+            navigationController?.isNavigationBarHidden = false
+            navigationItem.backButtonTitle = ""
         }
 
         tableView.deselectRow(at: indexPath, animated: true)
