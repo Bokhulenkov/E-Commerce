@@ -579,6 +579,7 @@ final class HomeViewController: UIViewController {
             vc.searchedText = text
             vc.products = allProducts
             vc.filteredProducts = filtered
+            textField.text = ""
             vc.modalPresentationStyle = .fullScreen
             present(vc, animated: true, completion: nil)
             
