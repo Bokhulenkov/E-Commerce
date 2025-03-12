@@ -17,7 +17,7 @@ class HistoryManager {
         return defaults.array(forKey: searchHistoryKey) as? [String] ?? []
     }
 
-    private func saveSearchHistory(_ history: [String]) {
+    func saveSearchHistory(_ history: [String]) {
         let defaults = UserDefaults.standard
         defaults.set(history, forKey: searchHistoryKey)
     }
