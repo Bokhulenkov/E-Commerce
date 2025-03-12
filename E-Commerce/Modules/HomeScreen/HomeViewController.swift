@@ -426,15 +426,13 @@ final class HomeViewController: UIViewController {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
                 cell.isUserInteractionEnabled = true
                 
-                cell.configure(justForYouProducts[indexPath.row].image,
-                                           justForYouProducts[indexPath.row].title,
-                                           "\(currency)\(justForYouProducts[indexPath.row].price)",
-                                           justForYouProducts[indexPath.row].isFavorite)
+                cell.configure(justForYouProducts[indexPath.row])
                 cell.addButtonAction = {
                     var currentCount = self.justForYouProducts[indexPath.item].cartCount
                     currentCount += 1
                     self.storageService.setCart(productId: self.justForYouProducts[indexPath.item].id, cartCount: currentCount)
                     self.setCountCart()
+                    cell.updateCartCount(currentCount)
                 }
                 
                 cell.likeButtonAction = { liked in
