@@ -162,13 +162,13 @@ class PaymentItemCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(image: String?, title: String, price: Double, quantity: Int) {
+    func configure(image: String?, title: String, price: String, quantity: Int) {
         if let imageUrl = image, let url = URL(string: imageUrl) {
             itemImageView.kf.setImage(with: url)
         }
 
         titleLabel.text = title
-        priceLabel.text = String(format: "$%.2f", price)
+        priceLabel.text = price
         self.quantity = quantity
     }
     

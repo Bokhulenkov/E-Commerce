@@ -13,6 +13,9 @@ final class CartViewController: UIViewController {
     private var cartView = CartView()
     private let addressView = AddressView()
     private var cartItems: [ProductRealmModel] = []
+    private let currencyManager = CurrencyManager()
+    private var currency: String = ""
+    
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -93,6 +96,7 @@ final class CartViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        currency = currencyManager.getCurrency()
         NotificationCenter.default.addObserver(self, selector: #selector(cartUpdated), name: NSNotification.Name("CartUpdated"), object: nil)
         tableView.dataSource = self
         tableView.delegate = self
@@ -189,7 +193,7 @@ final class CartViewController: UIViewController {
         cartCountLabel.text = "\(cartCount)"
 
         let totalPrice = cartItems.reduce(0) { $0 + ($1.price * Double($1.cartCount)) }
-        totalLabel.text = String(format: "Total $%.2f", totalPrice)
+        totalLabel.text = String(format: "Total \(currency)%.2f", totalPrice)
 
         let isEmpty = cartItems.isEmpty
         tableView.isHidden = isEmpty
@@ -255,7 +259,7 @@ extension CartViewController: UITableViewDataSource {
             image: item.image,
             title: item.title,
             size: "M",
-            price: item.price,
+            price: String(format: "\(currency)%.2f", item.price),
             quantity: item.cartCount
             
         )

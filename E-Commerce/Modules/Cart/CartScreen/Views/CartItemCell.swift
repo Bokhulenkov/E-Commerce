@@ -60,7 +60,7 @@ class CartItemCell: UITableViewCell {
     
     // MARK: - Configuration
     
-    func configure(productId: Int, image: String?, title: String, size: String, price: Double, quantity: Int) {
+    func configure(productId: Int, image: String?, title: String, size: String, price: String, quantity: Int) {
         self.productId = productId
         self.quantity = quantity
         counterLabel.text = "\(quantity)"
@@ -72,7 +72,7 @@ class CartItemCell: UITableViewCell {
 
         titleLabel.text = title
         sizeLabel.text = "Size: \(size)"
-        priceLabel.text = String(format: "$%.2f", price)
+        priceLabel.text = price
     }
     
     // MARK: - UI Setup
