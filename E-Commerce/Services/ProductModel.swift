@@ -28,8 +28,9 @@ class ProductRealmModel: Object {
     @Persisted var rate: Double = 0.0
     @Persisted var isFavorite: Bool = false
     @Persisted var cartCount: Int = 0
+    @Persisted var availableCount: Int = 0
     
-    convenience init(id: Int, title: String, price: Double, description: String = "", category: String = "", image: String = "", rate: Double = 0.0, isFavorite: Bool = false, cartCount: Int = 0) {
+    convenience init(id: Int, title: String, price: Double, description: String = "", category: String = "", image: String = "", rate: Double = 0.0, isFavorite: Bool = false, cartCount: Int = 0, availableCount: Int = 0) {
         self.init()
         self.id = id
         self.title = title
@@ -40,6 +41,7 @@ class ProductRealmModel: Object {
         self.rate = rate
         self.isFavorite = isFavorite
         self.cartCount = cartCount
+        self.availableCount = availableCount
     }
 }
 
@@ -64,7 +66,8 @@ extension ProductRealmModel {
                 image: product.image,
                 rate: product.rate,
                 isFavorite: false,
-                cartCount: 0
+                cartCount: 0,
+                availableCount: 50
             )
         }
     }
