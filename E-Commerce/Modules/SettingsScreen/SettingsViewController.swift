@@ -205,19 +205,60 @@ final class SettingsViewController: UIViewController {
         passTextField.text = userData["password"] as? String
     }
     
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+        return email.firstMatch(of: emailRegex) != nil
+    }
+    
+    private func showEmailErrorAlert() {
+        let alert = UIAlertController(title: "Ошибка", message: "Введет некорректный email", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alert.addAction(okAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func showPassErrorAlert() {
+        let alert = UIAlertController(title: "Ошибка", message: "Пароль должен быть длиннее 6 символов", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alert.addAction(okAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func showSucessSaveAlert() {
+        let alert = UIAlertController(title: "Данные успешно обновлены", message: nil, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alert.addAction(okAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+
+    
     //MARK: Action
     
     @objc func saveChangesButtonAction(_ button: UIButton) {
         guard let userID = self.userID else { return }
-        FirebaseService.shared.saveUserData(userId: userID, userData: ["name": "\(nameTextField.text ?? "")",
-                                                                       "email": "\(emailTextField.text ?? "")",
-                                                                       "password": "\(passTextField.text ?? "")"]) { result in
-            switch result {
-            case .success():
-                print("Данные успешно сохранены")
-            case .failure(let error):
-                print("Ошибка сохранения: \(error.localizedDescription)")
+        if isValidEmail(emailTextField.text ?? "") == true && (passTextField.text ?? "").count >= 6 {
+            FirebaseService.shared.saveUserData(userId: userID, userData: ["name": "\(nameTextField.text ?? "")",
+                                                                           "email": "\(emailTextField.text ?? "")",
+                                                                           "password": "\(passTextField.text ?? "")"]) { result in
+                switch result {
+                case .success():
+                    print("Данные успешно сохранены")
+                    self.showSucessSaveAlert()
+                case .failure(let error):
+                    print("Ошибка сохранения: \(error.localizedDescription)")
+                }
             }
+        }
+        
+        if isValidEmail(emailTextField.text ?? "") == false {
+            showEmailErrorAlert()
+        }
+        
+        if (passTextField.text ?? "").count < 6 {
+            showPassErrorAlert()
         }
     }
     

@@ -108,15 +108,21 @@ final class PaymentViewController: UIViewController {
         
         setupUI()
         updateCartInfo()
+        updateTableViewHeight()
         
         checkoutButton.addTarget(self, action: #selector(showSuccessAlert), for: .touchUpInside)
         addVoucherButton.addTarget(self, action: #selector(addVoucherTapped), for: .touchUpInside)
+        
+        shippingOptionsView.onShippingOptionChanged = { [weak self] isExpress in
+                    self?.updateTotalPrice(isExpress: isExpress)
+                }
     }
     
     // MARK: - Private Methods
     private func updateTableViewHeight() {
         tableView.layoutIfNeeded()
         let height = tableView.contentSize.height
+        print("TableView height: \(height)")
         tableViewHeightConstraint?.constant = height
     }
     
@@ -262,13 +268,17 @@ final class PaymentViewController: UIViewController {
     
     private func updateCartInfo() {
         
-        let cartItems = cartView.getItems()
         let cartCount = cartView.calculateCartCount()
         cartCountLabel.text = "\(cartCount)"
         
         let totalPrice = cartView.calculateTotal()
         totalLabel.text = String(format: "Total $%.2f", totalPrice)
     }
+    
+    private func updateTotalPrice(isExpress: Bool) {
+            let finalTotal = isExpress ? cartView.calculateTotal() + 12.00 : cartView.calculateTotal()
+            totalLabel.text = String(format: "Total $%.2f", finalTotal)
+        }
     
     private func showAddressInput() {
         let alert = UIAlertController(title: "Edit Address", message: nil, preferredStyle: .alert)
@@ -331,15 +341,17 @@ final class PaymentViewController: UIViewController {
 }
 
 // MARK: - TableView Methods
-extension PaymentViewController: UITableViewDataSource, UITableViewDelegate {
+extension PaymentViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return cartView.getItems().count
+        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PaymentCell", for: indexPath) as! PaymentItemCell
         let item = cartView.getItems()[indexPath.row]
+        print(cartView.getItems()[indexPath.row].title)
         cell.configure(
             image: item.image,
             title: item.title,
@@ -351,3 +363,6 @@ extension PaymentViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
+extension PaymentViewController: UITableViewDelegate {
+    // Implement delegate methods if needed
+}

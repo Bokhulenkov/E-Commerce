@@ -8,6 +8,7 @@
 import Foundation
 
 class CurrencyManager {
+    static let shared = CurrencyManager()
     
     private let currencyKey = "selectedCurrency"
     
@@ -22,4 +23,5 @@ class CurrencyManager {
 
 extension Notification.Name {
     static let currencyDidChange = Notification.Name("currencyDidChange")
+    static let updateFavoriteProducts = Notification.Name("updateFavoriteProducts")
 }

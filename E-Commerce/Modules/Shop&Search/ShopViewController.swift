@@ -7,7 +7,7 @@
 import UIKit
 
 final class ShopViewController: UIViewController {
-    
+    let storageService = StorageService()
     var products: [ProductRealmModel] = []
     var currency: String = ""
     var searchedText = ""
@@ -106,6 +106,7 @@ final class ShopViewController: UIViewController {
         searchHistory = historyManager.getAllSearchHistory()
         currency = currencyManager.getCurrency()
         
+        navigationController?.isNavigationBarHidden = true
         setupUI()
         searchTextField.delegate = self
         
@@ -202,13 +203,14 @@ private extension ShopViewController {
         historyCollectionView.isHidden = false
     }
     
-    private func removeQuery(at index: Int) {
+    func removeQuery(at index: Int) {
         searchHistory.remove(at: index)
+        historyManager.saveSearchHistory(searchHistory)
         historyCollectionView.reloadData()
     }
     
     @objc func closeVC() {
-        dismiss(animated: true)
+        navigationController?.popViewController(animated: true)
     }
     
     @objc func deleteHistory() {
@@ -251,10 +253,13 @@ extension ShopViewController: UICollectionViewDataSource {
             cell.configure(product.image, product.title, "\(currency)\(product.price)", product.isFavorite)
     
             cell.addButtonAction = {
-                print("Add to cart: \(product.title)")
+                var currentCount = self.products[indexPath.item].cartCount
+                currentCount += 1
+                self.storageService.setCart(productId: self.products[indexPath.item].id, cartCount: currentCount)
             }
             
             cell.likeButtonAction = { liked in
+                self.storageService.setFavorite(productId: self.products[indexPath.item].id, isFavorite: liked)
                 print("like state \(liked) for \(product.title)")
             }
             
@@ -282,9 +287,23 @@ extension ShopViewController: UICollectionViewDataSource {
             }
             
             let vc = DetailViewController()
-            vc.configure(for: selectedProduct)
-            vc.modalPresentationStyle = .fullScreen
-            present(vc, animated: true)
+            vc.configure(for: selectedProduct) {
+                let currentProduct = selectedProduct
+                var currentCount = currentProduct.cartCount
+                currentCount += 1
+                print(currentCount)
+                
+                self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
+                
+            } likeButtonAction: { liked in
+                let currentProduct = selectedProduct
+                self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
+            }
+
+            vc.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(vc, animated: true)
+            navigationController?.isNavigationBarHidden = false
+            navigationItem.backButtonTitle = ""
         }
     }
 }

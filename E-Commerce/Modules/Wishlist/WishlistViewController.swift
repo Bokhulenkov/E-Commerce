@@ -74,6 +74,12 @@ final class WishlistViewController: UIViewController {
         
         return collectionView
     }()
+    //MARK: - Properties
+    var storageService = StorageService()
+    var products: [ProductRealmModel] = []
+    var currency: String = ""
+    var searchedText = ""
+    let currencyManager = CurrencyManager()
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -81,14 +87,27 @@ final class WishlistViewController: UIViewController {
         
         navigationController?.isNavigationBarHidden = true
         view.backgroundColor = .white
-        
+     
         setupUI()
         setupKeyboardHandling()
+        loadWishlist()
+        searchTextField.delegate = self
+        
+        NotificationCenter.default.post(name: .currencyDidChange, object: nil)
+        currency = currencyManager.getCurrency()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
+        loadWishlist()
+    }
+    
+    //MARK: - Methods
+    private func loadWishlist() {
+        currency = currencyManager.getCurrency()
+        products = storageService.getAllFavoriteProducts()
+        collectionView.reloadData()
     }
     
     //MARK: - Private methods
@@ -139,11 +158,24 @@ final class WishlistViewController: UIViewController {
 //MARK: - UICollectionViewDataSource
 extension WishlistViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 4
+        return products.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WishlistViewCell", for: indexPath) as! WishlistViewCell
+        cell.configure(products[indexPath.row].image,
+                       products[indexPath.row].title,
+                       currency + String(format: "%.2f", products[indexPath.row].price),
+                       products[indexPath.row].isFavorite)
+        cell.addButtonAction = {
+            var currentCount = self.products[indexPath.item].cartCount
+            currentCount += 1
+            self.storageService.setCart(productId: self.products[indexPath.item].id, cartCount: currentCount)
+        }
+        
+        cell.likeButtonAction = { liked in
+            self.storageService.setFavorite(productId: self.products[indexPath.item].id, isFavorite: liked)
+        }
         
         cell.isUserInteractionEnabled = true
         
@@ -155,6 +187,18 @@ extension WishlistViewController: UICollectionViewDataSource {
 extension WishlistViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let vc = DetailViewController()
+        vc.configure(for: products[indexPath.row]) {
+            let currentProduct = self.products[indexPath.row]
+            var currentCount = currentProduct.cartCount
+            currentCount += 1
+
+            self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
+            
+        } likeButtonAction: { liked in
+            let currentProduct = self.products[indexPath.row]
+            self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
+        }
+        
         vc.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(vc, animated: true)
         navigationController?.isNavigationBarHidden = false
@@ -184,6 +228,18 @@ extension WishlistViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        searchedText = textField.text?.lowercased() ?? ""
+        
+        if searchedText.isEmpty {
+            products = storageService.getAllFavoriteProducts()
+        }  else {
+            products = storageService.getAllFavoriteProducts().filter {
+                $0.title.lowercased().contains(searchedText.lowercased())
+            }
+        }
+        
+        collectionView.reloadData()
+        
         return true
     }
     

@@ -192,6 +192,7 @@ final class HomeViewController: UIViewController {
         
         currencyManager.saveCurrency(currency)
         NotificationCenter.default.post(name: .currencyDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateFavoriteProducts(_:)), name: .updateFavoriteProducts, object: nil)
     }
     
     // текст филд не активен,если не пользуемся, надо доработать
@@ -288,6 +289,23 @@ final class HomeViewController: UIViewController {
         cartCount = storageService.getCartCountProducts()
     }
     
+    @objc private func updateFavoriteProducts(_ notification: Notification) {
+        allProducts = storageService.getAllProducts()
+        
+        justForYouProducts = justForYouProducts.map { product in
+            if let updatedProduct = allProducts.first(where: { $0.id == product.id }) {
+                return updatedProduct
+            }
+            return product
+        }
+
+        collectionProductsView.reloadData()
+
+        if let tabBarController = self.tabBarController as? TabBarViewController {
+            tabBarController.allProducts = self.allProducts
+        }
+    }
+    
     //MARK: Action
     
     @objc func openCategoriesButtonAction(_ button: UIButton) {
@@ -324,16 +342,40 @@ final class HomeViewController: UIViewController {
             }
             if collectionView == collectionPopularView {
                 let vc = DetailViewController()
-                vc.configure(for: popularProducts[indexPath.row])
+                vc.configure(for: popularProducts[indexPath.row]) {
+                    let currentProduct = self.popularProducts[indexPath.row]
+                    var currentCount = currentProduct.cartCount
+                    currentCount += 1
+                    
+                    self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
+                    self.setCountCart()
+                } likeButtonAction: { liked in
+                    let currentProduct = self.popularProducts[indexPath.row]
+                    self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
+                }
+            
                 vc.hidesBottomBarWhenPushed = true
-                navigationController?.pushViewController(vc, animated: true)
-                navigationController?.isNavigationBarHidden = false
-                navigationItem.backButtonTitle = ""
+                    self.navigationController?.pushViewController(vc, animated: true)
+                    self.navigationController?.isNavigationBarHidden = false
+                    self.navigationItem.backButtonTitle = ""
                 return
             }
+            
             if collectionView == collectionProductsView {
                 let vc = DetailViewController()
-                vc.configure(for: justForYouProducts[indexPath.row])
+                vc.configure(for: justForYouProducts[indexPath.row]) {
+                    let currentProduct = self.justForYouProducts[indexPath.row]
+                    var currentCount = currentProduct.cartCount
+                    currentCount += 1
+                    
+                    self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
+                    self.setCountCart()
+                    
+                } likeButtonAction: { liked in
+                    let currentProduct = self.justForYouProducts[indexPath.row]
+                    self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
+                }
+                
                 vc.hidesBottomBarWhenPushed = true
                 navigationController?.pushViewController(vc, animated: true)
                 navigationController?.isNavigationBarHidden = false
@@ -458,7 +500,6 @@ final class HomeViewController: UIViewController {
             
             if let tabBarController = self.tabBarController as? TabBarViewController {
                 tabBarController.allProducts = self.allProducts
-                
             }
         }
         
@@ -538,6 +579,7 @@ final class HomeViewController: UIViewController {
             vc.searchedText = text
             vc.products = allProducts
             vc.filteredProducts = filtered
+            textField.text = ""
             vc.modalPresentationStyle = .fullScreen
             present(vc, animated: true, completion: nil)
             

@@ -10,12 +10,20 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+    let hasLaunchedBefore = UserDefaults.standard.bool(forKey: "hasLaunchedBefore")
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
-        let vc = OnboardingViewController()
+        
+        let vc: UIViewController
+        if hasLaunchedBefore {
+            vc = TabBarViewController()
+        } else {
+            vc = OnboardingViewController()
+            UserDefaults.standard.set(true, forKey: "hasLaunchedBefore")
+        }
+                
         window?.rootViewController = vc
         window?.makeKeyAndVisible()
     }
