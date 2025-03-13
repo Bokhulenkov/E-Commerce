@@ -117,9 +117,9 @@ class HomeProductViewCell: UICollectionViewCell {
         addButton.heightAnchor.constraint(equalToConstant: 31).isActive = true
     }
     
-    public func configure(_ product: ProductRealmModel) {
+    public func configure(_ product: ProductRealmModel, currency: String) {
         productTitle.text = "\(product.title)"
-        productPrice.text = "\(product.price)"
+        productPrice.text = "\(currency)\(product.price)"
         
         if let url = URL(string: product.image) {
             productImageView.kf.setImage(with: url)

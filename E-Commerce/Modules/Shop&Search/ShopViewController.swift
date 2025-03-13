@@ -250,12 +250,14 @@ extension ShopViewController: UICollectionViewDataSource {
             let dataSource = !searchedText.isEmpty ? filteredProducts : products
             let product = dataSource[indexPath.row]
             
-            cell.configure(product)
+            cell.configure(product, currency: currency)
     
             cell.addButtonAction = {
                 var currentCount = self.products[indexPath.item].cartCount
                 currentCount += 1
                 self.storageService.setCart(productId: self.products[indexPath.item].id, cartCount: currentCount)
+                cell.updateCartCount(currentCount)
+                NotificationCenter.default.post(name: NSNotification.Name("CartUpdated"), object: nil)
             }
             
             cell.likeButtonAction = { liked in
