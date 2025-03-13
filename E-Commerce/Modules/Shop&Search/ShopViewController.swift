@@ -256,6 +256,8 @@ extension ShopViewController: UICollectionViewDataSource {
                 var currentCount = self.products[indexPath.item].cartCount
                 currentCount += 1
                 self.storageService.setCart(productId: self.products[indexPath.item].id, cartCount: currentCount)
+                cell.updateCartCount(currentCount)
+                NotificationCenter.default.post(name: NSNotification.Name("CartUpdated"), object: nil)
             }
             
             cell.likeButtonAction = { liked in
