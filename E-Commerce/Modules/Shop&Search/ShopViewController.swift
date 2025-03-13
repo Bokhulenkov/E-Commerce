@@ -250,7 +250,7 @@ extension ShopViewController: UICollectionViewDataSource {
             let dataSource = !searchedText.isEmpty ? filteredProducts : products
             let product = dataSource[indexPath.row]
             
-            cell.configure(product.image, product.title, "\(currency)\(product.price)", product.isFavorite)
+            cell.configure(product)
     
             cell.addButtonAction = {
                 var currentCount = self.products[indexPath.item].cartCount
