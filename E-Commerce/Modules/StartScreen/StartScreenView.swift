@@ -103,7 +103,8 @@ class StartScreenView: UIView {
         addSubview(arrowButton)
     }
     
-     internal func setupButtons(target: Any?, actionStartButton: Selector, actionArrowButton: Selector){
+    
+    internal func setupButtons(target: Any?, actionStartButton: Selector, actionArrowButton: Selector){
         //print("setupButtons сработала")
         startButton.addTarget(target, action: actionStartButton, for: .touchUpInside)
         arrowButton.addTarget(target, action: actionArrowButton, for: .touchUpInside)
