@@ -26,7 +26,7 @@ class WishlistViewCell: UICollectionViewCell {
     private lazy var photoImageView: UIImageView = {
         let imageView = UIImageView()
         
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         imageView.image = UIImage(named: "photoImage")
         imageView.layer.cornerRadius = 9
         imageView.clipsToBounds = true
@@ -165,6 +165,7 @@ class WishlistViewCell: UICollectionViewCell {
             descriptionLabel.topAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: 6),
             descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
             descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24),
+            descriptionLabel.heightAnchor.constraint(equalToConstant: 36),
             
             priceLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 1),
             priceLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
