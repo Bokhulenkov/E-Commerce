@@ -139,6 +139,7 @@ final class DetailViewController: UIViewController {
     var currentProduct: ProductRealmModel?
     var images: [String] = []
     var storageService = StorageService()
+    private var isFavorite: Bool = false
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -161,19 +162,20 @@ final class DetailViewController: UIViewController {
     func configure(for product: ProductRealmModel, addButtonAction: @escaping (() -> Void), likeButtonAction: @escaping ((Bool) -> Void)) {
         currency = CurrencyManager.shared.getCurrency()
         self.currentProduct = product
+        self.isFavorite = product.isFavorite
         
         descriptionLabel.text = "\(product.specification)"
         priceLabel.text = "\(currency)\(product.price)"
         firstVariationLabel.text = "\(product.category)"
         secondVariationLabel.text = "\(product.rate)"
         images = (1...6).map { "\(product.id).\($0)" }
-        
-        product.isFavorite ? likeButton.setImage(.heartRedFull, for: .normal) : likeButton.setImage(.heartRed, for: .normal)
 
         if let url = URL(string: product.image) {
             mainImageView.kf.setImage(with: url)
             mainImageView.layer.cornerRadius = 5
         }
+        
+        updateLikeButtons()
         
         detailNavBar.configure(self, #selector(buyNowAction), product.isFavorite)
         detailNavBar.addButtonAction = addButtonAction
@@ -184,11 +186,19 @@ final class DetailViewController: UIViewController {
     
     //MARK: - Private methods
     @objc private func likeButtonTapped() {
-        likeButtonAction?(likeButton.currentImage == .heartRed)
-        likeButton.currentImage == .heartRed ? likeButton.setImage(.heartRedFull, for: .normal) : likeButton.setImage(.heartRed, for: .normal)
-        storageService.setFavorite(productId: currentProduct?.id ?? 0, isFavorite: likeButton.currentImage == .heartRedFull)
+        isFavorite.toggle()
+        
+        storageService.setFavorite(productId: currentProduct?.id ?? 0, isFavorite: isFavorite)
         NotificationCenter.default.post(name: .updateFavoriteProducts, object: nil, userInfo: nil)
+        
+        updateLikeButtons()
     }
+    
+    private func updateLikeButtons() {
+        let image = isFavorite ? UIImage.heartRedFull : UIImage.heartRed
+          likeButton.setImage(image, for: .normal)
+        detailNavBar.likeButton.setImage(image, for: .normal)
+     }
         
     @objc private func backButtonTapped() {
         if navigationController != nil {
@@ -196,7 +206,6 @@ final class DetailViewController: UIViewController {
         } else {
             dismiss(animated: true)
         }
-        
     }
     
     @objc private func buyNowAction(_ button: UIButton) {
