@@ -175,6 +175,7 @@ extension WishlistViewController: UICollectionViewDataSource {
         
         cell.likeButtonAction = { liked in
             self.storageService.setFavorite(productId: self.products[indexPath.item].id, isFavorite: liked)
+            NotificationCenter.default.post(name: .updateFavoriteProducts, object: nil, userInfo: nil)
         }
         
         cell.isUserInteractionEnabled = true
