@@ -33,6 +33,7 @@ final class CartView {
                 print("Cart initialized with \(self?.cartProducts?.count ?? 0) items")
             case .update(_, let deletions, let insertions, let modifications):
                 print("Cart updated. Deletions: \(deletions.count), Insertions: \(insertions.count), Modifications: \(modifications.count)")
+                NotificationCenter.default.post(name: NSNotification.Name("UpdateCart"), object: nil)
                 NotificationCenter.default.post(name: NSNotification.Name("CartUpdated"), object: nil)
             case .error(let error):
                 print("Realm observation error: \(error)")
