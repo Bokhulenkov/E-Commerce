@@ -8,23 +8,36 @@
 import UIKit
 
 class LoginViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .green
-
-        // Do any additional setup after loading the view.
+    
+    //    MARK: - Properties
+    
+    private let loginView = LoginView()
+    
+    
+    //    MARK: - LifeCycle
+    override func loadView() {
+        view = loginView
+        loginView.setupButtons(target: self,
+                               actionNextButton:  #selector(nextButtonTapped),
+                               actionCancelButton:  #selector(cancelButtonTapped))
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    @objc private func nextButtonTapped() {
+        print("Кнопка Next нажата!")
+        let vc = HomeViewController()
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true, completion: nil)
     }
-    */
-
+    
+    @objc private func cancelButtonTapped() {
+        print("Кнопка Cancel нажата!")
+        let vc = StartScreenViewController()
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true, completion: nil)
+    }
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
 }

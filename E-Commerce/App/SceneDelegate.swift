@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let vc: UIViewController
         if hasLaunchedBefore {
-            vc = TabBarViewController()
+            vc = StartScreenViewController()
         } else {
             vc = OnboardingViewController()
             UserDefaults.standard.set(true, forKey: "hasLaunchedBefore")
