@@ -428,7 +428,7 @@ final class HomeViewController: UIViewController {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
                 cell.isUserInteractionEnabled = true
                 
-                cell.configure(justForYouProducts[indexPath.row])
+                cell.configure(justForYouProducts[indexPath.row], currency: currency)
                 cell.addButtonAction = {
                     var currentCount = self.justForYouProducts[indexPath.item].cartCount
                     currentCount += 1
@@ -580,8 +580,10 @@ final class HomeViewController: UIViewController {
             vc.products = allProducts
             vc.filteredProducts = filtered
             textField.text = ""
-            vc.modalPresentationStyle = .fullScreen
-            present(vc, animated: true, completion: nil)
+            vc.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(vc, animated: true)
+            navigationController?.isNavigationBarHidden = false
+            navigationItem.backButtonTitle = ""
             
             textField.resignFirstResponder()
             return true
