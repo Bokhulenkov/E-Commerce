@@ -10,9 +10,20 @@ import Foundation
 
 final class StorageService {
     private var realm: Realm
-        
+    private let config = Realm.Configuration(
+        schemaVersion: 2,
+        migrationBlock: { migration, oldSchemaVersion in
+            if oldSchemaVersion < 2 {
+                migration.enumerateObjects(ofType: ProductRealmModel.className()) { oldObject, newObject in
+                    newObject?["availableCount"] = 50
+                }
+            }
+        }
+    )
+    
     init() {
         do {
+            Realm.Configuration.defaultConfiguration = config
             self.realm = try Realm()
         } catch {
             fatalError("Ошибка при инициализации Realm: \(error)")
@@ -86,6 +97,20 @@ final class StorageService {
             try realm.write {
                 if let product = realm.object(ofType: ProductRealmModel.self, forPrimaryKey: productId) {
                     product.cartCount = cartCount
+                } else {
+                    print("Продукт с id \(productId) не найден")
+                }
+            }
+        } catch {
+            print("Ошибка при изменении isCart: \(error)")
+        }
+    }
+    
+    func setAvailable(productId: Int, change: Int) {
+        do {
+            try realm.write {
+                if let product = realm.object(ofType: ProductRealmModel.self, forPrimaryKey: productId) {
+                    product.availableCount += change
                 } else {
                     print("Продукт с id \(productId) не найден")
                 }
