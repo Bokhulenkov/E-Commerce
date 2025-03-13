@@ -9,30 +9,6 @@ import UIKit
 
 class StartScreenView: UIView {
     
-    //Инициализатор:
-    override init(frame: CGRect) {
-        super.init(frame: frame) //Передает размеры в родительский класс UIView.
-        setViews() //Задаем основные свойства вью.
-        setupConstraints() //Устанавливаем констреинты.
-    }
-    
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented") //Инициализатор, запрещающий сториборды.
-    }
-    
-    //Настраиваем Вью:
-    func setViews() {
-        backgroundColor = UIColor(named: "BackgoundColor") //Задаем цвет из Ассетов.
-        addSubview(titleLabel) //Добавляем сабвью для лейбла
-        addSubview(circleWhiteView) //Добавляем сабвью для круга
-        addSubview(bagPicture) //Добавляем сабвью для сумки
-        addSubview(startButton)
-        addSubview(titleLabelAccount)
-        addSubview(arrowButton)
-    }
-    
-    
     //Создаем Image View (белый круг с тенью):
     private lazy var circleWhiteView: UIView = {
         let view = UIView()
@@ -83,25 +59,16 @@ class StartScreenView: UIView {
         return button
     }()
     
-    
-    public func setupButtons(target: Any?, actionStartButton: Selector, actionArrowButton: Selector){
-        //print("setupButtons сработала")
-        startButton.addTarget(target, action: actionStartButton, for: .touchUpInside)
-        arrowButton.addTarget(target, action: actionArrowButton, for: .touchUpInside)
-    }
-    
-    
     // Создаем лейбл нижний
     private lazy var titleLabelAccount: UILabel = {
         let label = UILabel()
         label.text = "I already have an account"
-        label.font = UIFont(name: "NunitoSans-Regular", size: 15)
+        label.font = .custom(font: .nunito, size: 15)
         label.textColor = UIColor(hex: "202020")
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
     
     //Создаем кнопку со стрелкой
     private lazy var arrowButton: UIButton = {
@@ -111,6 +78,37 @@ class StartScreenView: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+    
+    
+    //Инициализатор:
+    override init(frame: CGRect) {
+        super.init(frame: frame) //Передает размеры в родительский класс UIView.
+        setViews() //Задаем основные свойства вью.
+        setupConstraints() //Устанавливаем констреинты.
+    }
+    
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented") //Инициализатор, запрещающий сториборды.
+    }
+    
+    //Настраиваем Вью:
+    func setViews() {
+        backgroundColor = UIColor(named: "BackgoundColor") //Задаем цвет из Ассетов.
+        addSubview(titleLabel) //Добавляем сабвью для лейбла
+        addSubview(circleWhiteView) //Добавляем сабвью для круга
+        addSubview(bagPicture) //Добавляем сабвью для сумки
+        addSubview(startButton)
+        addSubview(titleLabelAccount)
+        addSubview(arrowButton)
+    }
+    
+     internal func setupButtons(target: Any?, actionStartButton: Selector, actionArrowButton: Selector){
+        //print("setupButtons сработала")
+        startButton.addTarget(target, action: actionStartButton, for: .touchUpInside)
+        arrowButton.addTarget(target, action: actionArrowButton, for: .touchUpInside)
+    }
+    
     
 }
 
