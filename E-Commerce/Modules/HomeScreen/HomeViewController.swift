@@ -314,10 +314,11 @@ final class HomeViewController: UIViewController {
     
     @objc func openPopularButtonAction(_ button: UIButton) {
         let vc = ShopViewController()
-        vc.modalPresentationStyle = .fullScreen
         vc.products = popularProducts
-        vc.currency = currency
-        present(vc, animated: true)
+        vc.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(vc, animated: true)
+        navigationController?.isNavigationBarHidden = false
+        navigationItem.backButtonTitle = ""
     }
     
     @objc func openCartButtonAction(_ button: UIButton) {
@@ -335,10 +336,11 @@ final class HomeViewController: UIViewController {
                 let uniqueProducts = allProducts.filter { $0.category == selectedCategory }
                 
                 let vc = ShopViewController()
-                vc.modalPresentationStyle = .fullScreen
                 vc.products = uniqueProducts
-                vc.currency = currency
-                present(vc, animated: true)
+                vc.hidesBottomBarWhenPushed = true
+                navigationController?.pushViewController(vc, animated: true)
+                navigationController?.isNavigationBarHidden = false
+                navigationItem.backButtonTitle = ""
             }
             if collectionView == collectionPopularView {
                 let vc = DetailViewController()
