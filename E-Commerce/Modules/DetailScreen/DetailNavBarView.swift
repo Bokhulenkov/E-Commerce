@@ -9,7 +9,7 @@ import UIKit
 
 class DetailNavBarView: UIStackView {
     // MARK: - GUI Variables
-    private let likeButton: UIButton = {
+    lazy var likeButton: UIButton = {
         let button = UIButton()
         
         button.setImage(.heartRed, for: .normal)
