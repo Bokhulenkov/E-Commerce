@@ -117,19 +117,31 @@ class HomeProductViewCell: UICollectionViewCell {
         addButton.heightAnchor.constraint(equalToConstant: 31).isActive = true
     }
     
-    public func configure(_ image: String?, _ title: String, _ price: String, _ isFavorite: Bool) {
-        productTitle.text = "\(title)"
-        productPrice.text = "\(price)"
+    public func configure(_ product: ProductRealmModel) {
+        productTitle.text = "\(product.title)"
+        productPrice.text = "\(product.price)"
         
-        if let imageUrl = image, let url = URL(string: imageUrl) {
+        if let url = URL(string: product.image) {
             productImageView.kf.setImage(with: url)
             productImageView.layer.cornerRadius = 5
         }
         
-        let buttonImage = isFavorite ? UIImage.heartRedFull : UIImage.heartRed
+        let buttonImage = product.isFavorite ? UIImage.heartRedFull : UIImage.heartRed
         likeButton.setImage(buttonImage, for: .normal)
+        
+        updateCartCount(product.cartCount)
     }
     
+    public func updateCartCount(_ count: Int) {
+        if count > 0 {
+            addButton.setTitle("In the cart", for: .normal)
+            addButton.backgroundColor = .systemGreen
+        } else {
+            addButton.setTitle("Add to cart", for: .normal)
+            addButton.backgroundColor = UIColor(red: 0, green: 0.29, blue: 1, alpha: 1)
+        }
+    }
+        
     @objc private func addButtonTapped() {
         addButtonAction?()
     }

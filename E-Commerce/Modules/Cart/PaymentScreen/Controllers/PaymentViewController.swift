@@ -18,6 +18,8 @@ final class PaymentViewController: UIViewController {
     private let contactInfoView = AddressView()
     private let shippingOptionsView = ShippingOptionsView()
     private let paymentMethodView = PatView()
+    private let currencyManager = CurrencyManager()
+    private var currency: String = ""
     
     // MARK: - UI Elements
     private let titleLabel: UILabel = {
@@ -99,7 +101,7 @@ final class PaymentViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        
+        currency = currencyManager.getCurrency()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(PaymentItemCell.self, forCellReuseIdentifier: "PaymentCell")
@@ -272,12 +274,12 @@ final class PaymentViewController: UIViewController {
         cartCountLabel.text = "\(cartCount)"
         
         let totalPrice = cartView.calculateTotal()
-        totalLabel.text = String(format: "Total $%.2f", totalPrice)
+        totalLabel.text = String(format: "Total \(currency)%.2f", totalPrice)
     }
     
     private func updateTotalPrice(isExpress: Bool) {
             let finalTotal = isExpress ? cartView.calculateTotal() + 12.00 : cartView.calculateTotal()
-            totalLabel.text = String(format: "Total $%.2f", finalTotal)
+        totalLabel.text = String(format: "Total \(currency)%.2f", finalTotal)
         }
     
     private func showAddressInput() {
@@ -355,7 +357,7 @@ extension PaymentViewController: UITableViewDataSource {
         cell.configure(
             image: item.image,
             title: item.title,
-            price: item.price,
+            price: String(format: "\(currency)%.2f", item.price),
             quantity: item.cartCount
         )
         
