@@ -428,7 +428,7 @@ final class HomeViewController: UIViewController {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
                 cell.isUserInteractionEnabled = true
                 
-                cell.configure(justForYouProducts[indexPath.row])
+                cell.configure(justForYouProducts[indexPath.row], currency: currency)
                 cell.addButtonAction = {
                     var currentCount = self.justForYouProducts[indexPath.item].cartCount
                     currentCount += 1
