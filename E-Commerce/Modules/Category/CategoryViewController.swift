@@ -78,7 +78,7 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if data[section].isExpandable {
-            return data[section].subType.count
+            return 1
         }
         else {
             return 0
@@ -91,43 +91,16 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as? CategoryCell else {
-            return UITableViewCell()
-        }
-        cell.textLabel?.text = data[indexPath.section].subType[indexPath.row]
-        return cell
+                return UITableViewCell()
+            }
+            let subcategories = data[indexPath.section].subType
+            cell.configure(with: subcategories)
+            return cell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        let title = data[indexPath.section].headerName
-        
-        if let tabBarController = self.tabBarController as? TabBarViewController {
-            let products = tabBarController.allProducts
-            var productsCategorised:[ProductRealmModel] = []
-            
-            switch title {
-            case "Men":
-                productsCategorised = products.filter { $0.category == "men's clothing" }
-            case "Women":
-                productsCategorised = products.filter { $0.category == "women's clothing" }
-            case "Electronics":
-                productsCategorised = products.filter { $0.category == "electronics" }
-            case "Jewelry":
-                productsCategorised = products.filter { $0.category == "jewelery" }
-            default:
-                print("no category")
-            }
-            
-            let vc = ShopViewController()
-            vc.products = productsCategorised
-            vc.hidesBottomBarWhenPushed = true
-            navigationController?.pushViewController(vc, animated: true)
-            navigationController?.isNavigationBarHidden = false
-            navigationItem.backButtonTitle = ""
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+            return data[indexPath.section].isExpandable ? 350 : 0  
         }
-
-        tableView.deselectRow(at: indexPath, animated: true)
-    }
 }
 
 extension CategoryViewController: HeaderDelegate {
@@ -137,3 +110,5 @@ extension CategoryViewController: HeaderDelegate {
         tblView.reloadSections ([idx], with: .automatic)
     }
 }
+
+
