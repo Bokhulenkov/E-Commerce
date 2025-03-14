@@ -29,7 +29,7 @@ class AddressView: UIView {
     private lazy var editButton: UIButton = {
         let button = UIButton(type: .system)
         let pencilImage = UIImage(systemName: "pencil")
-        let config = UIImage.SymbolConfiguration(weight: .heavy) // Make the icon bolder
+        let config = UIImage.SymbolConfiguration(weight: .heavy)
         button.setImage(pencilImage?.withConfiguration(config), for: .normal)
         button.tintColor = .white
         button.backgroundColor = UIColor(named: "ButtonColor")

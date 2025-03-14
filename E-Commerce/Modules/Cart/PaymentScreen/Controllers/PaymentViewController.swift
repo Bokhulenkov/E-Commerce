@@ -80,7 +80,7 @@ final class PaymentViewController: UIViewController {
     
     private let totalLabel: UILabel = {
         let label = UILabel()
-        label.text = "Total $00.00"
+        //   label.text = "Total $00.00"
         label.font = UIFont.custom(font: .ralewaySemiBold, size: 20)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -102,6 +102,10 @@ final class PaymentViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         currency = currencyManager.getCurrency()
+        NotificationCenter.default.post(name: .currencyDidChange, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(currencyDidChange), name: .currencyDidChange, object: nil)
+        
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(PaymentItemCell.self, forCellReuseIdentifier: "PaymentCell")
@@ -116,19 +120,27 @@ final class PaymentViewController: UIViewController {
         addVoucherButton.addTarget(self, action: #selector(addVoucherTapped), for: .touchUpInside)
         
         shippingOptionsView.onShippingOptionChanged = { [weak self] isExpress in
-                    self?.updateTotalPrice(isExpress: isExpress)
-                }
+            self?.updateTotalPrice(isExpress: isExpress)
+        }
     }
     
     // MARK: - Private Methods
     private func updateTableViewHeight() {
         tableView.layoutIfNeeded()
         let height = tableView.contentSize.height
-        print("TableView height: \(height)")
         tableViewHeightConstraint?.constant = height
     }
     
     private func setupUI() {
+        shippingOptionsView.configureOptions(
+            standardTitle: "Standard",
+            standardDelivery: "5-7 days",
+            standardPrice: "FREE",
+            expressTitle: "Express",
+            expressDelivery: "1-2 days",
+            expressPrice: "\(currency)12.00"
+        )
+        
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -239,7 +251,7 @@ final class PaymentViewController: UIViewController {
         
         tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 0)
         tableViewHeightConstraint?.isActive = true
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 30, right: 0)
     }
     
     // MARK: - Action Methods
@@ -275,12 +287,30 @@ final class PaymentViewController: UIViewController {
         
         let totalPrice = cartView.calculateTotal()
         totalLabel.text = String(format: "Total \(currency)%.2f", totalPrice)
+        
+        
+    }
+    
+    @objc private func currencyDidChange() {
+        currency = currencyManager.getCurrency()
+        updateCartInfo()
+        
+        shippingOptionsView.configureOptions(
+            standardTitle: "Standard",
+            standardDelivery: "5-7 days",
+            standardPrice: "FREE",
+            expressTitle: "Express",
+            expressDelivery: "1-2 days",
+            expressPrice: "\(currency)12.00"
+        )
+        
+        tableView.reloadData()
     }
     
     private func updateTotalPrice(isExpress: Bool) {
-            let finalTotal = isExpress ? cartView.calculateTotal() + 12.00 : cartView.calculateTotal()
+        let finalTotal = isExpress ? cartView.calculateTotal() + 12.00 : cartView.calculateTotal()
         totalLabel.text = String(format: "Total \(currency)%.2f", finalTotal)
-        }
+    }
     
     private func showAddressInput() {
         let alert = UIAlertController(title: "Edit Address", message: nil, preferredStyle: .alert)
