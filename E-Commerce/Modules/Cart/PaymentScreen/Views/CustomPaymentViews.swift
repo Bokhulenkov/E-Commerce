@@ -10,6 +10,7 @@ import UIKit
 // MARK: - ShippingOptionsView
 
 class ShippingOptionsView: UIView {
+
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Shipping Options"
@@ -18,8 +19,8 @@ class ShippingOptionsView: UIView {
         return label
     }()
 
-    private let standardOptionView = ShippingOptionView(title: "Standard", deliveryTime: "5-7 days", price: "FREE")
-    private let expressOptionView = ShippingOptionView(title: "Express", deliveryTime: "1-2 days", price: "$12.00")
+    private let standardOptionView = ShippingOptionView()
+    private let expressOptionView = ShippingOptionView()
     private let deliveryDateLabel: UILabel = {
         let label = UILabel()
         label.text = "Delivered on or before Thursday, 23 April 2020"
@@ -85,15 +86,14 @@ class ShippingOptionsView: UIView {
     }
 
     // MARK: - Private Methods
-
-//    private func selectOption(_ option: ShippingOptionView) {
-//        selectedOption?.isSelected = false
-//        option.isSelected = true
-//        selectedOption = option
-//
-//        deliveryDateLabel.text = option === expressOptionView ?
-//            "Delivered on or before Monday, 13 April 2020" : "Delivered on or before Thursday, 23 April 2020"
-//    }
+    
+    func configureOptions(standardTitle: String, standardDelivery: String, standardPrice: String,
+                          expressTitle: String, expressDelivery: String, expressPrice: String) {
+        standardOptionView.update(title: standardTitle, deliveryTime: standardDelivery, price: standardPrice)
+        expressOptionView.update(title: expressTitle, deliveryTime: expressDelivery, price: expressPrice)
+        selectOption(standardOptionView)
+        setupUI()
+    }
     
     private func selectOption(_ option: ShippingOptionView) {
             selectedOption?.isSelected = false
@@ -104,12 +104,14 @@ class ShippingOptionsView: UIView {
             deliveryDateLabel.text = isExpress ?
                 "Delivered on or before Monday, 13 April 2020" : "Delivered on or before Thursday, 23 April 2020"
 
-            onShippingOptionChanged?(isExpress) // Сообщаем контроллеру об изменении опции
+            onShippingOptionChanged?(isExpress)
         }
 
     func getSelectedOption() -> String {
         return selectedOption === standardOptionView ? "Standard" : "Express"
     }
+    
+    
 }
 
 // MARK: - ShippingOptionView
@@ -159,14 +161,10 @@ class ShippingOptionView: UIView {
 
     // MARK: - Initializer
 
-    init(title: String, deliveryTime: String, price: String) {
-        super.init(frame: .zero)
-        translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.text = title
-        deliveryTimeLabel.text = deliveryTime
-        priceLabel.text = price
-        setupUI()
-    }
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+            setupUI()
+        }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -175,6 +173,7 @@ class ShippingOptionView: UIView {
     // MARK: - Setup UI
 
     private func setupUI() {
+        layer.cornerRadius = 10
         translatesAutoresizingMaskIntoConstraints = false
         addSubview(checkmarkImageView)
         addSubview(titleLabel)
@@ -196,6 +195,15 @@ class ShippingOptionView: UIView {
             priceLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12)
         ])
     }
+    
+        // MARK: - Update Method
+    
+    func update(title: String, deliveryTime: String, price: String) {
+            titleLabel.text = title
+            deliveryTimeLabel.text = deliveryTime
+            priceLabel.text = price
+            setupUI()
+        }
 }
 
 class PatView: UIView {
