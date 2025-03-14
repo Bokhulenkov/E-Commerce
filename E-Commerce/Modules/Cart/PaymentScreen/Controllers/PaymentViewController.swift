@@ -20,6 +20,7 @@ final class PaymentViewController: UIViewController {
     private let paymentMethodView = PatView()
     private let currencyManager = CurrencyManager()
     private var currency: String = ""
+    var selectedProduct: ProductRealmModel?
     
     // MARK: - UI Elements
     private let titleLabel: UILabel = {
@@ -255,8 +256,12 @@ final class PaymentViewController: UIViewController {
     
     // MARK: - Action Methods
     private func dismissAndReturnToCart() {
-        dismiss(animated: true, completion: nil)
-        cartView.removeAll()
+        if let product = selectedProduct {
+            dismiss(animated: true, completion: nil)
+        } else {
+            dismiss(animated: true, completion: nil)
+            cartView.removeAll()
+        }
     }
     
     @objc private func addVoucherTapped() {
@@ -280,14 +285,18 @@ final class PaymentViewController: UIViewController {
     }
     
     private func updateCartInfo() {
-        
-        let cartCount = cartView.calculateCartCount()
-        cartCountLabel.text = "\(cartCount)"
-        
-        let totalPrice = cartView.calculateTotal()
-        totalLabel.text = String(format: "Total \(currency)%.2f", totalPrice)
-        
-        
+        if let product = selectedProduct {
+            
+            cartCountLabel.text = "1" // Only 1 product
+            totalLabel.text = String(format: "Total \(currency)%.2f", product.price)
+        } else {
+            
+            let cartCount = cartView.calculateCartCount()
+            cartCountLabel.text = "\(cartCount)"
+            
+            let totalPrice = cartView.calculateTotal()
+            totalLabel.text = String(format: "Total \(currency)%.2f", totalPrice)
+        }
     }
     
     @objc private func currencyDidChange() {
@@ -307,8 +316,13 @@ final class PaymentViewController: UIViewController {
     }
     
     private func updateTotalPrice(isExpress: Bool) {
-        let finalTotal = isExpress ? cartView.calculateTotal() + 12.00 : cartView.calculateTotal()
-        totalLabel.text = String(format: "Total \(currency)%.2f", finalTotal)
+        if let product = selectedProduct {
+            let finalTotal = isExpress ? product.price + 12.00 : product.price
+            totalLabel.text = String(format: "Total \(currency)%.2f", finalTotal)
+        } else {
+            let finalTotal = isExpress ? cartView.calculateTotal() + 12.00 : cartView.calculateTotal()
+            totalLabel.text = String(format: "Total \(currency)%.2f", finalTotal)
+        }
     }
     
     private func showAddressInput() {
@@ -375,24 +389,49 @@ final class PaymentViewController: UIViewController {
 extension PaymentViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return cartView.getItems().count
-        
-    }
+        if let _ = selectedProduct {
+                    return 1
+                } else {
+                    return cartView.getItems().count
+                }
+            }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PaymentCell", for: indexPath) as! PaymentItemCell
-        let item = cartView.getItems()[indexPath.row]
-        print(cartView.getItems()[indexPath.row].title)
-        cell.configure(
-            image: item.image,
-            title: item.title,
-            price: String(format: "\(currency)%.2f", item.price),
-            quantity: item.cartCount
-        )
-        
-        return cell
-    }
-}
+//        let item = cartView.getItems()[indexPath.row]
+//        print(cartView.getItems()[indexPath.row].title)
+//        cell.configure(
+//            image: item.image,
+//            title: item.title,
+//            price: String(format: "\(currency)%.2f", item.price),
+//            quantity: item.cartCount
+//        )
+//        
+//        return cell
+//    }
+//}
+        if let product = selectedProduct {
+                    
+                    cell.configure(
+                        image: product.image,
+                        title: product.title,
+                        price: String(format: "\(currency)%.2f", product.price),
+                        quantity: 1 // Only 1 quantity for selected product
+                    )
+                } else {
+                   
+                    let item = cartView.getItems()[indexPath.row]
+                    cell.configure(
+                        image: item.image,
+                        title: item.title,
+                        price: String(format: "\(currency)%.2f", item.price),
+                        quantity: item.cartCount
+                    )
+                }
+                
+                return cell
+            }
+        }
 
 extension PaymentViewController: UITableViewDelegate {
     // Implement delegate methods if needed

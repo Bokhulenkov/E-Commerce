@@ -208,7 +208,8 @@ final class DetailViewController: UIViewController {
     }
     
     @objc private func buyNowAction(_ button: UIButton) {
-       let paymentVC = PaymentViewController()
+        let paymentVC = PaymentViewController()
+        paymentVC.selectedProduct = currentProduct
         navigationController?.present(paymentVC, animated: true)
     }
     
