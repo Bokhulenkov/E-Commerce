@@ -9,6 +9,7 @@ import UIKit
 
 final class SettingsViewController: UIViewController {
     
+    private var currentUID: String = ""
     private var currentName: String = ""
     private var currentEmail: String = ""
     private var currentPass: String = ""
@@ -140,14 +141,28 @@ final class SettingsViewController: UIViewController {
 
         FirebaseService.shared.getCurrentUser() { result in
             if let user = result {
-                let uid = user.uid
+                self.currentUID = user.uid
                 self.currentEmail = user.email ?? ""
                 self.currentName = user.displayName ?? ""
                 self.setupData(userData: ["name": "\(self.currentName)", "email": "\(self.currentEmail)", "password": ""])
+                
+                FirebaseService.shared.getUserData(userId: user.uid) { result in
+                    switch result {
+                    case .success(let data):
+                        if let photo = data["photo"] as? String {
+                            print("Фото пользователя: \(photo)")
+                            DispatchQueue.main.async {
+                                self.avatarImageView.image = photo.toImage()
+                            }
+                        } else {
+                            print("Фото отсутствует или не является строкой")
+                        }
+                    case .failure(let error):
+                        print("Ошибка при получении данных: \(error.localizedDescription)")
+                    }
+                }
             }
         }
-        
-        loadAvatar()
     }
 
     private func configureUI() {
@@ -255,33 +270,6 @@ final class SettingsViewController: UIViewController {
         
         present(alert, animated: true, completion: nil)
     }
-
-    private func saveAvatar(image: UIImage) {
-        if let data = image.jpegData(compressionQuality: 0.75) {
-            let fileManager = FileManager.default
-            let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-            if let documentDirectory = urls.first {
-                let fileURL = documentDirectory.appendingPathComponent("avatar.jpg")
-                do {
-                    try data.write(to: fileURL)
-                    print("Аватар успешно сохранён")
-                } catch {
-                    print("Ошибка сохранения аватара: \(error)")
-                }
-            }
-        }
-    }
-    
-    private func loadAvatar() {
-        let fileManager = FileManager.default
-        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-        if let documentDirectory = urls.first {
-            let fileURL = documentDirectory.appendingPathComponent("avatar.jpg")
-            if let imageData = try? Data(contentsOf: fileURL), let image = UIImage(data: imageData) {
-                avatarImageView.image = image
-            }
-        }
-    }
     
     //MARK: Action
     
@@ -375,7 +363,10 @@ extension SettingsViewController: UIImagePickerControllerDelegate, UINavigationC
         }
         
         avatarImageView.image = selectedImage
-        saveAvatar(image: selectedImage)
+        
+        FirebaseService.shared.saveUserData(userId: "\(self.currentUID)", userData: ["photo": selectedImage.toBase64() as Any]) { result in
+            print("Фото успешно сохранено")
+        }
         
         dismiss(animated: true, completion: nil)
     }
