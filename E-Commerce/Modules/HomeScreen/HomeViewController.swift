@@ -436,6 +436,9 @@ final class HomeViewController: UIViewController {
                     self.setCountCart()
                     cell.updateCartCount(currentCount)
                 }
+                cell.updateCartAction = {
+                    self.setCountCart()
+                }
                 
                 cell.likeButtonAction = { liked in
                     self.storageService.setFavorite(productId: self.justForYouProducts[indexPath.item].id, isFavorite: liked)
