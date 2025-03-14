@@ -192,7 +192,12 @@ final class HomeViewController: UIViewController {
         
         currencyManager.saveCurrency(currency)
         NotificationCenter.default.post(name: .currencyDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateFavoriteProducts(_:)), name: .updateFavoriteProducts, object: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setCountCart()
+        setFavoriteProducts()
     }
     
     // текст филд не активен,если не пользуемся, надо доработать
@@ -289,7 +294,7 @@ final class HomeViewController: UIViewController {
         cartCount = storageService.getCartCountProducts()
     }
     
-    @objc private func updateFavoriteProducts(_ notification: Notification) {
+    private func setFavoriteProducts() {
         allProducts = storageService.getAllProducts()
         
         justForYouProducts = justForYouProducts.map { product in

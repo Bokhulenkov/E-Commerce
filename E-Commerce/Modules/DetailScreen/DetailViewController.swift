@@ -189,7 +189,6 @@ final class DetailViewController: UIViewController {
         isFavorite.toggle()
         
         storageService.setFavorite(productId: currentProduct?.id ?? 0, isFavorite: isFavorite)
-        NotificationCenter.default.post(name: .updateFavoriteProducts, object: nil, userInfo: nil)
         
         updateLikeButtons()
     }
