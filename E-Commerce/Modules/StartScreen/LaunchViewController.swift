@@ -44,7 +44,7 @@ final class LaunchViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupUI()
-        
+        loadDatabase()
         checkUserAuthentication()
     }
     
@@ -69,6 +69,15 @@ final class LaunchViewController: UIViewController {
             case .failure(let error):
                 print("Ошибка загрузки данных: \(error.localizedDescription)")
             }
+        }
+    }
+    
+    private func loadDatabase() {
+        let products = StorageService.shared.getAllProducts()
+        if products.isEmpty {
+            print("База данных пуста")
+        } else {
+            print("Данные загружены из Realm")
         }
     }
     
