@@ -225,11 +225,18 @@ extension WishlistViewController: UITextFieldDelegate {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
         view.addGestureRecognizer(tapGesture)
+        
+        searchTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        searchedText = textField.text?.lowercased() ?? ""
+        doSearch(textField.text)
+        return true
+    }
+    
+    private func doSearch(_ text: String?) {
+        searchedText = text?.lowercased() ?? ""
         
         if searchedText.isEmpty {
             products = storageService.getAllFavoriteProducts()
@@ -240,8 +247,10 @@ extension WishlistViewController: UITextFieldDelegate {
         }
         
         collectionView.reloadData()
-        
-        return true
+    }
+    
+    @objc private func textFieldDidChange(_ textField: UITextField) {
+        doSearch(textField.text)
     }
     
     @objc private func dismissKeyboard() {
