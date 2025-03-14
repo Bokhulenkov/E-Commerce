@@ -80,7 +80,6 @@ final class PaymentViewController: UIViewController {
     
     private let totalLabel: UILabel = {
         let label = UILabel()
-        //   label.text = "Total $00.00"
         label.font = UIFont.custom(font: .ralewaySemiBold, size: 20)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -174,7 +173,7 @@ final class PaymentViewController: UIViewController {
         }
         
         contactInfoView.onEditTapped = { [weak self] in
-            self?.showPaymentMethodSelection()
+            self?.showContactInfoInput()
         }
         
         paymentMethodView.onEditTapped = { [weak self] in
