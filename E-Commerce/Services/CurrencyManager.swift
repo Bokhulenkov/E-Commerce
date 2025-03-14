@@ -23,5 +23,4 @@ class CurrencyManager {
 
 extension Notification.Name {
     static let currencyDidChange = Notification.Name("currencyDidChange")
-    static let updateFavoriteProducts = Notification.Name("updateFavoriteProducts")
 }

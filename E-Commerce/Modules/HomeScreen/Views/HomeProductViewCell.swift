@@ -12,6 +12,8 @@ class HomeProductViewCell: UICollectionViewCell {
     
     var addButtonAction: (() -> Void)?
     var likeButtonAction: ((Bool) -> Void)?
+    var updateCartAction: (() -> Void)?
+    private var product: ProductRealmModel?
 
     private let addButton: UIButton = {
         let button = UIButton()
@@ -65,10 +67,36 @@ class HomeProductViewCell: UICollectionViewCell {
         return button
     }()
     
+    private let minusButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "minus"), for: .normal)
+        button.tintColor = .white
+        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderWidth = 1
+        button.backgroundColor = .clear
+        button.layer.cornerRadius = 11
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private let plusButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "plus"), for: .normal)
+        button.tintColor = .white
+        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderWidth = 1
+        button.backgroundColor = .clear
+        button.layer.cornerRadius = 11
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
+        minusButton.addTarget(self, action: #selector(changeCountButtonTapped), for: .touchUpInside)
+        plusButton.addTarget(self, action: #selector(changeCountButtonTapped), for: .touchUpInside)
         configureCell()
     }
         
@@ -115,9 +143,23 @@ class HomeProductViewCell: UICollectionViewCell {
         addButton.leftAnchor.constraint(equalTo: leftAnchor, constant: 0).isActive = true
         addButton.rightAnchor.constraint(equalTo: rightAnchor, constant: 0).isActive = true
         addButton.heightAnchor.constraint(equalToConstant: 31).isActive = true
+        
+        addSubview(minusButton)
+        minusButton.centerYAnchor.constraint(equalTo: addButton.centerYAnchor, constant: 0).isActive = true
+        minusButton.leftAnchor.constraint(equalTo: addButton.leftAnchor, constant: 16).isActive = true
+        minusButton.widthAnchor.constraint(equalToConstant: 22).isActive = true
+        minusButton.heightAnchor.constraint(equalToConstant: 22).isActive = true
+        
+        addSubview(plusButton)
+        plusButton.centerYAnchor.constraint(equalTo: addButton.centerYAnchor, constant: 0).isActive = true
+        plusButton.rightAnchor.constraint(equalTo: addButton.rightAnchor, constant: -16).isActive = true
+        plusButton.widthAnchor.constraint(equalToConstant: 22).isActive = true
+        plusButton.heightAnchor.constraint(equalToConstant: 22).isActive = true
     }
     
     public func configure(_ product: ProductRealmModel, currency: String) {
+        self.product = product
+        
         productTitle.text = "\(product.title)"
         productPrice.text = "\(currency)\(product.price)"
         
@@ -134,9 +176,15 @@ class HomeProductViewCell: UICollectionViewCell {
     
     public func updateCartCount(_ count: Int) {
         if count > 0 {
-            addButton.setTitle("In the cart", for: .normal)
-            addButton.backgroundColor = .systemGreen
+            minusButton.isHidden = false
+            plusButton.isHidden = false
+            addButton.isEnabled = false
+            addButton.setTitle("\(count)", for: .normal)
+            addButton.backgroundColor = UIColor.systemGreen
         } else {
+            minusButton.isHidden = true
+            plusButton.isHidden = true
+            addButton.isEnabled = true
             addButton.setTitle("Add to cart", for: .normal)
             addButton.backgroundColor = UIColor(red: 0, green: 0.29, blue: 1, alpha: 1)
         }
@@ -149,5 +197,18 @@ class HomeProductViewCell: UICollectionViewCell {
     @objc private func likeButtonTapped() {
         likeButtonAction?(likeButton.currentImage == .heartRed)
         likeButton.currentImage == .heartRed ? likeButton.setImage(.heartRedFull, for: .normal) : likeButton.setImage(.heartRed, for: .normal)
+    }
+    
+    @objc private func changeCountButtonTapped(_ sender: UIButton) {
+        if sender == minusButton {
+            StorageService.shared.setCart(productId: product?.id ?? 0, cartCount: (product?.cartCount ?? 0) - 1)
+        } else {
+            StorageService.shared.setCart(productId: product?.id ?? 0, cartCount: (product?.cartCount ?? 0) + 1)
+        }
+        
+        updateCartAction?()
+        updateCartCount(product?.cartCount ?? 0)
+        
+        NotificationCenter.default.post(name: NSNotification.Name("UpdateCart"), object: nil, userInfo: nil)
     }
 }

@@ -28,8 +28,71 @@ final class FirebaseService {
         }
     }
     
-    func getCurrentUser() -> User? {
-        return auth.currentUser
+    func createUser(email: String, password: String, completion: @escaping (Result<User, Error>) -> Void) {
+        auth.createUser(withEmail: email, password: password) { [weak self] authResult, error in
+            guard let strongSelf = self else { return }
+            if let error = error {
+                completion(.failure(error))
+            } else if let user = authResult?.user {
+                completion(.success(user))
+            }
+        }
+    }
+    
+    func authUser(email: String, password: String, completion: @escaping (Result<User, Error>) -> Void) {
+        auth.signIn(withEmail: email, password: password) { authResult, error in
+            if let error = error {
+                completion(.failure(error))
+            } else if let user = authResult?.user {
+                completion(.success(user))
+            }
+        }
+    }
+    
+    func updatePassword(newPassword: String, completion: @escaping (Error?) -> Void) {
+        if let user = Auth.auth().currentUser {
+            user.updatePassword(to: newPassword) { error in
+                completion(error)
+            }
+        } else {
+            completion(NSError(domain: "Firebase", code: 401, userInfo: [NSLocalizedDescriptionKey: "Пользователь не авторизован"]))
+        }
+    }
+    
+    func updateEmail(newEmail: String, completion: @escaping (Error?) -> Void) {
+        if let user = Auth.auth().currentUser {
+            user.updateEmail(to: newEmail) { error in
+                completion(error)
+            }
+        } else {
+            completion(NSError(domain: "Firebase", code: 401, userInfo: [NSLocalizedDescriptionKey: "Пользователь не авторизован"]))
+        }
+    }
+    
+    func updateDisplayName(newName: String, completion: @escaping (Error?) -> Void) {
+        if let user = Auth.auth().currentUser {
+            let changeRequest = user.createProfileChangeRequest()
+            changeRequest.displayName = newName
+            changeRequest.commitChanges { error in
+                completion(error)
+            }
+        } else {
+            completion(NSError(domain: "Firebase", code: 401, userInfo: [NSLocalizedDescriptionKey: "Пользователь не авторизован"]))
+        }
+    }
+
+    func signOut(completion: @escaping (Error?) -> Void) {
+        do {
+            try Auth.auth().signOut()
+            completion(nil)
+        } catch let error {
+            completion(error)
+        }
+    }
+
+    func getCurrentUser(completion: @escaping (User?) -> Void) {
+        let user = Auth.auth().currentUser
+        completion(user)
     }
     
     // MARK: - Firestore Database

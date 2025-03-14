@@ -105,7 +105,7 @@ class CreateAccountView: UIView {
         return button
     }()
     
-
+    
     private lazy var cancelButton: UIButton = {
         let button = UIButton()
         button.setTitle("Cancel", for: .normal)
@@ -121,6 +121,9 @@ class CreateAccountView: UIView {
         super.init(frame: frame)
         setViews()
         setupConstraints()
+        
+        emailTextField.delegate = self
+        passwordTextField.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -140,6 +143,14 @@ class CreateAccountView: UIView {
         addSubview(cancelButton)
     }
     
+    internal func setupButtons(target: Any?, actionDoneButton: Selector, actionCancelButton: Selector){
+        doneButton.addTarget(target, action: actionDoneButton, for: .touchUpInside)
+        cancelButton.addTarget(target, action: actionCancelButton, for: .touchUpInside)
+    }
+    
+    public func getUserEmailPass() -> (email: String?, password: String?){
+        return (emailTextField.text, passwordTextField.text)
+    }
 }
 
 
@@ -152,8 +163,12 @@ extension CreateAccountView {
         NSLayoutConstraint.activate([
             
             //Bubble View:
-            bubbleImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            bubbleImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
+            bubbleImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
             bubbleImageView.topAnchor.constraint(equalTo: topAnchor, constant: 0),
+            
+            
+            
             
             //Create Label:
             createLabel.topAnchor.constraint(equalTo: topAnchor, constant: 110),
@@ -210,7 +225,9 @@ extension CreateAccountView {
 }
 
 
-
-
-
-
+extension CreateAccountView: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+}

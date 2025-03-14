@@ -30,7 +30,7 @@ final class StartScreenViewController: UIViewController {
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true, completion: nil)
     }
-
+    
     @objc private func arrowButtonTapped() {
         //print("Кнопка Со стрелкой нажата!")
         let vc = LoginViewController()
@@ -39,8 +39,8 @@ final class StartScreenViewController: UIViewController {
     }
     
     
-override func viewDidLoad() {
-    super.viewDidLoad()
-}
-
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
 }

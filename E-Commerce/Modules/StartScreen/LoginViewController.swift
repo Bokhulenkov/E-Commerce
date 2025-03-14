@@ -8,23 +8,60 @@
 import UIKit
 
 class LoginViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .green
-
-        // Do any additional setup after loading the view.
+    
+    //    MARK: - Properties
+    
+    private let loginView = LoginView()
+    
+    
+    //    MARK: - LifeCycle
+    override func loadView() {
+        view = loginView
+        loginView.setupButtons(target: self,
+                               actionNextButton:  #selector(nextButtonTapped),
+                               actionCancelButton:  #selector(cancelButtonTapped))
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    @objc private func nextButtonTapped() {
+        print("Кнопка Next нажата!")
+        
+        let userData = loginView.getUserEmailPass()
+        if userData.email != nil && userData.password != nil {
+            FirebaseService.shared.authUser(email: userData.email!, password: userData.password!) {  result in
+                switch result {
+                case .success(let user):
+                    print("user: \(user.uid)")
+                    self.setNextController()
+                case .failure(let error):
+                    print("Ошибка авторизации: \(error.localizedDescription)")
+                    self.showErrorAlert(error.localizedDescription)
+                }
+            }
+        }
     }
-    */
-
+    
+    @objc private func cancelButtonTapped() {
+        print("Кнопка Cancel нажата!")
+        let vc = StartScreenViewController()
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true, completion: nil)
+    }
+    
+    private func showErrorAlert(_ error: String) {
+        let alert = UIAlertController(title: "Error", message: "\(error)", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alert.addAction(okAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func setNextController() {
+        let vc = TabBarViewController()
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true, completion: nil)
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
 }
