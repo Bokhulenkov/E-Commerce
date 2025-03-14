@@ -79,10 +79,12 @@ class CartItemCell: UITableViewCell {
     // MARK: - UI Setup
     
     private func setupUI() {
-        [itemImageView, titleLabel, sizeLabel, priceLabel, deleteButton, minusButton, counterContainerView, plusButton,shadowContainerView].forEach {
+        [shadowContainerView, titleLabel, sizeLabel, priceLabel, deleteButton, minusButton, counterContainerView, plusButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview($0)
+            
             shadowContainerView.addSubview(itemImageView)
+            itemImageView.translatesAutoresizingMaskIntoConstraints = false
         }
         
         itemImageView.contentMode = .scaleAspectFit
@@ -154,25 +156,21 @@ class CartItemCell: UITableViewCell {
             itemImageView.centerYAnchor.constraint(equalTo: shadowContainerView.centerYAnchor),
             itemImageView.widthAnchor.constraint(equalToConstant: 90),
             itemImageView.heightAnchor.constraint(equalToConstant: 90),
-            //            itemImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            //            itemImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            //            itemImageView.widthAnchor.constraint(equalToConstant: 90),
-            //            itemImageView.heightAnchor.constraint(equalToConstant: 90),
             
-            deleteButton.leadingAnchor.constraint(equalTo: itemImageView.leadingAnchor, constant: 5),
-            deleteButton.bottomAnchor.constraint(equalTo: itemImageView.bottomAnchor, constant: -5),
+            deleteButton.leadingAnchor.constraint(equalTo: shadowContainerView.leadingAnchor, constant: 5),
+            deleteButton.bottomAnchor.constraint(equalTo: shadowContainerView.bottomAnchor, constant: -5),
             deleteButton.widthAnchor.constraint(equalToConstant: 30),
             deleteButton.heightAnchor.constraint(equalToConstant: 30),
             
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            titleLabel.leadingAnchor.constraint(equalTo: itemImageView.trailingAnchor, constant: 16),
+            titleLabel.leadingAnchor.constraint(equalTo: shadowContainerView.trailingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
             sizeLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
-            sizeLabel.leadingAnchor.constraint(equalTo: itemImageView.trailingAnchor, constant: 16),
+            sizeLabel.leadingAnchor.constraint(equalTo: shadowContainerView.trailingAnchor, constant: 16),
             sizeLabel.trailingAnchor.constraint(lessThanOrEqualTo: plusButton.leadingAnchor, constant: -16),
             
-            priceLabel.leadingAnchor.constraint(equalTo: itemImageView.trailingAnchor, constant: 16),
+            priceLabel.leadingAnchor.constraint(equalTo: shadowContainerView.trailingAnchor, constant: 16),
             priceLabel.trailingAnchor.constraint(lessThanOrEqualTo: plusButton.leadingAnchor, constant: -16),
             priceLabel.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -16),
             
