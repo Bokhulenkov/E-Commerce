@@ -9,6 +9,7 @@ import RealmSwift
 import Foundation
 
 final class StorageService {
+    static let shared = StorageService()
     private var realm: Realm
     private let config = Realm.Configuration(
         schemaVersion: 2,

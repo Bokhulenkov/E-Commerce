@@ -24,9 +24,20 @@ class CreateAccountViewController: UIViewController {
     
     @objc private func doneButtonTapped() {
         print("Кнопка Done нажата!")
-        let vc = OnboardingViewController()
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true, completion: nil)
+        let userData = createAccountView.getUserEmailPass()
+        
+        if userData.email != nil && userData.password != nil {
+            FirebaseService.shared.createUser(email: userData.email!, password: userData.password!) {  result in
+                switch result {
+                case .success(let user):
+                    print("user: \(user.uid)")
+                    self.setOnboarding()
+                case .failure(let error):
+                    print("Ошибка авторизации: \(error.localizedDescription)")
+                    self.showErrorAlert(error.localizedDescription)
+                }
+            }
+        }
     }
     
     @objc private func cancelButtonTapped() {
@@ -36,6 +47,19 @@ class CreateAccountViewController: UIViewController {
         present(vc, animated: true, completion: nil)
     }
     
+    private func showErrorAlert(_ error: String) {
+        let alert = UIAlertController(title: "Error", message: "\(error)", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alert.addAction(okAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func setOnboarding() {
+        let vc = OnboardingViewController()
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true, completion: nil)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
