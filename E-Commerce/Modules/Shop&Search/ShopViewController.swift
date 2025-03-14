@@ -151,21 +151,21 @@ private extension ShopViewController {
         view.backgroundColor = .white
         
         view.addSubview(closeButton)
-        closeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15).isActive = true
-        closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -5).isActive = true
+        closeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -21).isActive = true
+        closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5).isActive = true
         closeButton.heightAnchor.constraint(equalToConstant: 15).isActive = true
         closeButton.widthAnchor.constraint(equalToConstant: 15).isActive = true
         
         view.addSubview(shopTitle)
         shopTitle.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 21).isActive = true
-        shopTitle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        shopTitle.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 10).isActive = true
         shopTitle.heightAnchor.constraint(equalToConstant: 36).isActive = true
         shopTitle.widthAnchor.constraint(equalToConstant: 70).isActive = true
         
         view.addSubview(searchTextField)
         searchTextField.leftAnchor.constraint(equalTo: shopTitle.rightAnchor, constant: 19).isActive = true
         searchTextField.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -21).isActive = true
-        searchTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,constant: 20).isActive = true
+        searchTextField.topAnchor.constraint(equalTo: shopTitle.topAnchor,constant: 0).isActive = true
         searchTextField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
         view.addSubview(collectionProductsView)
@@ -261,7 +261,7 @@ extension ShopViewController: UICollectionViewDataSource {
             }
             
             cell.likeButtonAction = { liked in
-                self.storageService.setFavorite(productId: self.products[indexPath.item].id, isFavorite: liked)
+                self.storageService.setFavorite(productId: product.id, isFavorite: liked)
                 print("like state \(liked) for \(product.title)")
             }
             
