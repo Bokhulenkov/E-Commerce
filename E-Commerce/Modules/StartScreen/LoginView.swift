@@ -129,6 +129,8 @@ class LoginView: UIView {
         super.init(frame: frame)
         setViews()
         setupConstraints()
+        emailTextField.delegate = self
+        passwordTextField.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -154,7 +156,9 @@ class LoginView: UIView {
         cancelButton.addTarget(target, action: actionCancelButton, for: .touchUpInside)
     }
     
-    
+    public func getUserEmailPass() -> (email: String?, password: String?){
+        return (emailTextField.text, passwordTextField.text)
+    }
 }
 
 
@@ -221,8 +225,9 @@ extension LoginView {
     }
 }
 
-
-
-
-
-
+extension LoginView: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+}

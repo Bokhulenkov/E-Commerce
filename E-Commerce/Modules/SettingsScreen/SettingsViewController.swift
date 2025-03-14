@@ -9,7 +9,10 @@ import UIKit
 
 final class SettingsViewController: UIViewController {
     
-    private var userID: String? = nil
+    private var currentName: String = ""
+    private var currentEmail: String = ""
+    private var currentPass: String = ""
+
     private let settingsTitle: UILabel = {
         let label = UILabel()
         label.text = "Settings"
@@ -45,7 +48,7 @@ final class SettingsViewController: UIViewController {
     
     private let avatarImageView: UIImageView = {
         let view = UIImageView()
-        view.image = .productTest
+        view.image = nil
         view.contentMode = .scaleAspectFit
         view.layer.cornerRadius = 46
         view.clipsToBounds = true
@@ -112,6 +115,17 @@ final class SettingsViewController: UIViewController {
         return button
     }()
     
+    private let signOutButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Sign Out", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 12, weight: .regular)
+        button.layer.cornerRadius = 9
+        button.backgroundColor = UIColor.systemRed
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
@@ -122,24 +136,18 @@ final class SettingsViewController: UIViewController {
         
         saveButton.addTarget(self, action: #selector(saveChangesButtonAction(_:)), for: .touchUpInside)
         changeAvatarButton.addTarget(self, action: #selector(changeAvatarButtonAction(_:)), for: .touchUpInside)
-        
-        FirebaseService.shared.signIn() { result in
-            switch result {
-            case .success(let user):
-                self.userID = user.uid
-                FirebaseService.shared.getUserData(userId: user.uid) { result in
-                    switch result {
-                    case .success(let data):
-                        self.setupData(userData: data)
-                    case .failure(let error):
-                        print("Ошибка получения даных: \(error.localizedDescription)")
-                    }
-                }
-                
-            case .failure(let error):
-                print("Ошибка авторизации: \(error.localizedDescription)")
+        signOutButton.addTarget(self, action: #selector(signOutButtonAction(_:)), for: .touchUpInside)
+
+        FirebaseService.shared.getCurrentUser() { result in
+            if let user = result {
+                let uid = user.uid
+                self.currentEmail = user.email ?? ""
+                self.currentName = user.displayName ?? ""
+                self.setupData(userData: ["name": "\(self.currentName)", "email": "\(self.currentEmail)", "password": ""])
             }
         }
+        
+        loadAvatar()
     }
 
     private func configureUI() {
@@ -191,10 +199,16 @@ final class SettingsViewController: UIViewController {
         passTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 10).isActive = true
         passTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
+        view.addSubview(signOutButton)
+        signOutButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        signOutButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        signOutButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
+        signOutButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
         view.addSubview(saveButton)
         saveButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         saveButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-        saveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
+        saveButton.bottomAnchor.constraint(equalTo: signOutButton.topAnchor, constant: -10).isActive = true
         saveButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     //MARK: Func
@@ -233,37 +247,111 @@ final class SettingsViewController: UIViewController {
         
         present(alert, animated: true, completion: nil)
     }
+    
+    private func showAlert(_ text: String) {
+        let alert = UIAlertController(title: "\(text)", message: nil, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alert.addAction(okAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
 
+    private func saveAvatar(image: UIImage) {
+        if let data = image.jpegData(compressionQuality: 0.75) {
+            let fileManager = FileManager.default
+            let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+            if let documentDirectory = urls.first {
+                let fileURL = documentDirectory.appendingPathComponent("avatar.jpg")
+                do {
+                    try data.write(to: fileURL)
+                    print("Аватар успешно сохранён")
+                } catch {
+                    print("Ошибка сохранения аватара: \(error)")
+                }
+            }
+        }
+    }
+    
+    private func loadAvatar() {
+        let fileManager = FileManager.default
+        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        if let documentDirectory = urls.first {
+            let fileURL = documentDirectory.appendingPathComponent("avatar.jpg")
+            if let imageData = try? Data(contentsOf: fileURL), let image = UIImage(data: imageData) {
+                avatarImageView.image = image
+            }
+        }
+    }
     
     //MARK: Action
     
     @objc func saveChangesButtonAction(_ button: UIButton) {
-        guard let userID = self.userID else { return }
-        if isValidEmail(emailTextField.text ?? "") == true && (passTextField.text ?? "").count >= 6 {
-            FirebaseService.shared.saveUserData(userId: userID, userData: ["name": "\(nameTextField.text ?? "")",
-                                                                           "email": "\(emailTextField.text ?? "")",
-                                                                           "password": "\(passTextField.text ?? "")"]) { result in
-                switch result {
-                case .success():
-                    print("Данные успешно сохранены")
-                    self.showSucessSaveAlert()
-                case .failure(let error):
-                    print("Ошибка сохранения: \(error.localizedDescription)")
+        if currentName != nameTextField.text ?? "" {
+            FirebaseService.shared.updateDisplayName(newName: "\(nameTextField.text ?? "")") { error in
+                if let error = error {
+                    print("Ошибка при обновлении имени: \(error.localizedDescription)")
+                    self.showAlert(error.localizedDescription)
+                } else {
+                    print("Имя пользователя успешно обновлено!")
                 }
             }
         }
         
-        if isValidEmail(emailTextField.text ?? "") == false {
-            showEmailErrorAlert()
+        if currentPass != passTextField.text ?? "" && (passTextField.text ?? "").count >= 6 {
+            FirebaseService.shared.updatePassword(newPassword: "\(passTextField.text ?? "")") { error in
+                if let error = error {
+                    print("Ошибка при обновлении пароля: \(error.localizedDescription)")
+                    self.showAlert(error.localizedDescription)
+                } else {
+                    print("Пароль успешно изменён!")
+                }
+            }
+        } else if currentPass != passTextField.text ?? "" {
+            if (passTextField.text ?? "").count < 6 {
+                showPassErrorAlert()
+            }
         }
         
-        if (passTextField.text ?? "").count < 6 {
-            showPassErrorAlert()
+        if currentEmail != emailTextField.text ?? "" && isValidEmail(emailTextField.text ?? "") == true {
+            FirebaseService.shared.updateEmail(newEmail: "\(emailTextField.text ?? "")") { error in
+                if let error = error {
+                    print("Ошибка при обновлении email: \(error.localizedDescription)")
+                    self.showAlert(error.localizedDescription)
+                } else {
+                    print("Email успешно изменён!")
+                }
+            }
+        } else if currentEmail != emailTextField.text ?? "" && isValidEmail(emailTextField.text ?? "") == false {
+            showEmailErrorAlert()
         }
     }
     
     @objc func changeAvatarButtonAction(_ button: UIButton) {
-        print("changeAvatarButtonAction")
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = true
+        imagePicker.sourceType = .photoLibrary
+        present(imagePicker, animated: true, completion: nil)
+    }
+    
+    @objc func signOutButtonAction(_ button: UIButton) {
+        FirebaseService.shared.signOut { error in
+            if let error = error {
+                print("Ошибка выхода: \(error.localizedDescription)")
+                self.showAlert(error.localizedDescription)
+            } else {
+                print("Выход выполнен успешно")
+                
+                let vc = LoginViewController()
+                let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+                let window = windowScene?.windows.first
+                    
+                UIView.transition(with: window!, duration: 0.3, options: .transitionCrossDissolve, animations: {
+                    window?.rootViewController = vc
+                })
+            }
+        }
+
     }
 }
 
@@ -274,5 +362,25 @@ extension SettingsViewController: UITextFieldDelegate {
                 
         textField.resignFirstResponder()
         return true
+    }
+}
+
+//MARK: UIImagePickerControllerDelegate, UINavigationControllerDelegate
+
+extension SettingsViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let selectedImage = info[.editedImage] as? UIImage else {
+            dismiss(animated: true, completion: nil)
+            return
+        }
+        
+        avatarImageView.image = selectedImage
+        saveAvatar(image: selectedImage)
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
     }
 }
