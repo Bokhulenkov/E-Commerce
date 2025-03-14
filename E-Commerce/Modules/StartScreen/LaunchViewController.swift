@@ -10,20 +10,18 @@ import FirebaseFirestore
 
 final class LaunchViewController: UIViewController {
     
-    //Создаем Image View (белый круг с тенью):
     private lazy var circleWhiteView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(hex: "#FFFFFF")
         view.layer.cornerRadius = 67
-        view.layer.shadowColor = UIColor.black.cgColor  // Цвет тени
-        view.layer.shadowOpacity = 0.2                 // Прозрачность тени (0.0 - 1.0)
-        view.layer.shadowOffset = CGSize(width: 4, height: 4) // Смещение тени
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOpacity = 0.2
+        view.layer.shadowOffset = CGSize(width: 4, height: 4)
         view.layer.shadowRadius = 5
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
-    //Создаем Image View (картинка сумки):
     private lazy var bagPicture: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "bag")
@@ -32,14 +30,13 @@ final class LaunchViewController: UIViewController {
         return imageView
     }()
     
-    // Создаем лейбл
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Shoppe" // Текст лейбла
-        label.font = UIFont(name: "Raleway-v4020-Bold", size: 52) // Имя и размер шрифта
-        label.textColor = .black // Цвет текста
-        label.textAlignment = .center // Выравнивание по центру
-        label.translatesAutoresizingMaskIntoConstraints = false // Включаем Auto Layout
+        label.text = "Shoppe"
+        label.font = UIFont(name: "Raleway-v4020-Bold", size: 52)
+        label.textColor = .black
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -54,11 +51,23 @@ final class LaunchViewController: UIViewController {
     private func checkUserAuthentication() {
         FirebaseService.shared.getCurrentUser { user in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                if user != nil {
+                if let user = user {
+                    self.loadUserData(userId: user.uid)
                     self.showTabBar()
                 } else {
                     self.showAuthScreen()
                 }
+            }
+        }
+    }
+    
+    private func loadUserData(userId: String) {
+        FirebaseService.shared.getUserData(userId: userId) { result in
+            switch result {
+            case .success(let userData):
+                print("Данные пользователя загружены: \(userData)")
+            case .failure(let error):
+                print("Ошибка загрузки данных: \(error.localizedDescription)")
             }
         }
     }
@@ -78,10 +87,10 @@ final class LaunchViewController: UIViewController {
     }
     
     private func setupUI() {
-        view.backgroundColor = UIColor(named: "BackgoundColor") //Задаем цвет из Ассетов.
-        view.addSubview(titleLabel) //Добавляем сабвью для лейбла
-        view.addSubview(circleWhiteView) //Добавляем сабвью для круга
-        view.addSubview(bagPicture) //Добавляем сабвью для сумки
+        view.backgroundColor = UIColor(named: "BackgoundColor")
+        view.addSubview(titleLabel)
+        view.addSubview(circleWhiteView)
+        view.addSubview(bagPicture)
         
         NSLayoutConstraint.activate([
             //Image View:
