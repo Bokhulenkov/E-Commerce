@@ -8,7 +8,9 @@
 import UIKit
 
 final class WishlistViewController: UIViewController {
+    
     // MARK: - GUI Variables
+    
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         
@@ -74,7 +76,9 @@ final class WishlistViewController: UIViewController {
         
         return collectionView
     }()
+    
     //MARK: - Properties
+    
     var storageService = StorageService()
     var products: [ProductRealmModel] = []
     var currency: String = ""
@@ -83,12 +87,13 @@ final class WishlistViewController: UIViewController {
     private let userManager = UserManager()
     
     // MARK: - Life cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationController?.isNavigationBarHidden = true
         view.backgroundColor = .white
-     
+        
         setupUI()
         setupKeyboardHandling()
         loadWishlist()
@@ -105,6 +110,7 @@ final class WishlistViewController: UIViewController {
     }
     
     //MARK: - Methods
+    
     private func loadWishlist() {
         currency = currencyManager.getCurrency()
         products = storageService.getAllFavoriteProducts()
@@ -112,6 +118,7 @@ final class WishlistViewController: UIViewController {
     }
     
     //MARK: - Private methods
+    
     private func setupUI() {
         view.addSubview(titleLabel)
         view.addSubview(searchContainer)
@@ -157,6 +164,7 @@ final class WishlistViewController: UIViewController {
 }
 
 //MARK: - UICollectionViewDataSource
+
 extension WishlistViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return products.count
@@ -187,6 +195,7 @@ extension WishlistViewController: UICollectionViewDataSource {
 }
 
 //MARK: - UICollectionViewDelegate
+
 extension WishlistViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let vc = DetailViewController()
@@ -194,7 +203,7 @@ extension WishlistViewController: UICollectionViewDelegate {
             let currentProduct = self.products[indexPath.row]
             var currentCount = currentProduct.cartCount
             currentCount += 1
-
+            
             self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
             self.userManager.setCart(currentProduct.id, currentCount)
         } likeButtonAction: { liked in
@@ -211,6 +220,7 @@ extension WishlistViewController: UICollectionViewDelegate {
 }
 
 //MARK: -  UICollectionViewDelegateFlowLayout
+
 extension WishlistViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
@@ -221,6 +231,7 @@ extension WishlistViewController: UICollectionViewDelegateFlowLayout {
 }
 
 // MARK: - UITextFieldDelegate
+
 extension WishlistViewController: UITextFieldDelegate {
     func setupKeyboardHandling() {
         searchTextField.delegate = self
@@ -248,7 +259,6 @@ extension WishlistViewController: UITextFieldDelegate {
                 $0.title.lowercased().contains(searchedText.lowercased())
             }
         }
-        
         collectionView.reloadData()
     }
     

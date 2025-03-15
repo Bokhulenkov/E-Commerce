@@ -6,7 +6,6 @@
 //
 
 import UIKit
-
 import RealmSwift
 
 final class CartView {
@@ -50,7 +49,6 @@ final class CartView {
     func getItems() -> [ProductRealmModel] {
         return cartProducts?.map { $0 } ?? []
     }
-    
     
     func updateQuantity(for productId: Int, quantity: Int) {
         guard let product = cartProducts?.first(where: { $0.id == productId }), product.cartCount != quantity else {

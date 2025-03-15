@@ -95,5 +95,4 @@ final class HeaderView: UIView {
             self.rightImageView.image = UIImage(systemName: chevron)
         }
     }
-    
 }

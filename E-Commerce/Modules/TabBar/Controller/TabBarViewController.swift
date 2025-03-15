@@ -7,8 +7,8 @@
 
 import UIKit
 
-class TabBarViewController: UITabBarController {
-
+final class TabBarViewController: UITabBarController {
+    
     private let storageService = StorageService()
     
     let homeVC = HomeViewController()
@@ -16,7 +16,7 @@ class TabBarViewController: UITabBarController {
     let categoryVC = CategoryViewController()
     let cartVC = CartViewController()
     let settingsVC = SettingsViewController()
-
+    
     private let indicatorView = UIView()
     private let cartCount = UILabel()
     
@@ -43,7 +43,7 @@ class TabBarViewController: UITabBarController {
             updateIndicatorPosition(for: tabBar.items?[selectedIndex])
         }
     }
-
+    
     private func setupViewControllers() {
         tabBar.backgroundColor = .white
         tabBar.layer.shadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.1).cgColor
@@ -65,7 +65,7 @@ class TabBarViewController: UITabBarController {
         categoryNav.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         categoryNav.tabBarItem.setTitleTextAttributes([.foregroundColor: UIColor.clear], for: .selected)
         categoryNav.tabBarItem.setTitleTextAttributes([.foregroundColor: UIColor.clear], for: .normal)
-
+        
         cartVC.tabBarItem.image = UIImage(resource: .cartTab)
         cartVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         
@@ -81,22 +81,22 @@ class TabBarViewController: UITabBarController {
         indicatorView.backgroundColor = UIColor.black
         indicatorView.layer.cornerRadius = 2
         tabBar.addSubview(indicatorView)
-                
+        
         if let firstItem = tabBarItems.first {
             updateIndicatorPosition(for: firstItem)
         }
     }
-        
+    
     private func updateIndicatorPosition(for item: UITabBarItem?) {
         guard let item = item, let index = tabBar.items?.firstIndex(of: item) else { return }
-            
+        
         let tabBarItemCount = CGFloat(tabBar.items?.count ?? 1)
         let itemWidth = tabBar.frame.width / tabBarItemCount
         let indicatorWidth: CGFloat = 10
         let indicatorHeight: CGFloat = 3
         let indicatorYPosition: CGFloat = 45
         let itemXPosition = (itemWidth * CGFloat(index)) + (itemWidth / 2) - (indicatorWidth / 2)
-
+        
         UIView.animate(withDuration: 0.2) {
             self.indicatorView.frame = CGRect(x: itemXPosition, y: indicatorYPosition, width: indicatorWidth, height: indicatorHeight)
         }
@@ -123,5 +123,4 @@ class TabBarViewController: UITabBarController {
         cartCount.isHidden = cartCount.text == "0"
         cartCount.text = "\(count)"
     }
-
 }

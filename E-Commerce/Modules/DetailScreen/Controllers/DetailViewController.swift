@@ -10,6 +10,7 @@ import Kingfisher
 
 final class DetailViewController: UIViewController {
     // MARK: - GUI Variables
+    
     private lazy var scrollView: UIScrollView = {
         let view = UIScrollView()
         
@@ -132,6 +133,7 @@ final class DetailViewController: UIViewController {
     }()
     
     //MARK: - Properties
+    
     var likeButtonAction: ((Bool) -> Void)?
     private var currency: String = ""
     var networkService = NetworkService()
@@ -143,6 +145,7 @@ final class DetailViewController: UIViewController {
     private let userManager = UserManager()
     
     // MARK: - Life cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -160,6 +163,7 @@ final class DetailViewController: UIViewController {
     }
     
     //MARK: - Methods
+    
     func configure(for product: ProductRealmModel, addButtonAction: @escaping (() -> Void), likeButtonAction: @escaping ((Bool) -> Void)) {
         currency = CurrencyManager.shared.getCurrency()
         self.currentProduct = product
@@ -170,7 +174,7 @@ final class DetailViewController: UIViewController {
         firstVariationLabel.text = "\(product.category)"
         secondVariationLabel.text = "\(product.rate)"
         images = (1...6).map { "\(product.id).\($0)" }
-
+        
         if let url = URL(string: product.image) {
             mainImageView.kf.setImage(with: url)
             mainImageView.layer.cornerRadius = 5
@@ -188,6 +192,7 @@ final class DetailViewController: UIViewController {
     }
     
     //MARK: - Private methods
+    
     @objc private func likeButtonTapped() {
         isFavorite.toggle()
         
@@ -198,10 +203,10 @@ final class DetailViewController: UIViewController {
     
     private func updateLikeButtons() {
         let image = isFavorite ? UIImage.heartRedFull : UIImage.heartRed
-          likeButton.setImage(image, for: .normal)
+        likeButton.setImage(image, for: .normal)
         detailNavBar.likeButton.setImage(image, for: .normal)
-     }
-        
+    }
+    
     @objc private func backButtonTapped() {
         if navigationController != nil {
             navigationController?.popViewController(animated: true)
@@ -312,6 +317,7 @@ final class DetailViewController: UIViewController {
 }
 
 //MARK: - UICollectionViewDataSource
+
 extension DetailViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return images.count
@@ -327,11 +333,13 @@ extension DetailViewController: UICollectionViewDataSource {
 }
 
 //MARK: - UICollectionViewDelegate
+
 extension DetailViewController: UICollectionViewDelegate {
     
 }
 
 //MARK: -  UICollectionViewDelegateFlowLayout
+
 extension DetailViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
@@ -341,6 +349,7 @@ extension DetailViewController: UICollectionViewDelegateFlowLayout {
 }
 
 //MARK: - NetworkServiceDelegate
+
 extension DetailViewController: NetworkServiceDelegate {
     func didUpdateData(products: [ProductModel]) {
         

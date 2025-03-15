@@ -16,7 +16,6 @@ final class CartViewController: UIViewController {
     private let currencyManager = CurrencyManager()
     private var currency: String = ""
     
-    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Cart"
@@ -295,8 +294,3 @@ extension CartViewController: UITableViewDataSource {
 extension CartViewController: UITableViewDelegate {
     // Implement delegate methods if needed
 }
-
-
-
-
-

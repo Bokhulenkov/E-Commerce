@@ -9,8 +9,8 @@ import UIKit
 
 // MARK: - ShippingOptionsView
 
-class ShippingOptionsView: UIView {
-
+final class ShippingOptionsView: UIView {
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Shipping Options"
@@ -18,7 +18,7 @@ class ShippingOptionsView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-
+    
     private let standardOptionView = ShippingOptionView()
     private let expressOptionView = ShippingOptionView()
     private let deliveryDateLabel: UILabel = {
@@ -29,36 +29,36 @@ class ShippingOptionsView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-
+    
     private var selectedOption: ShippingOptionView?
     var onShippingOptionChanged: ((Bool) -> Void)?
-
+    
     // MARK: - Initializer
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
         selectOption(standardOptionView)
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     // MARK: - Setup UI
-
+    
     private func setupUI() {
         translatesAutoresizingMaskIntoConstraints = false
         addSubview(titleLabel)
         addSubview(standardOptionView)
         addSubview(expressOptionView)
         addSubview(deliveryDateLabel)
-
+        
         let standardTap = UITapGestureRecognizer(target: self, action: #selector(optionTapped(_:)))
         let expressTap = UITapGestureRecognizer(target: self, action: #selector(optionTapped(_:)))
         standardOptionView.addGestureRecognizer(standardTap)
         expressOptionView.addGestureRecognizer(expressTap)
-
+        
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: topAnchor),
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -77,18 +77,22 @@ class ShippingOptionsView: UIView {
             deliveryDateLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
-
+    
     // MARK: - Actions
-
+    
     @objc private func optionTapped(_ gesture: UITapGestureRecognizer) {
         guard let selectedView = gesture.view as? ShippingOptionView else { return }
         selectOption(selectedView)
     }
-
+    
     // MARK: - Private Methods
     
-    func configureOptions(standardTitle: String, standardDelivery: String, standardPrice: String,
-                          expressTitle: String, expressDelivery: String, expressPrice: String) {
+    func configureOptions(standardTitle: String,
+                          standardDelivery: String,
+                          standardPrice: String,
+                          expressTitle: String,
+                          expressDelivery: String,
+                          expressPrice: String) {
         standardOptionView.update(title: standardTitle, deliveryTime: standardDelivery, price: standardPrice)
         expressOptionView.update(title: expressTitle, deliveryTime: expressDelivery, price: expressPrice)
         selectOption(standardOptionView)
@@ -96,22 +100,20 @@ class ShippingOptionsView: UIView {
     }
     
     private func selectOption(_ option: ShippingOptionView) {
-            selectedOption?.isSelected = false
-            option.isSelected = true
-            selectedOption = option
-
-            let isExpress = option === expressOptionView
-            deliveryDateLabel.text = isExpress ?
-                "Delivered on or before Monday, 13 April 2020" : "Delivered on or before Thursday, 23 April 2020"
-
-            onShippingOptionChanged?(isExpress)
-        }
-
+        selectedOption?.isSelected = false
+        option.isSelected = true
+        selectedOption = option
+        
+        let isExpress = option === expressOptionView
+        deliveryDateLabel.text = isExpress ?
+        "Delivered on or before Monday, 13 April 2020" : "Delivered on or before Thursday, 23 April 2020"
+        
+        onShippingOptionChanged?(isExpress)
+    }
+    
     func getSelectedOption() -> String {
         return selectedOption === standardOptionView ? "Standard" : "Express"
     }
-    
-    
 }
 
 // MARK: - ShippingOptionView
@@ -124,14 +126,14 @@ class ShippingOptionView: UIView {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
-
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.custom(font: .ralewaySemiBold, size: 16)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-
+    
     private let deliveryTimeLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.custom(font: .ralewayMedium, size: 13)
@@ -143,14 +145,14 @@ class ShippingOptionView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-
+    
     private let priceLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.custom(font: .ralewayBold, size: 16)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-
+    
     var isSelected: Bool = false {
         didSet {
             backgroundColor = isSelected ? UIColor(named: "QuantityBackgroundColor") : UIColor(named: "SearchFieldBackGroundColor")
@@ -158,20 +160,20 @@ class ShippingOptionView: UIView {
             checkmarkImageView.tintColor = isSelected ? .systemBlue : .gray
         }
     }
-
+    
     // MARK: - Initializer
-
-        override init(frame: CGRect) {
-            super.init(frame: frame)
-            setupUI()
-        }
-
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupUI()
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     // MARK: - Setup UI
-
+    
     private func setupUI() {
         layer.cornerRadius = 10
         translatesAutoresizingMaskIntoConstraints = false
@@ -179,7 +181,7 @@ class ShippingOptionView: UIView {
         addSubview(titleLabel)
         addSubview(deliveryTimeLabel)
         addSubview(priceLabel)
-
+        
         NSLayoutConstraint.activate([
             checkmarkImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
             checkmarkImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
@@ -196,14 +198,14 @@ class ShippingOptionView: UIView {
         ])
     }
     
-        // MARK: - Update Method
+    // MARK: - Update Method
     
     func update(title: String, deliveryTime: String, price: String) {
-            titleLabel.text = title
-            deliveryTimeLabel.text = deliveryTime
-            priceLabel.text = price
-            setupUI()
-        }
+        titleLabel.text = title
+        deliveryTimeLabel.text = deliveryTime
+        priceLabel.text = price
+        setupUI()
+    }
 }
 
 class PatView: UIView {
@@ -234,7 +236,7 @@ class PatView: UIView {
         return view
     }()
     
-    private let editButton: UIButton = {
+    private lazy var editButton: UIButton = {
         let button = UIButton(type: .system)
         let pencilImage = UIImage(systemName: "pencil")
         let config = UIImage.SymbolConfiguration(weight: .heavy)
@@ -266,7 +268,7 @@ class PatView: UIView {
     private func setupUI() {
         
         translatesAutoresizingMaskIntoConstraints = false
-
+        
         [titleLabel, methodContainerView, editButton].forEach { addSubview($0) }
         methodContainerView.addSubview(methodLabel)
         
@@ -286,7 +288,7 @@ class PatView: UIView {
             methodLabel.bottomAnchor.constraint(equalTo: methodContainerView.bottomAnchor, constant: -6),
             methodLabel.leadingAnchor.constraint(equalTo: methodContainerView.leadingAnchor, constant: 16),
             methodLabel.trailingAnchor.constraint(equalTo: methodContainerView.trailingAnchor, constant: -16),
-
+            
             // Edit Button
             editButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
             editButton.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -304,4 +306,3 @@ class PatView: UIView {
         methodLabel.text = method
     }
 }
-

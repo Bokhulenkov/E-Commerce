@@ -7,20 +7,44 @@
 
 import UIKit
 
-class CreateAccountViewController: UIViewController {
+final class CreateAccountViewController: UIViewController {
     
     //    MARK: - Properties
     
     private let createAccountView = CreateAccountView()
     
-    
     //    MARK: - LifeCycle
+    
     override func loadView() {
         view = createAccountView
-        createAccountView.setupButtons(target: self,
-                                       actionDoneButton:  #selector(doneButtonTapped),
-                                       actionCancelButton:  #selector(cancelButtonTapped))
+        createAccountView.setupButtons(
+            target: self,
+            actionDoneButton:  #selector(doneButtonTapped),
+            actionCancelButton:  #selector(cancelButtonTapped))
     }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupKeyboardHidding()
+    }
+    
+    // MARK: - Methods
+    
+    private func showErrorAlert(_ error: String) {
+        let alert = UIAlertController(title: "Error", message: "\(error)", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alert.addAction(okAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func setOnboarding() {
+        let vc = OnboardingViewController()
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true, completion: nil)
+    }
+    
+    // MARK: - Actions
     
     @objc private func doneButtonTapped() {
         print("Кнопка Done нажата!")
@@ -46,24 +70,4 @@ class CreateAccountViewController: UIViewController {
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true, completion: nil)
     }
-    
-    private func showErrorAlert(_ error: String) {
-        let alert = UIAlertController(title: "Error", message: "\(error)", preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-        alert.addAction(okAction)
-        
-        present(alert, animated: true, completion: nil)
-    }
-    
-    private func setOnboarding() {
-        let vc = OnboardingViewController()
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true, completion: nil)
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
-    
 }

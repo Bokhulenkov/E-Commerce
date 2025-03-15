@@ -8,7 +8,9 @@
 import UIKit
 
 class WishlistViewCell: UICollectionViewCell {
+    
     // MARK: - GUI Variables
+    
     private lazy var shadowView: UIView = {
         let view = UIView()
         
@@ -90,10 +92,12 @@ class WishlistViewCell: UICollectionViewCell {
     }()
     
     //MARK: - Properties
+    
     var likeButtonAction: ((Bool) -> Void)?
     var addButtonAction: (() -> Void)?
     
     // MARK: - Initialization
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -121,6 +125,7 @@ class WishlistViewCell: UICollectionViewCell {
     }
     
     // MARK: - Private Methods
+    
     @objc private func addButtonTapped() {
         addButtonAction?()
     }

@@ -16,7 +16,7 @@ final class CategoryCell: UITableViewCell {
             return CategoryCell.createLayoutForCollection()
         }
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-
+        
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(SubcategoryCell.self, forCellWithReuseIdentifier: "SubcategoryCell")
@@ -54,7 +54,7 @@ final class CategoryCell: UITableViewCell {
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
                                                heightDimension: .estimated(50))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-            group.interItemSpacing = .fixed(10)
+        group.interItemSpacing = .fixed(10)
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 10
         return section
@@ -62,13 +62,13 @@ final class CategoryCell: UITableViewCell {
     
     private func categorySelected(subcategory: String) {
         guard let parentVC = self.parentViewController as? CategoryViewController else { return }
-
+        
         let title = parentVC.data.first(where: { $0.subType.contains(subcategory) })?.headerName ?? "Unknown"
-
+        
         if let tabBarController = parentVC.tabBarController as? TabBarViewController {
             let products = tabBarController.allProducts
             var productsCategorised: [ProductRealmModel] = []
-
+            
             switch title {
             case "Men":
                 productsCategorised = products.filter { $0.category == "men's clothing" }
@@ -81,7 +81,7 @@ final class CategoryCell: UITableViewCell {
             default:
                 print("No matching category")
             }
-
+            
             let vc = ShopViewController()
             vc.products = productsCategorised
             vc.hidesBottomBarWhenPushed = true
@@ -109,7 +109,7 @@ extension CategoryCell: UICollectionViewDataSource {
         
         guard let cell = collectionView.cellForItem(at: indexPath) else { return }
         cell.contentView.backgroundColor = UIColor(named: "ElectronicCategoryBackgroundColor")
-
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             cell.contentView.backgroundColor = UIColor.white
         }

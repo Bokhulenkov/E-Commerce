@@ -88,13 +88,6 @@ class CreateAccountView: UIView {
         return textField
     }()
     
-    @objc private func togglePasswordVisibility(_ sender: UIButton) {
-        passwordTextField.isSecureTextEntry.toggle() // Переключаем режим ввода
-        
-        let imageName = passwordTextField.isSecureTextEntry ? "eye.slash" : "eye" // Меняем иконку
-        sender.setImage(UIImage(systemName: imageName), for: .normal)
-    }
-    
     private lazy var doneButton: UIButton = {
         let button = UIButton()
         button.setTitle("Done", for: .normal)
@@ -116,6 +109,7 @@ class CreateAccountView: UIView {
         return button
     }()
     
+    // MARK: - init
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -130,6 +124,8 @@ class CreateAccountView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Methods
+    
     func setViews() {
         backgroundColor = UIColor(named: "BackgoundColor")
         addSubview(bubbleImageView)
@@ -143,13 +139,21 @@ class CreateAccountView: UIView {
         addSubview(cancelButton)
     }
     
-    internal func setupButtons(target: Any?, actionDoneButton: Selector, actionCancelButton: Selector){
+    func setupButtons(target: Any?, actionDoneButton: Selector, actionCancelButton: Selector){
         doneButton.addTarget(target, action: actionDoneButton, for: .touchUpInside)
         cancelButton.addTarget(target, action: actionCancelButton, for: .touchUpInside)
     }
     
     public func getUserEmailPass() -> (email: String?, password: String?){
         return (emailTextField.text, passwordTextField.text)
+    }
+    
+    // MARK: - Actions
+    @objc private func togglePasswordVisibility(_ sender: UIButton) {
+        passwordTextField.isSecureTextEntry.toggle() // Переключаем режим ввода
+        
+        let imageName = passwordTextField.isSecureTextEntry ? "eye.slash" : "eye" // Меняем иконку
+        sender.setImage(UIImage(systemName: imageName), for: .normal)
     }
 }
 
@@ -167,9 +171,6 @@ extension CreateAccountView {
             bubbleImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
             bubbleImageView.topAnchor.constraint(equalTo: topAnchor, constant: 0),
             
-            
-            
-            
             //Create Label:
             createLabel.topAnchor.constraint(equalTo: topAnchor, constant: 110),
             createLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 40),
@@ -184,7 +185,6 @@ extension CreateAccountView {
             backgoundEmailView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
             backgoundEmailView.heightAnchor.constraint(equalToConstant: 60),
             
-            
             //Email field:
             emailTextField.topAnchor.constraint(equalTo: backgoundEmailView.topAnchor, constant: 20),
             emailTextField.leadingAnchor.constraint(equalTo: backgoundEmailView.leadingAnchor, constant: 20),
@@ -196,7 +196,6 @@ extension CreateAccountView {
             backgoundPasswordView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             backgoundPasswordView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
             backgoundPasswordView.heightAnchor.constraint(equalToConstant: 60),
-            
             
             //Password field:
             passwordTextField.topAnchor.constraint(equalTo: backgoundPasswordView.topAnchor, constant: 20),
@@ -210,24 +209,20 @@ extension CreateAccountView {
             doneButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -117),
             doneButton.heightAnchor.constraint(equalToConstant: 61),
             
-            
-            
             //Cancel button:
             cancelButton.centerXAnchor.constraint(equalTo:  centerXAnchor),
             cancelButton.topAnchor.constraint(equalTo: doneButton.bottomAnchor, constant: 27),
-            
-            
-            
-            
-            
         ])
     }
 }
 
+// MARK: - Extensions UITextFieldDelegate
 
 extension CreateAccountView: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
+    
+   
 }

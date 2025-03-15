@@ -8,7 +8,7 @@
 import UIKit
 import Kingfisher
 
-class HomePopularViewCell: UICollectionViewCell {
+final class HomePopularViewCell: UICollectionViewCell {
     
     private let productImageViewContainer: UIView = {
         let view = UIView()
@@ -61,11 +61,11 @@ class HomePopularViewCell: UICollectionViewCell {
         super.init(frame: frame)
         configureCell()
     }
-        
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-        
+    
     override func prepareForReuse() {
         backgroundColor = .clear
         productImageView.image = nil
@@ -87,7 +87,7 @@ class HomePopularViewCell: UICollectionViewCell {
         productImageView.leftAnchor.constraint(equalTo: productImageViewContainer.leftAnchor, constant: 5).isActive = true
         productImageView.rightAnchor.constraint(equalTo: productImageViewContainer.rightAnchor, constant: -5).isActive = true
         productImageView.bottomAnchor.constraint(equalTo: productImageViewContainer.bottomAnchor, constant: -5).isActive = true
-
+        
         addSubview(productTitle)
         productTitle.topAnchor.constraint(equalTo: productImageView.bottomAnchor, constant: 11).isActive = true
         productTitle.leftAnchor.constraint(equalTo: leftAnchor, constant: 0).isActive = true

@@ -104,7 +104,7 @@ private extension OnboardingViewController {
             startButton.leadingAnchor.constraint(equalTo: view4.leadingAnchor, constant: 40),
             startButton.trailingAnchor.constraint(equalTo: view4.trailingAnchor, constant: -40),
             startButton.heightAnchor.constraint(equalToConstant: 50)
-     ])
+        ])
     }
     
     func setupGestures() {
@@ -119,8 +119,8 @@ private extension OnboardingViewController {
     
     func updateUI(){
         for (index, view) in views.enumerated() {
-                view.isHidden = index != currentPage
-            }
+            view.isHidden = index != currentPage
+        }
         startButton.isHidden = currentPage == 3 ? false : true
     }
     

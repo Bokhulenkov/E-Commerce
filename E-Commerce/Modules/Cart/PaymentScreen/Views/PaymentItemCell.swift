@@ -36,7 +36,7 @@ final class PaymentItemCell: UITableViewCell {
         if let imageUrl = image, let url = URL(string: imageUrl) {
             itemImageView.kf.setImage(with: url)
         }
-
+        
         titleLabel.text = title
         priceLabel.text = price
         self.quantity = quantity
@@ -48,7 +48,7 @@ final class PaymentItemCell: UITableViewCell {
         contentView.addSubview(counterContainerView)
         contentView.addSubview(titleLabel)
         contentView.addSubview(priceLabel)
-
+        
         // Настройка тени
         shadowContainerView.translatesAutoresizingMaskIntoConstraints = false
         shadowContainerView.layer.shadowColor = UIColor.black.cgColor
@@ -57,14 +57,14 @@ final class PaymentItemCell: UITableViewCell {
         shadowContainerView.layer.shadowRadius = 4
         shadowContainerView.layer.backgroundColor = UIColor.white.cgColor
         shadowContainerView.layer.cornerRadius = 35
-
+        
         // Настройка изображения
         itemImageView.translatesAutoresizingMaskIntoConstraints = false
         itemImageView.contentMode = .scaleAspectFit
         itemImageView.clipsToBounds = true
         itemImageView.layer.cornerRadius = 25
-
-
+        
+        
         // Настройка счётчика
         counterContainerView.translatesAutoresizingMaskIntoConstraints = false
         counterContainerView.backgroundColor = UIColor(named: "QuantityBackgroundColor")
@@ -73,7 +73,7 @@ final class PaymentItemCell: UITableViewCell {
         counterContainerView.layer.cornerRadius = 12.5
         counterContainerView.clipsToBounds = true
         counterContainerView.addSubview(counterLabel)
-
+        
         // Настройка текста
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = UIFont.custom(font: .nunitoLight, size: 12)
@@ -81,35 +81,35 @@ final class PaymentItemCell: UITableViewCell {
         
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
         priceLabel.font = UIFont.custom(font: .ralewayBold, size: 18)
-
+        
         counterLabel.translatesAutoresizingMaskIntoConstraints = false
         counterLabel.textAlignment = .center
         counterLabel.font = UIFont.custom(font: .ralewayMedium, size: 13)
-
+        
         NSLayoutConstraint.activate([
-
+            
             shadowContainerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             shadowContainerView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             shadowContainerView.widthAnchor.constraint(equalToConstant: 70),
             shadowContainerView.heightAnchor.constraint(equalToConstant: 70),
-
+            
             itemImageView.centerXAnchor.constraint(equalTo: shadowContainerView.centerXAnchor),
             itemImageView.centerYAnchor.constraint(equalTo: shadowContainerView.centerYAnchor),
             itemImageView.widthAnchor.constraint(equalToConstant: 50),
             itemImageView.heightAnchor.constraint(equalToConstant: 50),
-
+            
             counterContainerView.widthAnchor.constraint(equalToConstant: 25),
             counterContainerView.heightAnchor.constraint(equalToConstant: 25),
             counterContainerView.topAnchor.constraint(equalTo: shadowContainerView.topAnchor, constant: -5),
             counterContainerView.trailingAnchor.constraint(equalTo: shadowContainerView.trailingAnchor, constant: 0),
-
+            
             counterLabel.centerXAnchor.constraint(equalTo: counterContainerView.centerXAnchor),
             counterLabel.centerYAnchor.constraint(equalTo: counterContainerView.centerYAnchor),
-
+            
             titleLabel.leadingAnchor.constraint(equalTo: shadowContainerView.trailingAnchor, constant: 12),
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             titleLabel.widthAnchor.constraint(equalToConstant: 160),
-
+            
             priceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -18),
             priceLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])

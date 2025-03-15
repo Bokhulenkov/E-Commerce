@@ -30,21 +30,21 @@ final class StorageService {
             fatalError("Ошибка при инициализации Realm: \(error)")
         }
     }
-        
+    
     func saveProducts(_ products: [ProductModel]) {
-            do {
-                try realm.write {
-                    for product in products {
-                        let realmProduct = ProductRealmModel.from(product: product, realm: realm)
-                        realm.add(realmProduct, update: .modified)
-                    }
+        do {
+            try realm.write {
+                for product in products {
+                    let realmProduct = ProductRealmModel.from(product: product, realm: realm)
+                    realm.add(realmProduct, update: .modified)
                 }
-            } catch {
-                print("Ошибка при сохранении данных: \(error)")
             }
+        } catch {
+            print("Ошибка при сохранении данных: \(error)")
         }
-        
-        
+    }
+    
+    
     func getAllProducts() -> [ProductRealmModel] {
         let products = realm.objects(ProductRealmModel.self)
         return Array(products)

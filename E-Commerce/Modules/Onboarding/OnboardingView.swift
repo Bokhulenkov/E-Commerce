@@ -8,57 +8,56 @@
 import UIKit
 
 final class OnboardingView: UIView {
-        
+    
     private lazy var imageView: UIImageView = {
-            let imageView = UIImageView()
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 20
         imageView.clipsToBounds = true
-            imageView.translatesAutoresizingMaskIntoConstraints = false
-            return imageView
-        }()
-        
-        private lazy var titleLabel: UILabel = {
-            let label = UILabel()
-            label.font = .custom(font: CustomFont.ralewayBold, size: 20)
-            label.textColor = .black
-            label.numberOfLines = 1
-            label.adjustsFontSizeToFitWidth = true
-            label.minimumScaleFactor = 0.8
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        
-        private lazy var descriptionLabel: UILabel = {
-            let label = UILabel()
-            label.font = .custom(font: CustomFont.nunito, size: 15)
-            label.textColor = .darkGray
-            label.numberOfLines = 3
-            label.textAlignment = .center
-            label.adjustsFontSizeToFitWidth = true
-            label.minimumScaleFactor = 0.8
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
     
-        
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .custom(font: CustomFont.ralewayBold, size: 20)
+        label.textColor = .black
+        label.numberOfLines = 1
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.8
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.font = .custom(font: CustomFont.nunito, size: 15)
+        label.textColor = .darkGray
+        label.numberOfLines = 3
+        label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.8
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     init(image: UIImage?, title: String, description: String) {
-            super.init(frame: .zero)
-            
-            setupView()
-            configure(image: image, title: title, description: description)
-        }
+        super.init(frame: .zero)
         
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-        
-        func configure(image: UIImage?, title: String, description: String) {
-            imageView.image = image
-            titleLabel.text = title
-            descriptionLabel.text = description
-        }
+        setupView()
+        configure(image: image, title: title, description: description)
     }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func configure(image: UIImage?, title: String, description: String) {
+        imageView.image = image
+        titleLabel.text = title
+        descriptionLabel.text = description
+    }
+}
 
 private extension OnboardingView {
     func setupView() {
@@ -91,4 +90,3 @@ private extension OnboardingView {
         ])
     }
 }
-

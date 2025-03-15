@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HeaderWithButtonView: UIView {
+final class HeaderWithButtonView: UIView {
 
     private let titleLabel: UILabel = {
         let label = UILabel()

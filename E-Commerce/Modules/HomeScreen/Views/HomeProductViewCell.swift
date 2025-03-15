@@ -8,13 +8,13 @@
 import UIKit
 import Kingfisher
 
-class HomeProductViewCell: UICollectionViewCell {
+final class HomeProductViewCell: UICollectionViewCell {
     
     var addButtonAction: (() -> Void)?
     var likeButtonAction: ((Bool) -> Void)?
     var updateCartAction: (() -> Void)?
     private var product: ProductRealmModel?
-
+    
     private let addButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -99,11 +99,11 @@ class HomeProductViewCell: UICollectionViewCell {
         plusButton.addTarget(self, action: #selector(changeCountButtonTapped), for: .touchUpInside)
         configureCell()
     }
-        
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-        
+    
     override func prepareForReuse() {
         backgroundColor = .clear
         productImageView.image = nil
@@ -189,7 +189,7 @@ class HomeProductViewCell: UICollectionViewCell {
             addButton.backgroundColor = UIColor(red: 0, green: 0.29, blue: 1, alpha: 1)
         }
     }
-        
+    
     @objc private func addButtonTapped() {
         addButtonAction?()
     }
