@@ -202,8 +202,10 @@ class HomeProductViewCell: UICollectionViewCell {
     @objc private func changeCountButtonTapped(_ sender: UIButton) {
         if sender == minusButton {
             StorageService.shared.setCart(productId: product?.id ?? 0, cartCount: (product?.cartCount ?? 0) - 1)
+            UserManager.shared.setCart(product?.id ?? 0, (product?.cartCount ?? 0) - 1)
         } else {
             StorageService.shared.setCart(productId: product?.id ?? 0, cartCount: (product?.cartCount ?? 0) + 1)
+            UserManager.shared.setCart(product?.id ?? 0, (product?.cartCount ?? 0) + 1)
         }
         
         updateCartAction?()

@@ -98,7 +98,7 @@ final class FirebaseService {
     // MARK: - Firestore Database
     
     func saveUserData(userId: String, userData: [String: Any], completion: @escaping (Result<Void, Error>) -> Void) {
-        db.collection("users").document(userId).setData(userData) { error in
+        db.collection("users").document(userId).setData(userData, merge: true) { error in
             if let error = error {
                 completion(.failure(error))
             } else {

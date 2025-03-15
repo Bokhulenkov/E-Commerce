@@ -140,6 +140,7 @@ final class DetailViewController: UIViewController {
     var images: [String] = []
     var storageService = StorageService()
     private var isFavorite: Bool = false
+    private let userManager = UserManager()
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -189,7 +190,7 @@ final class DetailViewController: UIViewController {
         isFavorite.toggle()
         
         storageService.setFavorite(productId: currentProduct?.id ?? 0, isFavorite: isFavorite)
-        
+        self.userManager.setFavorites(currentProduct?.id ?? 0, isFavorite)
         updateLikeButtons()
     }
     

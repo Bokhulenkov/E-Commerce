@@ -11,6 +11,7 @@ import CoreLocation
 final class HomeViewController: UIViewController {
     
     private let storageService = StorageService()
+    private let userManager = UserManager()
     private let locationManager = CLLocationManager()
     private let geocoder = CLGeocoder()
     private var networkService = NetworkService()
@@ -355,10 +356,12 @@ final class HomeViewController: UIViewController {
                     currentCount += 1
                     
                     self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
+                    self.userManager.setCart(currentProduct.id, currentCount)
                     self.setCountCart()
                 } likeButtonAction: { liked in
                     let currentProduct = self.popularProducts[indexPath.row]
                     self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
+                    self.userManager.setFavorites(currentProduct.id, liked)
                 }
             
                 vc.hidesBottomBarWhenPushed = true
@@ -376,11 +379,13 @@ final class HomeViewController: UIViewController {
                     currentCount += 1
                     
                     self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
+                    self.userManager.setCart(currentProduct.id, currentCount)
                     self.setCountCart()
                     
                 } likeButtonAction: { liked in
                     let currentProduct = self.justForYouProducts[indexPath.row]
                     self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
+                    self.userManager.setFavorites(currentProduct.id, liked)
                 }
                 
                 vc.hidesBottomBarWhenPushed = true
@@ -438,6 +443,7 @@ final class HomeViewController: UIViewController {
                     var currentCount = self.justForYouProducts[indexPath.item].cartCount
                     currentCount += 1
                     self.storageService.setCart(productId: self.justForYouProducts[indexPath.item].id, cartCount: currentCount)
+                    self.userManager.setCart(self.justForYouProducts[indexPath.item].id, currentCount)
                     self.setCountCart()
                     cell.updateCartCount(currentCount)
                 }
@@ -447,6 +453,7 @@ final class HomeViewController: UIViewController {
                 
                 cell.likeButtonAction = { liked in
                     self.storageService.setFavorite(productId: self.justForYouProducts[indexPath.item].id, isFavorite: liked)
+                    self.userManager.setFavorites(self.justForYouProducts[indexPath.item].id, liked)
                 }
                 
                 return cell
@@ -494,6 +501,42 @@ final class HomeViewController: UIViewController {
             storageService.saveProducts(products)
 
             allProducts = storageService.getAllProducts()
+            
+            if UserDefaults.standard.string(forKey: "userID") != "" {
+                FirebaseService.shared.getUserData(userId: UserDefaults.standard.string(forKey: "userID") ?? "") { result in
+                    switch result {
+                    case .success(let userData):
+                        print("Данные пользователя загружены: \(userData)")
+                        if let favorites = userData["favorites"] as? [Int] {
+                            for product in self.allProducts {
+                                self.storageService.setFavorite(productId: product.id, isFavorite: favorites.contains(product.id))
+                            }
+                        }
+                        
+                        if let cart = userData["cart"] as? [Int], let cartCount = userData["cartCount"] as? [Int] {
+                            
+                            self.allProducts.forEach { product in
+                                    if !cart.contains(product.id) {
+                                        self.storageService.setCart(productId: product.id, cartCount: 0)
+                                    }
+                                }
+                            
+                            if cart.count == cartCount.count {
+                                for index in 0..<cart.count {
+                                    self.storageService.setCart(productId: cart[index], cartCount: cartCount[index])
+                                }
+                            }
+                        }
+                        
+                    case .failure(let error):
+                        print("Ошибка загрузки данных: \(error.localizedDescription)")
+                    }
+                }
+                
+                allProducts = storageService.getAllProducts()
+            }
+
+            
             popularProducts = allProducts.sorted { $0.rate > $1.rate }
             justForYouProducts = Array(allProducts.shuffled().prefix(4))
             uniqueCategories = Array(Set(allProducts.map { $0.category }))

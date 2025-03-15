@@ -14,6 +14,7 @@ final class ShopViewController: UIViewController {
     var filteredProducts: [ProductRealmModel] = []
     let historyManager = HistoryManager()
     let currencyManager = CurrencyManager()
+    private let userManager = UserManager()
     
     private var searchHistory: [String] = []
     
@@ -256,12 +257,14 @@ extension ShopViewController: UICollectionViewDataSource {
                 var currentCount = self.products[indexPath.item].cartCount
                 currentCount += 1
                 self.storageService.setCart(productId: self.products[indexPath.item].id, cartCount: currentCount)
+                self.userManager.setCart(self.products[indexPath.item].id, currentCount)
                 cell.updateCartCount(currentCount)
                 NotificationCenter.default.post(name: NSNotification.Name("CartUpdated"), object: nil)
             }
             
             cell.likeButtonAction = { liked in
                 self.storageService.setFavorite(productId: product.id, isFavorite: liked)
+                self.userManager.setFavorites(product.id, liked)
                 print("like state \(liked) for \(product.title)")
             }
             
@@ -296,10 +299,11 @@ extension ShopViewController: UICollectionViewDataSource {
                 print(currentCount)
                 
                 self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
-                
+                self.userManager.setCart(currentProduct.id, currentCount)
             } likeButtonAction: { liked in
                 let currentProduct = selectedProduct
                 self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
+                self.userManager.setFavorites(currentProduct.id, liked)
             }
 
             vc.hidesBottomBarWhenPushed = true
