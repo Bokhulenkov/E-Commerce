@@ -15,16 +15,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
-        
-        let vc: UIViewController
-        if hasLaunchedBefore {
-            vc = StartScreenViewController()
-        } else {
-            vc = OnboardingViewController()
-            UserDefaults.standard.set(true, forKey: "hasLaunchedBefore")
-        }
-                
-        window?.rootViewController = vc
+         
+        window?.rootViewController = LaunchViewController()
         window?.makeKeyAndVisible()
     }
 
