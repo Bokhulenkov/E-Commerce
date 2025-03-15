@@ -80,6 +80,7 @@ final class WishlistViewController: UIViewController {
     var currency: String = ""
     var searchedText = ""
     let currencyManager = CurrencyManager()
+    private let userManager = UserManager()
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -171,10 +172,12 @@ extension WishlistViewController: UICollectionViewDataSource {
             var currentCount = self.products[indexPath.item].cartCount
             currentCount += 1
             self.storageService.setCart(productId: self.products[indexPath.item].id, cartCount: currentCount)
+            self.userManager.setCart(self.products[indexPath.item].id, currentCount)
         }
         
         cell.likeButtonAction = { liked in
             self.storageService.setFavorite(productId: self.products[indexPath.item].id, isFavorite: liked)
+            self.userManager.setFavorites(self.products[indexPath.item].id, liked)
         }
         
         cell.isUserInteractionEnabled = true
@@ -193,10 +196,11 @@ extension WishlistViewController: UICollectionViewDelegate {
             currentCount += 1
 
             self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
-            
+            self.userManager.setCart(currentProduct.id, currentCount)
         } likeButtonAction: { liked in
             let currentProduct = self.products[indexPath.row]
             self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
+            self.userManager.setFavorites(currentProduct.id, liked)
         }
         
         vc.hidesBottomBarWhenPushed = true
