@@ -13,6 +13,7 @@ final class CartView {
     private let storageService = StorageService()
     private var cartProducts: Results<ProductRealmModel>?
     private var notificationToken: NotificationToken?
+    private let userManager = UserManager()
     
     init() {
         loadCartProducts()
@@ -56,17 +57,20 @@ final class CartView {
             return
         }
         storageService.setCart(productId: productId, cartCount: quantity)
+        userManager.setCart(productId, quantity)
     }
     
     // Удаляем товар из корзины
     func removeItem(at index: Int) {
         guard let product = cartProducts?[index] else { return }
         storageService.setCart(productId: product.id, cartCount: 0)
+        userManager.setCart(product.id, 0)
     }
     
     // Очищаем корзину
     func removeAll() {
         storageService.clearCart()
+        userManager.clearAllCart()
     }
     
     // Вычисляем общую сумму в корзине

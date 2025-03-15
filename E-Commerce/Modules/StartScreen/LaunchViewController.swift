@@ -29,6 +29,7 @@ final class LaunchViewController: UIViewController {
         FirebaseService.shared.getCurrentUser { user in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 if let user = user {
+                    UserDefaults.standard.set(user.uid, forKey: "userID")
                     self.loadUserData(userId: user.uid)
                     self.showTabBar()
                 } else {

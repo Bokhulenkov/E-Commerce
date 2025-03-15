@@ -271,6 +271,22 @@ final class SettingsViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    private func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage? {
+        let widthRatio  = targetSize.width  / image.size.width
+        let heightRatio = targetSize.height / image.size.height
+
+        let scaleFactor = min(widthRatio, heightRatio)
+        
+        let newSize = CGSize(width: image.size.width * scaleFactor, height: image.size.height * scaleFactor)
+        
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
+        image.draw(in: CGRect(origin: .zero, size: newSize))
+        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return resizedImage
+    }
+    
     //MARK: Action
     
     @objc func saveChangesButtonAction(_ button: UIButton) {
@@ -364,7 +380,8 @@ extension SettingsViewController: UIImagePickerControllerDelegate, UINavigationC
         
         avatarImageView.image = selectedImage
         
-        FirebaseService.shared.saveUserData(userId: "\(self.currentUID)", userData: ["photo": selectedImage.toBase64() as Any]) { result in
+        let resizedImage = resizeImage(image: selectedImage, targetSize: CGSize(width: 256, height: 256))
+        FirebaseService.shared.saveUserData(userId: "\(self.currentUID)", userData: ["photo": resizedImage?.toBase64() as Any]) { result in
             print("Фото успешно сохранено")
         }
         
