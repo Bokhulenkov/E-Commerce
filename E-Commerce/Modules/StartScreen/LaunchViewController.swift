@@ -9,40 +9,17 @@ import FirebaseAuth
 import FirebaseFirestore
 
 final class LaunchViewController: UIViewController {
-    
-    private lazy var circleWhiteView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(hex: "#FFFFFF")
-        view.layer.cornerRadius = 67
-        view.layer.shadowColor = UIColor.black.cgColor
-        view.layer.shadowOpacity = 0.2
-        view.layer.shadowOffset = CGSize(width: 4, height: 4)
-        view.layer.shadowRadius = 5
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
+
     private lazy var bagPicture: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "bag")
-        imageView.contentMode = .scaleToFill
+        imageView.image = UIImage(named: "Start")
+        imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
-    
-    private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Shoppe"
-        label.font = UIFont(name: "Raleway-v4020-Bold", size: 52)
-        label.textColor = .black
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
         setupUI()
         loadDatabase()
         checkUserAuthentication()
@@ -96,27 +73,13 @@ final class LaunchViewController: UIViewController {
     }
     
     private func setupUI() {
-        view.backgroundColor = UIColor(named: "BackgoundColor")
-        view.addSubview(titleLabel)
-        view.addSubview(circleWhiteView)
+        view.backgroundColor = .white
         view.addSubview(bagPicture)
-        
         NSLayoutConstraint.activate([
-            //Image View:
-            circleWhiteView.topAnchor.constraint(equalTo: view.topAnchor, constant: 232),
-            circleWhiteView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            circleWhiteView.widthAnchor.constraint(equalToConstant: 134),
-            circleWhiteView.heightAnchor.constraint(equalToConstant: 134),
-            
-            //Bag Picture:
-            bagPicture.leadingAnchor.constraint(equalTo: circleWhiteView.leadingAnchor, constant: 26),
-            bagPicture.trailingAnchor.constraint(equalTo: circleWhiteView.trailingAnchor, constant: -26),
-            bagPicture.topAnchor.constraint(equalTo: circleWhiteView.topAnchor, constant: 21),
-            bagPicture.bottomAnchor.constraint(equalTo: circleWhiteView.bottomAnchor, constant: -21),
-            
-            //Title Lable:
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            titleLabel.topAnchor.constraint(equalTo: circleWhiteView.bottomAnchor, constant: 24)
+            bagPicture.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bagPicture.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bagPicture.topAnchor.constraint(equalTo: view.topAnchor),
+            bagPicture.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
 }
