@@ -46,7 +46,7 @@ final class DetailViewController: UIViewController {
     private lazy var priceLabel: UILabel = {
         let label = UILabel()
         
-        label.text = "$17,00"
+        label.text = ""
         label.textAlignment = .left
         label.font = UIFont.custom(font: .ralewayBlack, size: 26)
         
@@ -66,7 +66,7 @@ final class DetailViewController: UIViewController {
         
         label.numberOfLines = 0
         label.font = UIFont.custom(font: .nunito, size: 15)
-        label.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam arcu mauris, scelerisque eu mauris id, pretium pulvinar sapien."
+        label.text = ""
         
         return label
     }()
@@ -83,7 +83,7 @@ final class DetailViewController: UIViewController {
     private lazy var firstVariationLabel: UILabel = {
         let label = UILabel()
         
-        label.text = "Pink"
+        label.text = ""
         label.backgroundColor = .variationsBackground
         label.font = UIFont.custom(font: .ralewayMedium, size: 14)
         label.layer.cornerRadius = 4
@@ -96,7 +96,7 @@ final class DetailViewController: UIViewController {
     private lazy var secondVariationLabel: UILabel = {
         let label = UILabel()
         
-        label.text = "M"
+        label.text = ""
         label.backgroundColor = .variationsBackground
         label.font = UIFont.custom(font: .ralewayMedium, size: 14)
         label.layer.cornerRadius = 4
@@ -177,9 +177,11 @@ final class DetailViewController: UIViewController {
         
         updateLikeButtons()
         
-        detailNavBar.configure(self, #selector(buyNowAction), product.isFavorite)
+        detailNavBar.configure(product: product, self, #selector(buyNowAction), product.isFavorite)
         detailNavBar.addButtonAction = addButtonAction
-        detailNavBar.likeButtonAction = likeButtonAction
+        detailNavBar.likeButtonAction = { [weak self] isLiked in
+            self?.likeButtonTapped()
+        }
         
         collectionView.reloadData()
     }

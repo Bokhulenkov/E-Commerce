@@ -44,9 +44,36 @@ class DetailNavBarView: UIStackView {
         return button
     }()
     
+    private let minusButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "minus"), for: .normal)
+        button.tintColor = .white
+        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderWidth = 1
+        button.backgroundColor = .clear
+        button.layer.cornerRadius = 11
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private let plusButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "plus"), for: .normal)
+        button.tintColor = .white
+        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderWidth = 1
+        button.backgroundColor = .clear
+        button.layer.cornerRadius = 11
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     //MARK: - Properties
     var addButtonAction: (() -> Void)?
     var likeButtonAction: ((Bool) -> Void)?
+    private var isFavorite: Bool = false
+    var updateCartAction: (() -> Void)?
+    private var product: ProductRealmModel?
     
     // MARK: - Initialization
     override init(frame: CGRect) {
@@ -56,6 +83,8 @@ class DetailNavBarView: UIStackView {
         
         addToCartButton.addTarget(self, action: #selector(addToCartButtonTapped), for: .touchUpInside)
         likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
+        minusButton.addTarget(self, action: #selector(changeCountButtonTapped), for: .touchUpInside)
+        plusButton.addTarget(self, action: #selector(changeCountButtonTapped), for: .touchUpInside)
     }
     
     required init(coder: NSCoder) {
@@ -64,9 +93,14 @@ class DetailNavBarView: UIStackView {
     
     
     //MARK: - Methods
-    func configure(_ target: Any?, _ action: Selector, _ isFavorite: Bool) {
+    func configure(product: ProductRealmModel, _ target: Any?, _ action: Selector, _ isFavorite: Bool) {
         buyButton.addTarget(target, action: action, for: .touchUpInside)
+        self.isFavorite = isFavorite
+        self.product = product
+        
         isFavorite ? likeButton.setImage(.heartRedFull, for: .normal) : likeButton.setImage(.heartRed, for: .normal)
+        
+        updateCartCount(product.cartCount)
     }
     
     // MARK: - Private Methods
@@ -81,18 +115,57 @@ class DetailNavBarView: UIStackView {
     }
     
     @objc private func likeButtonTapped() {
-        likeButtonAction?(likeButton.currentImage == .heartRed)
-        likeButton.currentImage == .heartRed ? likeButton.setImage(.heartRedFull, for: .normal) : likeButton.setImage(.heartRed, for: .normal)
+        isFavorite.toggle()
+        likeButtonAction?(isFavorite)
     }
     
     @objc private func addToCartButtonTapped() {
+        guard let product = self.product else { return }
+        
+        let newCount = product.cartCount + 1
+        
+        StorageService.shared.setCart(productId: product.id, cartCount: newCount)
+        
+        updateCartCount(newCount)
         addButtonAction?()
     }
     
+    @objc private func changeCountButtonTapped(_ sender: UIButton) {
+        guard let product = self.product else { return }
+        
+        let newCount = sender == minusButton ? max(product.cartCount - 1, 0) : product.cartCount + 1
+        
+        StorageService.shared.setCart(productId: product.id, cartCount: newCount)
+        
+        updateCartCount(newCount)
+        updateCartAction?()
+        
+        NotificationCenter.default.post(name: NSNotification.Name("UpdateCart"), object: nil, userInfo: nil)
+    }
+    
+    public func updateCartCount(_ count: Int) {
+        print(count)
+        if count > 0 {
+            minusButton.isHidden = false
+            plusButton.isHidden = false
+            addToCartButton.setTitle("\(count)", for: .normal)
+            addToCartButton.backgroundColor = UIColor.systemGreen
+        } else {
+            minusButton.isHidden = true
+            plusButton.isHidden = true
+            addToCartButton.setTitle("Add to cart", for: .normal)
+            addToCartButton.backgroundColor = .black
+        }
+        
+        addToCartButton.isEnabled = true
+    }
+
     private func setupUI() {
         addArrangedSubview(likeButton)
         addArrangedSubview(addToCartButton)
         addArrangedSubview(buyButton)
+        addSubview(minusButton)
+        addSubview(plusButton)
         
         setupConstraints()
     }
@@ -101,14 +174,27 @@ class DetailNavBarView: UIStackView {
         likeButton.translatesAutoresizingMaskIntoConstraints = false
         addToCartButton.translatesAutoresizingMaskIntoConstraints = false
         buyButton.translatesAutoresizingMaskIntoConstraints = false
+        minusButton.translatesAutoresizingMaskIntoConstraints = false
+        plusButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             likeButton.heightAnchor.constraint(equalToConstant: 40),
             likeButton.widthAnchor.constraint(equalToConstant: 47),
             
             addToCartButton.heightAnchor.constraint(equalToConstant: 40),
-            
+            addToCartButton.widthAnchor.constraint(equalTo: buyButton.widthAnchor),
+
             buyButton.heightAnchor.constraint(equalToConstant: 40),
+            
+            minusButton.centerYAnchor.constraint(equalTo: addToCartButton.centerYAnchor),
+            minusButton.leadingAnchor.constraint(equalTo: addToCartButton.leadingAnchor, constant: 10),
+            minusButton.widthAnchor.constraint(equalToConstant: 22),
+            minusButton.heightAnchor.constraint(equalToConstant: 22),
+            
+            plusButton.centerYAnchor.constraint(equalTo: addToCartButton.centerYAnchor),
+            plusButton.trailingAnchor.constraint(equalTo: addToCartButton.trailingAnchor, constant: -10),
+            plusButton.widthAnchor.constraint(equalToConstant: 22),
+            plusButton.heightAnchor.constraint(equalToConstant: 22)
         ])
     }
 }

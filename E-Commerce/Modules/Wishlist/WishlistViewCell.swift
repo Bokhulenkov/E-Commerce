@@ -37,7 +37,7 @@ class WishlistViewCell: UICollectionViewCell {
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         
-        label.text = "Lorem ipsum dolor sit amet consectetur"
+        label.text = ""
         label.textAlignment = .left
         label.numberOfLines = 2
         label.font = .custom(font: .nunito, size: 12)
@@ -48,7 +48,7 @@ class WishlistViewCell: UICollectionViewCell {
     private lazy var priceLabel: UILabel = {
         let label = UILabel()
         
-        label.text = "$17,00"
+        label.text = ""
         label.textAlignment = .left
         label.font = .custom(font: .ralewayBlack, size: 17)
         
