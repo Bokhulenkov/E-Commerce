@@ -10,7 +10,7 @@ final class UserManager {
     static let shared = UserManager()
     
     init() {}
-
+    
     var userUID: String = ""
     var favorites: [Int] = []
     var cart: [Int] = []
@@ -38,7 +38,7 @@ final class UserManager {
         
         if !userUID.isEmpty {
             let products = StorageService.shared.getAllCartProducts()
-
+            
             cart.removeAll()
             cartCount.removeAll()
             for product in products {
@@ -70,5 +70,4 @@ final class UserManager {
             }
         }
     }
-
 }

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AddressView: UIView {
+final class AddressView: UIView {
     
     // MARK: - Properties
     

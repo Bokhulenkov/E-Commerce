@@ -13,7 +13,7 @@ final class SettingsViewController: UIViewController {
     private var currentName: String = ""
     private var currentEmail: String = ""
     private var currentPass: String = ""
-
+    
     private let settingsTitle: UILabel = {
         let label = UILabel()
         label.text = "Settings"
@@ -130,6 +130,7 @@ final class SettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+        setupKeyboardHidding()
         
         nameTextField.delegate = self
         emailTextField.delegate = self
@@ -138,7 +139,7 @@ final class SettingsViewController: UIViewController {
         saveButton.addTarget(self, action: #selector(saveChangesButtonAction(_:)), for: .touchUpInside)
         changeAvatarButton.addTarget(self, action: #selector(changeAvatarButtonAction(_:)), for: .touchUpInside)
         signOutButton.addTarget(self, action: #selector(signOutButtonAction(_:)), for: .touchUpInside)
-
+        
         FirebaseService.shared.getCurrentUser() { result in
             if let user = result {
                 self.currentUID = user.uid
@@ -164,7 +165,7 @@ final class SettingsViewController: UIViewController {
             }
         }
     }
-
+    
     private func configureUI() {
         view.addSubview(settingsTitle)
         settingsTitle.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
@@ -226,6 +227,7 @@ final class SettingsViewController: UIViewController {
         saveButton.bottomAnchor.constraint(equalTo: signOutButton.topAnchor, constant: -10).isActive = true
         saveButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
+    
     //MARK: Func
     
     private func setupData(userData: [String: Any]) {
@@ -274,7 +276,7 @@ final class SettingsViewController: UIViewController {
     private func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage? {
         let widthRatio  = targetSize.width  / image.size.width
         let heightRatio = targetSize.height / image.size.height
-
+        
         let scaleFactor = min(widthRatio, heightRatio)
         
         let newSize = CGSize(width: image.size.width * scaleFactor, height: image.size.height * scaleFactor)
@@ -283,7 +285,7 @@ final class SettingsViewController: UIViewController {
         image.draw(in: CGRect(origin: .zero, size: newSize))
         let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-
+        
         return resizedImage
     }
     
@@ -349,13 +351,13 @@ final class SettingsViewController: UIViewController {
                 let vc = LoginViewController()
                 let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
                 let window = windowScene?.windows.first
-                    
+                
                 UIView.transition(with: window!, duration: 0.3, options: .transitionCrossDissolve, animations: {
                     window?.rootViewController = vc
                 })
             }
         }
-
+        
     }
 }
 
@@ -363,7 +365,7 @@ final class SettingsViewController: UIViewController {
 
 extension SettingsViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-                
+        
         textField.resignFirstResponder()
         return true
     }

@@ -41,14 +41,16 @@ final class PaymentViewController: UIViewController {
     
     private let addVoucherButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Add Voucher", for: .normal)
-        button.setTitleColor(UIColor(named: "ButtonColor"), for: .normal)
-        button.titleLabel?.font = UIFont.custom(font: .nunitoLight, size: 13)
-        button.translatesAutoresizingMaskIntoConstraints = false
+        var config = UIButton.Configuration.plain()
+        config.title = "Add Voucher"
+        config.baseForegroundColor = UIColor(named: "ButtonColor")
+        config.attributedTitle = AttributedString("Add Voucher", attributes: AttributeContainer([.font: UIFont.custom(font: .nunito, size: 13)]))
+        config.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
+        button.configuration = config
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor(named: "ButtonColor")?.cgColor
         button.layer.cornerRadius = 8
-        button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
@@ -98,6 +100,7 @@ final class PaymentViewController: UIViewController {
     }()
     
     // MARK: - Lifecycle Methods
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -125,6 +128,7 @@ final class PaymentViewController: UIViewController {
     }
     
     // MARK: - Private Methods
+    
     private func updateTableViewHeight() {
         tableView.layoutIfNeeded()
         let height = tableView.contentSize.height
@@ -255,8 +259,9 @@ final class PaymentViewController: UIViewController {
     }
     
     // MARK: - Action Methods
+    
     private func dismissAndReturnToCart() {
-        if let product = selectedProduct {
+        if let _ = selectedProduct {
             dismiss(animated: true, completion: nil)
         } else {
             dismiss(animated: true, completion: nil)
@@ -386,52 +391,53 @@ final class PaymentViewController: UIViewController {
 }
 
 // MARK: - TableView Methods
+
 extension PaymentViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let _ = selectedProduct {
-                    return 1
-                } else {
-                    return cartView.getItems().count
-                }
-            }
+            return 1
+        } else {
+            return cartView.getItems().count
+        }
+    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PaymentCell", for: indexPath) as! PaymentItemCell
-//        let item = cartView.getItems()[indexPath.row]
-//        print(cartView.getItems()[indexPath.row].title)
-//        cell.configure(
-//            image: item.image,
-//            title: item.title,
-//            price: String(format: "\(currency)%.2f", item.price),
-//            quantity: item.cartCount
-//        )
-//        
-//        return cell
-//    }
-//}
+        //        let item = cartView.getItems()[indexPath.row]
+        //        print(cartView.getItems()[indexPath.row].title)
+        //        cell.configure(
+        //            image: item.image,
+        //            title: item.title,
+        //            price: String(format: "\(currency)%.2f", item.price),
+        //            quantity: item.cartCount
+        //        )
+        //        
+        //        return cell
+        //    }
+        //}
         if let product = selectedProduct {
-                    
-                    cell.configure(
-                        image: product.image,
-                        title: product.title,
-                        price: String(format: "\(currency)%.2f", product.price),
-                        quantity: 1 // Only 1 quantity for selected product
-                    )
-                } else {
-                   
-                    let item = cartView.getItems()[indexPath.row]
-                    cell.configure(
-                        image: item.image,
-                        title: item.title,
-                        price: String(format: "\(currency)%.2f", item.price),
-                        quantity: item.cartCount
-                    )
-                }
-                
-                return cell
-            }
+            
+            cell.configure(
+                image: product.image,
+                title: product.title,
+                price: String(format: "\(currency)%.2f", product.price),
+                quantity: 1 // Only 1 quantity for selected product
+            )
+        } else {
+            
+            let item = cartView.getItems()[indexPath.row]
+            cell.configure(
+                image: item.image,
+                title: item.title,
+                price: String(format: "\(currency)%.2f", item.price),
+                quantity: item.cartCount
+            )
         }
+        
+        return cell
+    }
+}
 
 extension PaymentViewController: UITableViewDelegate {
     // Implement delegate methods if needed

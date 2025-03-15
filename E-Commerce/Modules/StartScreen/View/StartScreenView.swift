@@ -79,14 +79,12 @@ class StartScreenView: UIView {
         return button
     }()
     
-    
     //Инициализатор:
     override init(frame: CGRect) {
         super.init(frame: frame) //Передает размеры в родительский класс UIView.
         setViews() //Задаем основные свойства вью.
         setupConstraints() //Устанавливаем констреинты.
     }
-    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented") //Инициализатор, запрещающий сториборды.
@@ -103,23 +101,16 @@ class StartScreenView: UIView {
         addSubview(arrowButton)
     }
     
-    
     internal func setupButtons(target: Any?, actionStartButton: Selector, actionArrowButton: Selector){
         //print("setupButtons сработала")
         startButton.addTarget(target, action: actionStartButton, for: .touchUpInside)
         arrowButton.addTarget(target, action: actionArrowButton, for: .touchUpInside)
     }
-    
-    
 }
-
-
-
 
 //MARK: Extensions
 
 extension StartScreenView {
-    
     func setupConstraints(){
         NSLayoutConstraint.activate([
             
@@ -152,11 +143,9 @@ extension StartScreenView {
             //Arrow Button:
             arrowButton.leadingAnchor.constraint(equalTo: titleLabelAccount.trailingAnchor, constant: 16),
             arrowButton.topAnchor.constraint(equalTo: startButton.bottomAnchor, constant: 24),
-            
         ])
     }
 }
-
 
 extension UIColor {
     convenience init(hex: String) {

@@ -7,6 +7,7 @@
 import UIKit
 
 final class ShopViewController: UIViewController {
+    
     let storageService = StorageService()
     var products: [ProductRealmModel] = []
     var currency: String = ""
@@ -126,20 +127,19 @@ final class ShopViewController: UIViewController {
         }
     }
     
-    
     override func viewWillAppear(_ animated: Bool) {
-            super.viewWillAppear(animated)
-            
-            if searchedText.isEmpty {
-                filteredProducts = products
-            }
+        super.viewWillAppear(animated)
+        
+        if searchedText.isEmpty {
+            filteredProducts = products
+        }
         
         if filteredProducts.isEmpty {
-                updateUIWhenEmpty()
-            }
-        
-            collectionProductsView.reloadData()
+            updateUIWhenEmpty()
         }
+        
+        collectionProductsView.reloadData()
+    }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -147,6 +147,7 @@ final class ShopViewController: UIViewController {
 }
 
 //MARK: Private methods
+
 private extension ShopViewController {
     func setupUI() {
         view.backgroundColor = .white
@@ -252,7 +253,7 @@ extension ShopViewController: UICollectionViewDataSource {
             let product = dataSource[indexPath.row]
             
             cell.configure(product, currency: currency)
-    
+            
             cell.addButtonAction = {
                 var currentCount = self.products[indexPath.item].cartCount
                 currentCount += 1
@@ -305,7 +306,7 @@ extension ShopViewController: UICollectionViewDataSource {
                 self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
                 self.userManager.setFavorites(currentProduct.id, liked)
             }
-
+            
             vc.hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(vc, animated: true)
             navigationController?.isNavigationBarHidden = false
@@ -332,10 +333,10 @@ extension ShopViewController: UITextFieldDelegate {
         searchedText = textField.text?.lowercased() ?? ""
         
         if !searchedText.isEmpty {
-                   historyManager.addSearchQuery(searchedText)
-                   searchHistory = historyManager.getAllSearchHistory()
-                   historyCollectionView.reloadData()
-               }
+            historyManager.addSearchQuery(searchedText)
+            searchHistory = historyManager.getAllSearchHistory()
+            historyCollectionView.reloadData()
+        }
         
         if searchedText.isEmpty {
             filteredProducts = products
@@ -346,7 +347,7 @@ extension ShopViewController: UITextFieldDelegate {
         }
         
         collectionProductsView.reloadData()
-
+        
         if filteredProducts.isEmpty {
             updateUIWhenEmpty()
         } else {
@@ -363,9 +364,9 @@ extension ShopViewController: UITextFieldDelegate {
         searchedText = ""
         
         if products.isEmpty, let tabBarController = self.tabBarController as? TabBarViewController {
-                products = tabBarController.allProducts
-            }
-      filteredProducts = products
+            products = tabBarController.allProducts
+        }
+        filteredProducts = products
         
         textField.resignFirstResponder()
         
@@ -378,6 +379,3 @@ extension ShopViewController: UITextFieldDelegate {
         return true
     }
 }
-
-
-

@@ -209,7 +209,7 @@ final class HomeViewController: UIViewController {
     
     private func configureUI() {
         navigationController?.navigationBar.isHidden = true
-
+        
         view.addSubview(cartButton)
         cartButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -21).isActive = true
         cartButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 11).isActive = true
@@ -304,9 +304,9 @@ final class HomeViewController: UIViewController {
             }
             return product
         }
-
+        
         collectionProductsView.reloadData()
-
+        
         if let tabBarController = self.tabBarController as? TabBarViewController {
             tabBarController.allProducts = self.allProducts
         }
@@ -332,311 +332,311 @@ final class HomeViewController: UIViewController {
     }
     
 }
-    
-    //MARK: UICollectionViewDelegate
-    
-    extension HomeViewController: UICollectionViewDelegate {
-        func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-            if collectionView == collectionCategoriesView {
-                let selectedCategory = uniqueCategories[indexPath.row]
-                let uniqueProducts = allProducts.filter { $0.category == selectedCategory }
-                
-                let vc = ShopViewController()
-                vc.products = uniqueProducts
-                vc.hidesBottomBarWhenPushed = true
-                navigationController?.pushViewController(vc, animated: true)
-                navigationController?.isNavigationBarHidden = false
-                navigationItem.backButtonTitle = ""
-            }
-            if collectionView == collectionPopularView {
-                let vc = DetailViewController()
-                vc.configure(for: popularProducts[indexPath.row]) {
-                    let currentProduct = self.popularProducts[indexPath.row]
-                    var currentCount = currentProduct.cartCount
-                    currentCount += 1
-                    
-                    self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
-                    self.userManager.setCart(currentProduct.id, currentCount)
-                    self.setCountCart()
-                } likeButtonAction: { liked in
-                    let currentProduct = self.popularProducts[indexPath.row]
-                    self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
-                    self.userManager.setFavorites(currentProduct.id, liked)
-                }
-            
-                vc.hidesBottomBarWhenPushed = true
-                    self.navigationController?.pushViewController(vc, animated: true)
-                    self.navigationController?.isNavigationBarHidden = false
-                    self.navigationItem.backButtonTitle = ""
-                return
-            }
-            
-            if collectionView == collectionProductsView {
-                let vc = DetailViewController()
-                vc.configure(for: justForYouProducts[indexPath.row]) {
-                    let currentProduct = self.justForYouProducts[indexPath.row]
-                    var currentCount = currentProduct.cartCount
-                    currentCount += 1
-                    
-                    self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
-                    self.userManager.setCart(currentProduct.id, currentCount)
-                    self.setCountCart()
-                    
-                } likeButtonAction: { liked in
-                    let currentProduct = self.justForYouProducts[indexPath.row]
-                    self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
-                    self.userManager.setFavorites(currentProduct.id, liked)
-                }
-                
-                vc.hidesBottomBarWhenPushed = true
-                navigationController?.pushViewController(vc, animated: true)
-                navigationController?.isNavigationBarHidden = false
-                navigationItem.backButtonTitle = ""
-                return
-            }
-        }
-    }
-    
-    //MARK: UICollectionViewDataSource
-    
-    extension HomeViewController: UICollectionViewDataSource {
-        
-        func numberOfSections(in collectionView: UICollectionView) -> Int {
-            return 1
-        }
-        
-        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-            if collectionView == collectionCategoriesView {
-                return uniqueCategories.count
-            } else if collectionView == collectionPopularView {
-                return popularProducts.count
-            } else if collectionView == collectionProductsView {
-                return justForYouProducts.count > 0 ? 4 : 0
-            } else {
-                return 0
-            }
-        }
-        
-        func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-            if collectionView == collectionCategoriesView {
-                
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeCategoriesViewCell", for: indexPath) as! HomeCategoriesViewCell
-                let uniqueProducts = allProducts.filter { $0.category == uniqueCategories[indexPath.row] }
-                let images = uniqueProducts.compactMap { $0.image }
-                
-                cell.configure(with: "\(uniqueCategories[indexPath.row])", count: uniqueProducts.count, images: images)
-                return cell
-                
-            } else if collectionView == collectionPopularView {
-                
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomePopularViewCell", for: indexPath) as! HomePopularViewCell
-                cell.configure(popularProducts[indexPath.row].image, popularProducts[indexPath.row].title, "\(currency)\(popularProducts[indexPath.row].price)" )
-                return cell
-                
-            } else if collectionView == collectionProductsView {
-                
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
-                cell.isUserInteractionEnabled = true
-                
-                cell.configure(justForYouProducts[indexPath.row], currency: currency)
-                cell.addButtonAction = {
-                    var currentCount = self.justForYouProducts[indexPath.item].cartCount
-                    currentCount += 1
-                    self.storageService.setCart(productId: self.justForYouProducts[indexPath.item].id, cartCount: currentCount)
-                    self.userManager.setCart(self.justForYouProducts[indexPath.item].id, currentCount)
-                    self.setCountCart()
-                    cell.updateCartCount(currentCount)
-                }
-                cell.updateCartAction = {
-                    self.setCountCart()
-                }
-                
-                cell.likeButtonAction = { liked in
-                    self.storageService.setFavorite(productId: self.justForYouProducts[indexPath.item].id, isFavorite: liked)
-                    self.userManager.setFavorites(self.justForYouProducts[indexPath.item].id, liked)
-                }
-                
-                return cell
-                
-            } else {
-                
-                return UICollectionViewCell()
-            }
-        }
-    }
-    
-    //MARK: UICollectionViewDelegateFlowLayout
-    
-    extension HomeViewController: UICollectionViewDelegateFlowLayout {
-        
-        func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-            if collectionView == collectionCategoriesView {
-                
-                let width = (collectionCategoriesView.frame.width - 4) / 2
-                let height = width + 30
-                return CGSize(width: width, height: height)
-                
-            } else if collectionView == collectionPopularView {
-                
-                return CGSize(width: 140, height: 204)
-                
-            } else if collectionView == collectionProductsView {
-                
-                let width = (collectionProductsView.frame.width - 13) / 2
-                let height = width * 1.75
-                return CGSize(width: width, height: height)
-                
-            } else {
-                
-                return CGSize(width: 0, height: 0)
-            }
-        }
-    }
-    
-    //MARK: NetworkServiceDelegate
-    
-    extension HomeViewController: NetworkServiceDelegate {
-        func didUpdateData(products: [ProductModel]) {
-            
-            storageService.saveProducts(products)
 
-            allProducts = storageService.getAllProducts()
-            
-            if UserDefaults.standard.string(forKey: "userID") != "" {
-                FirebaseService.shared.getUserData(userId: UserDefaults.standard.string(forKey: "userID") ?? "") { result in
-                    switch result {
-                    case .success(let userData):
-                        print("Данные пользователя загружены: \(userData)")
-                        if let favorites = userData["favorites"] as? [Int] {
-                            for product in self.allProducts {
-                                self.storageService.setFavorite(productId: product.id, isFavorite: favorites.contains(product.id))
-                            }
-                        }
-                        
-                        if let cart = userData["cart"] as? [Int], let cartCount = userData["cartCount"] as? [Int] {
-                            
-                            self.allProducts.forEach { product in
-                                    if !cart.contains(product.id) {
-                                        self.storageService.setCart(productId: product.id, cartCount: 0)
-                                    }
-                                }
-                            
-                            if cart.count == cartCount.count {
-                                for index in 0..<cart.count {
-                                    self.storageService.setCart(productId: cart[index], cartCount: cartCount[index])
-                                }
-                            }
-                        }
-                        
-                    case .failure(let error):
-                        print("Ошибка загрузки данных: \(error.localizedDescription)")
-                    }
-                }
-                
-                allProducts = storageService.getAllProducts()
-            }
+//MARK: UICollectionViewDelegate
 
-            
-            popularProducts = allProducts.sorted { $0.rate > $1.rate }
-            justForYouProducts = Array(allProducts.shuffled().prefix(4))
-            uniqueCategories = Array(Set(allProducts.map { $0.category }))
-
-            setCountCart()
-            
-            configureUI()
-            
-            collectionPopularView.reloadData()
-            collectionProductsView.reloadData()
-            collectionCategoriesView.reloadData()
-            
-            if let tabBarController = self.tabBarController as? TabBarViewController {
-                tabBarController.allProducts = self.allProducts
-            }
-        }
-        
-        func didFailWithError(error: any Error) {
-            print("didFailWithError: \(error)")
-        }
-    }
-    
-    extension HomeViewController: CLLocationManagerDelegate {
-        func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-            let europeanCountries = ["AT", "AL", "AD", "BE", "BG", "BA", "VA", "GB", "HU", "DE", "GR", "DK", "IE", "IS", "ES", "IT", "CY", "LV", "LT", "LI", "LU", "MK", "MT", "MD", "MC", "NL", "NO", "PL", "PT", "RO", "SM", "RS", "SK", "SI", "UA", "FI", "FR", "HR", "ME", "CZ", "CH", "SE", "EE"]
-            let americanCountries = ["US", "CA", "MX", "AR", "BR", "CL", "CO", "VE", "PE", "PY", "UY", "BO", "EC", "GT", "HN", "CU", "DO", "PA", "CR", "JM", "SV", "NI", "HT", "TT", "BB", "BZ", "BS", "SR", "GY"]
-
-            if let location = locations.last {
-                geocoder.reverseGeocodeLocation(location) { [weak self] (placemarks, error) in
-                    guard let self = self else { return }
-                                    
-                    if let error = error {
-                        print("Ошибка геокодирования: \(error.localizedDescription)")
-                        return
-                    }
-                                    
-                    if let placemark = placemarks?.first {
-                        if let city = placemark.locality {
-                            deliveryAdressButton.setTitle("\(city)", for: .normal)
-                        } else {
-                            print("Город не найден")
-                        }
-                            
-                        if let country = placemark.isoCountryCode {
-                            var newCurrency = ""
-                            if americanCountries.contains(country) {
-                                newCurrency = "$"
-                            } else if europeanCountries.contains(country) {
-                                newCurrency = "€"
-                            } else if country == "RU" {
-                                newCurrency = "₽"
-                            } else {
-                                newCurrency = "$"
-                            }
-                                
-                            if newCurrency != currency {
-                                currency = newCurrency
-                                print(newCurrency)
-                                currencyManager.saveCurrency(newCurrency)
-                                NotificationCenter.default.post(name: .currencyDidChange, object: nil)
-                            }
-                        } else {
-                            print("Страна не найдена")
-                        }
-                    }
-                }
-            }
-        }
-        
-        func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-            print("Ошибка при получении местоположения: \(error.localizedDescription)")
-        }
-    }
-    
-    //MARK: UITextFieldDelegate
-    
-    extension HomeViewController: UITextFieldDelegate {
-        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-            guard let text = textField.text, !text.isEmpty else {
-                return false
-            }
-
-            let filtered = allProducts.filter {
-                        $0.title.lowercased().contains(text.lowercased())
-                    }
-            
-            let historyManager = HistoryManager()
-            historyManager.addSearchQuery(text)
+extension HomeViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView == collectionCategoriesView {
+            let selectedCategory = uniqueCategories[indexPath.row]
+            let uniqueProducts = allProducts.filter { $0.category == selectedCategory }
             
             let vc = ShopViewController()
-            vc.searchedText = text
-            vc.products = allProducts
-            vc.filteredProducts = filtered
-            textField.text = ""
+            vc.products = uniqueProducts
             vc.hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(vc, animated: true)
             navigationController?.isNavigationBarHidden = false
             navigationItem.backButtonTitle = ""
+        }
+        if collectionView == collectionPopularView {
+            let vc = DetailViewController()
+            vc.configure(for: popularProducts[indexPath.row]) {
+                let currentProduct = self.popularProducts[indexPath.row]
+                var currentCount = currentProduct.cartCount
+                currentCount += 1
+                
+                self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
+                self.userManager.setCart(currentProduct.id, currentCount)
+                self.setCountCart()
+            } likeButtonAction: { liked in
+                let currentProduct = self.popularProducts[indexPath.row]
+                self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
+                self.userManager.setFavorites(currentProduct.id, liked)
+            }
             
-            textField.resignFirstResponder()
-            return true
+            vc.hidesBottomBarWhenPushed = true
+            self.navigationController?.pushViewController(vc, animated: true)
+            self.navigationController?.isNavigationBarHidden = false
+            self.navigationItem.backButtonTitle = ""
+            return
+        }
+        
+        if collectionView == collectionProductsView {
+            let vc = DetailViewController()
+            vc.configure(for: justForYouProducts[indexPath.row]) {
+                let currentProduct = self.justForYouProducts[indexPath.row]
+                var currentCount = currentProduct.cartCount
+                currentCount += 1
+                
+                self.storageService.setCart(productId: currentProduct.id, cartCount: currentCount)
+                self.userManager.setCart(currentProduct.id, currentCount)
+                self.setCountCart()
+                
+            } likeButtonAction: { liked in
+                let currentProduct = self.justForYouProducts[indexPath.row]
+                self.storageService.setFavorite(productId: currentProduct.id, isFavorite: liked)
+                self.userManager.setFavorites(currentProduct.id, liked)
+            }
+            
+            vc.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(vc, animated: true)
+            navigationController?.isNavigationBarHidden = false
+            navigationItem.backButtonTitle = ""
+            return
         }
     }
+}
+
+//MARK: UICollectionViewDataSource
+
+extension HomeViewController: UICollectionViewDataSource {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if collectionView == collectionCategoriesView {
+            return uniqueCategories.count
+        } else if collectionView == collectionPopularView {
+            return popularProducts.count
+        } else if collectionView == collectionProductsView {
+            return justForYouProducts.count > 0 ? 4 : 0
+        } else {
+            return 0
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if collectionView == collectionCategoriesView {
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeCategoriesViewCell", for: indexPath) as! HomeCategoriesViewCell
+            let uniqueProducts = allProducts.filter { $0.category == uniqueCategories[indexPath.row] }
+            let images = uniqueProducts.compactMap { $0.image }
+            
+            cell.configure(with: "\(uniqueCategories[indexPath.row])", count: uniqueProducts.count, images: images)
+            return cell
+            
+        } else if collectionView == collectionPopularView {
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomePopularViewCell", for: indexPath) as! HomePopularViewCell
+            cell.configure(popularProducts[indexPath.row].image, popularProducts[indexPath.row].title, "\(currency)\(popularProducts[indexPath.row].price)" )
+            return cell
+            
+        } else if collectionView == collectionProductsView {
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeProductViewCell", for: indexPath) as! HomeProductViewCell
+            cell.isUserInteractionEnabled = true
+            
+            cell.configure(justForYouProducts[indexPath.row], currency: currency)
+            cell.addButtonAction = {
+                var currentCount = self.justForYouProducts[indexPath.item].cartCount
+                currentCount += 1
+                self.storageService.setCart(productId: self.justForYouProducts[indexPath.item].id, cartCount: currentCount)
+                self.userManager.setCart(self.justForYouProducts[indexPath.item].id, currentCount)
+                self.setCountCart()
+                cell.updateCartCount(currentCount)
+            }
+            cell.updateCartAction = {
+                self.setCountCart()
+            }
+            
+            cell.likeButtonAction = { liked in
+                self.storageService.setFavorite(productId: self.justForYouProducts[indexPath.item].id, isFavorite: liked)
+                self.userManager.setFavorites(self.justForYouProducts[indexPath.item].id, liked)
+            }
+            
+            return cell
+            
+        } else {
+            
+            return UICollectionViewCell()
+        }
+    }
+}
+
+//MARK: UICollectionViewDelegateFlowLayout
+
+extension HomeViewController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if collectionView == collectionCategoriesView {
+            
+            let width = (collectionCategoriesView.frame.width - 4) / 2
+            let height = width + 30
+            return CGSize(width: width, height: height)
+            
+        } else if collectionView == collectionPopularView {
+            
+            return CGSize(width: 140, height: 204)
+            
+        } else if collectionView == collectionProductsView {
+            
+            let width = (collectionProductsView.frame.width - 13) / 2
+            let height = width * 1.75
+            return CGSize(width: width, height: height)
+            
+        } else {
+            
+            return CGSize(width: 0, height: 0)
+        }
+    }
+}
+
+//MARK: NetworkServiceDelegate
+
+extension HomeViewController: NetworkServiceDelegate {
+    func didUpdateData(products: [ProductModel]) {
+        
+        storageService.saveProducts(products)
+        
+        allProducts = storageService.getAllProducts()
+        
+        if UserDefaults.standard.string(forKey: "userID") != "" {
+            FirebaseService.shared.getUserData(userId: UserDefaults.standard.string(forKey: "userID") ?? "") { result in
+                switch result {
+                case .success(let userData):
+                    print("Данные пользователя загружены: \(userData)")
+                    if let favorites = userData["favorites"] as? [Int] {
+                        for product in self.allProducts {
+                            self.storageService.setFavorite(productId: product.id, isFavorite: favorites.contains(product.id))
+                        }
+                    }
+                    
+                    if let cart = userData["cart"] as? [Int], let cartCount = userData["cartCount"] as? [Int] {
+                        
+                        self.allProducts.forEach { product in
+                            if !cart.contains(product.id) {
+                                self.storageService.setCart(productId: product.id, cartCount: 0)
+                            }
+                        }
+                        
+                        if cart.count == cartCount.count {
+                            for index in 0..<cart.count {
+                                self.storageService.setCart(productId: cart[index], cartCount: cartCount[index])
+                            }
+                        }
+                    }
+                    
+                case .failure(let error):
+                    print("Ошибка загрузки данных: \(error.localizedDescription)")
+                }
+            }
+            
+            allProducts = storageService.getAllProducts()
+        }
+        
+        
+        popularProducts = allProducts.sorted { $0.rate > $1.rate }
+        justForYouProducts = Array(allProducts.shuffled().prefix(4))
+        uniqueCategories = Array(Set(allProducts.map { $0.category }))
+        
+        setCountCart()
+        
+        configureUI()
+        
+        collectionPopularView.reloadData()
+        collectionProductsView.reloadData()
+        collectionCategoriesView.reloadData()
+        
+        if let tabBarController = self.tabBarController as? TabBarViewController {
+            tabBarController.allProducts = self.allProducts
+        }
+    }
+    
+    func didFailWithError(error: any Error) {
+        print("didFailWithError: \(error)")
+    }
+}
+
+extension HomeViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let europeanCountries = ["AT", "AL", "AD", "BE", "BG", "BA", "VA", "GB", "HU", "DE", "GR", "DK", "IE", "IS", "ES", "IT", "CY", "LV", "LT", "LI", "LU", "MK", "MT", "MD", "MC", "NL", "NO", "PL", "PT", "RO", "SM", "RS", "SK", "SI", "UA", "FI", "FR", "HR", "ME", "CZ", "CH", "SE", "EE"]
+        let americanCountries = ["US", "CA", "MX", "AR", "BR", "CL", "CO", "VE", "PE", "PY", "UY", "BO", "EC", "GT", "HN", "CU", "DO", "PA", "CR", "JM", "SV", "NI", "HT", "TT", "BB", "BZ", "BS", "SR", "GY"]
+        
+        if let location = locations.last {
+            geocoder.reverseGeocodeLocation(location) { [weak self] (placemarks, error) in
+                guard let self = self else { return }
+                
+                if let error = error {
+                    print("Ошибка геокодирования: \(error.localizedDescription)")
+                    return
+                }
+                
+                if let placemark = placemarks?.first {
+                    if let city = placemark.locality {
+                        deliveryAdressButton.setTitle("\(city)", for: .normal)
+                    } else {
+                        print("Город не найден")
+                    }
+                    
+                    if let country = placemark.isoCountryCode {
+                        var newCurrency = ""
+                        if americanCountries.contains(country) {
+                            newCurrency = "$"
+                        } else if europeanCountries.contains(country) {
+                            newCurrency = "€"
+                        } else if country == "RU" {
+                            newCurrency = "₽"
+                        } else {
+                            newCurrency = "$"
+                        }
+                        
+                        if newCurrency != currency {
+                            currency = newCurrency
+                            print(newCurrency)
+                            currencyManager.saveCurrency(newCurrency)
+                            NotificationCenter.default.post(name: .currencyDidChange, object: nil)
+                        }
+                    } else {
+                        print("Страна не найдена")
+                    }
+                }
+            }
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Ошибка при получении местоположения: \(error.localizedDescription)")
+    }
+}
+
+//MARK: UITextFieldDelegate
+
+extension HomeViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        guard let text = textField.text, !text.isEmpty else {
+            return false
+        }
+        
+        let filtered = allProducts.filter {
+            $0.title.lowercased().contains(text.lowercased())
+        }
+        
+        let historyManager = HistoryManager()
+        historyManager.addSearchQuery(text)
+        
+        let vc = ShopViewController()
+        vc.searchedText = text
+        vc.products = allProducts
+        vc.filteredProducts = filtered
+        textField.text = ""
+        vc.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(vc, animated: true)
+        navigationController?.isNavigationBarHidden = false
+        navigationItem.backButtonTitle = ""
+        
+        textField.resignFirstResponder()
+        return true
+    }
+}

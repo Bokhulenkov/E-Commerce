@@ -8,7 +8,7 @@
 import UIKit
 import Kingfisher
 
-class HomeCategoriesViewCell: UICollectionViewCell {
+final class HomeCategoriesViewCell: UICollectionViewCell {
     
     private var imageViews: [UIImageView] = []
     

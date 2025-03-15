@@ -30,7 +30,7 @@ final class FirebaseService {
     
     func createUser(email: String, password: String, completion: @escaping (Result<User, Error>) -> Void) {
         auth.createUser(withEmail: email, password: password) { [weak self] authResult, error in
-            guard let strongSelf = self else { return }
+            guard let _ = self else { return }
             if let error = error {
                 completion(.failure(error))
             } else if let user = authResult?.user {

@@ -19,7 +19,7 @@ final class CategoryViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-
+    
     var data = categories
     
     override func viewDidLoad() {
@@ -32,6 +32,7 @@ final class CategoryViewController: UIViewController {
         
     }
 }
+// MARK: - Extensions
 
 private extension CategoryViewController {
     func setupTableView() {
@@ -49,7 +50,7 @@ private extension CategoryViewController {
     
     func setupUI(){
         view.backgroundColor = .white
-      
+        
         view.addSubview(titleLabel)
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
@@ -91,16 +92,16 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as? CategoryCell else {
-                return UITableViewCell()
-            }
-            let subcategories = data[indexPath.section].subType
-            cell.configure(with: subcategories)
-            return cell
+            return UITableViewCell()
+        }
+        let subcategories = data[indexPath.section].subType
+        cell.configure(with: subcategories)
+        return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-            return data[indexPath.section].isExpandable ? 350 : 0  
-        }
+        return data[indexPath.section].isExpandable ? 350 : 0  
+    }
 }
 
 extension CategoryViewController: HeaderDelegate {
@@ -110,5 +111,3 @@ extension CategoryViewController: HeaderDelegate {
         tblView.reloadSections ([idx], with: .automatic)
     }
 }
-
-

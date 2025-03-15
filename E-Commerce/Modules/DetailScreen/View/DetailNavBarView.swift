@@ -7,8 +7,10 @@
 
 import UIKit
 
-class DetailNavBarView: UIStackView {
+final class DetailNavBarView: UIStackView {
+    
     // MARK: - GUI Variables
+    
     lazy var likeButton: UIButton = {
         let button = UIButton()
         
@@ -69,6 +71,7 @@ class DetailNavBarView: UIStackView {
     }()
     
     //MARK: - Properties
+    
     var addButtonAction: (() -> Void)?
     var likeButtonAction: ((Bool) -> Void)?
     private var isFavorite: Bool = false
@@ -76,6 +79,7 @@ class DetailNavBarView: UIStackView {
     private var product: ProductRealmModel?
     
     // MARK: - Initialization
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -91,8 +95,8 @@ class DetailNavBarView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
     //MARK: - Methods
+    
     func configure(product: ProductRealmModel, _ target: Any?, _ action: Selector, _ isFavorite: Bool) {
         buyButton.addTarget(target, action: action, for: .touchUpInside)
         self.isFavorite = isFavorite
@@ -104,6 +108,7 @@ class DetailNavBarView: UIStackView {
     }
     
     // MARK: - Private Methods
+    
     private func setupView() {
         backgroundColor = .white
         axis = .horizontal
@@ -159,7 +164,7 @@ class DetailNavBarView: UIStackView {
         
         addToCartButton.isEnabled = true
     }
-
+    
     private func setupUI() {
         addArrangedSubview(likeButton)
         addArrangedSubview(addToCartButton)
@@ -183,7 +188,7 @@ class DetailNavBarView: UIStackView {
             
             addToCartButton.heightAnchor.constraint(equalToConstant: 40),
             addToCartButton.widthAnchor.constraint(equalTo: buyButton.widthAnchor),
-
+            
             buyButton.heightAnchor.constraint(equalToConstant: 40),
             
             minusButton.centerYAnchor.constraint(equalTo: addToCartButton.centerYAnchor),

@@ -8,6 +8,7 @@
 import UIKit
 
 final class SubcategoryCell: UICollectionViewCell {
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14, weight: .medium)

@@ -9,19 +9,17 @@ import UIKit
 
 final class StartScreenViewController: UIViewController {
     
-    
-    
     //    MARK: - Properties
     
     private let startScreenView = StartScreenView()
     
-    
     //    MARK: - LifeCycle
     override func loadView() {
         view = startScreenView
-        startScreenView.setupButtons(target: self,
-                                     actionStartButton:  #selector(startButtonTapped),
-                                     actionArrowButton:  #selector(arrowButtonTapped))
+        startScreenView.setupButtons(
+            target: self,
+            actionStartButton:  #selector(startButtonTapped),
+            actionArrowButton:  #selector(arrowButtonTapped))
     }
     
     @objc private func startButtonTapped() {
@@ -38,9 +36,7 @@ final class StartScreenViewController: UIViewController {
         present(vc, animated: true, completion: nil)
     }
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    
 }

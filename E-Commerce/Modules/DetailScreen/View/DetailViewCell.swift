@@ -7,8 +7,10 @@
 
 import UIKit
 
-class DetailViewCell: UICollectionViewCell {
+final class DetailViewCell: UICollectionViewCell {
+    
     // MARK: - GUI Variables
+    
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         

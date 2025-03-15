@@ -8,7 +8,7 @@
 import UIKit
 import Kingfisher
 
-class CartItemCell: UITableViewCell {
+final class CartItemCell: UITableViewCell {
     
     // MARK: - Properties
     
@@ -136,8 +136,6 @@ class CartItemCell: UITableViewCell {
         counterLabel.translatesAutoresizingMaskIntoConstraints = false
         counterLabel.textAlignment = .center
         counterLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        
-        
         
         NSLayoutConstraint.activate([
             counterLabel.centerXAnchor.constraint(equalTo: counterContainerView.centerXAnchor),

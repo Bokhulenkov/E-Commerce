@@ -78,7 +78,6 @@
 			isa = PBXGroup;
 			children = (
 				11BF980E2D75A8520012D5A0 /* E-Commerce */,
-				F38BEA5B2D7C737F007DA57E /* Frameworks */,
 				11BF980D2D75A8520012D5A0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -89,13 +88,6 @@
 				11BF980C2D75A8520012D5A0 /* E-Commerce.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		F38BEA5B2D7C737F007DA57E /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
