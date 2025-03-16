@@ -30,7 +30,9 @@ final class HomeViewController: UIViewController {
             return Int(cartCountLabel.text ?? "0") ?? 0
         }
         set {
-            cartCountLabel.text = "\(newValue)"
+            DispatchQueue.main.async {
+                self.cartCountLabel.text = "\(newValue)"
+            }
             cartCountLabel.isHidden = newValue == 0
             NotificationCenter.default.post(name: NSNotification.Name("UpdateCart"), object: nil, userInfo: nil)
         }
@@ -312,6 +314,23 @@ final class HomeViewController: UIViewController {
         }
     }
     
+    private func updateProducts() {
+        popularProducts = allProducts.sorted { $0.rate > $1.rate }
+        justForYouProducts = Array(allProducts.shuffled().prefix(4))
+        uniqueCategories = Array(Set(allProducts.map { $0.category }))
+        
+        configureUI()
+        setCountCart()
+                
+        collectionPopularView.reloadData()
+        collectionProductsView.reloadData()
+        collectionCategoriesView.reloadData()
+        
+        if let tabBarController = self.tabBarController as? TabBarViewController {
+            tabBarController.allProducts = self.allProducts
+        }
+    }
+    
     //MARK: Action
     
     @objc func openCategoriesButtonAction(_ button: UIButton) {
@@ -497,16 +516,14 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
 
 extension HomeViewController: NetworkServiceDelegate {
     func didUpdateData(products: [ProductModel]) {
-        
         storageService.saveProducts(products)
-        
         allProducts = storageService.getAllProducts()
-        
+
         if UserDefaults.standard.string(forKey: "userID") != "" {
             FirebaseService.shared.getUserData(userId: UserDefaults.standard.string(forKey: "userID") ?? "") { result in
                 switch result {
                 case .success(let userData):
-                    print("Данные пользователя загружены: \(userData)")
+                    print("Данные пользователя загружены")
                     if let favorites = userData["favorites"] as? [Int] {
                         for product in self.allProducts {
                             self.storageService.setFavorite(productId: product.id, isFavorite: favorites.contains(product.id))
@@ -528,29 +545,15 @@ extension HomeViewController: NetworkServiceDelegate {
                         }
                     }
                     
+                    self.allProducts = self.storageService.getAllProducts()
+                    self.updateProducts()
+                    
                 case .failure(let error):
                     print("Ошибка загрузки данных: \(error.localizedDescription)")
                 }
             }
-            
-            allProducts = storageService.getAllProducts()
-        }
-        
-        
-        popularProducts = allProducts.sorted { $0.rate > $1.rate }
-        justForYouProducts = Array(allProducts.shuffled().prefix(4))
-        uniqueCategories = Array(Set(allProducts.map { $0.category }))
-        
-        setCountCart()
-        
-        configureUI()
-        
-        collectionPopularView.reloadData()
-        collectionProductsView.reloadData()
-        collectionCategoriesView.reloadData()
-        
-        if let tabBarController = self.tabBarController as? TabBarViewController {
-            tabBarController.allProducts = self.allProducts
+        } else {
+            updateProducts()
         }
     }
     
