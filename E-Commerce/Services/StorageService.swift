@@ -133,4 +133,17 @@ final class StorageService {
             print("Ошибка при очистке корзины: \(error)")
         }
     }
+    
+    func clearFavorite() {
+        do {
+            try realm.write {
+                let cartProducts = realm.objects(ProductRealmModel.self).filter("isFavorite == true")
+                for product in cartProducts {
+                    product.isFavorite = false
+                }
+            }
+        } catch {
+            print("Ошибка при очистке избранного: \(error)")
+        }
+    }
 }

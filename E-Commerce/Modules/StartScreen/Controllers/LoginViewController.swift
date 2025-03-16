@@ -31,6 +31,7 @@ class LoginViewController: UIViewController {
                 switch result {
                 case .success(let user):
                     print("user: \(user.uid)")
+                    UserDefaults.standard.set(user.uid, forKey: "userID")
                     self.setNextController()
                 case .failure(let error):
                     print("Ошибка авторизации: \(error.localizedDescription)")
