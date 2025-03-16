@@ -43,7 +43,7 @@ final class LaunchViewController: UIViewController {
         FirebaseService.shared.getUserData(userId: userId) { result in
             switch result {
             case .success(let userData):
-                print("Данные пользователя загружены")
+                print("Данные пользователя загружены \(userData)")
             case .failure(let error):
                 print("Ошибка загрузки данных: \(error.localizedDescription)")
             }

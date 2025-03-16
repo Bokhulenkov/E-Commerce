@@ -132,7 +132,6 @@ final class DetailNavBarView: UIStackView {
         StorageService.shared.setCart(productId: product.id, cartCount: newCount)
         
         updateCartCount(newCount)
-        addButtonAction?()
     }
     
     @objc private func changeCountButtonTapped(_ sender: UIButton) {
