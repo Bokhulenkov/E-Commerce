@@ -347,7 +347,9 @@ final class SettingsViewController: UIViewController {
                 self.showAlert(error.localizedDescription)
             } else {
                 print("Выход выполнен успешно")
-                
+                UserDefaults.standard.set("", forKey: "userID")
+                StorageService.shared.clearCart()
+                StorageService.shared.clearFavorite()
                 let vc = LoginViewController()
                 let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
                 let window = windowScene?.windows.first
