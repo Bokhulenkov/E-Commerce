@@ -550,6 +550,7 @@ extension HomeViewController: NetworkServiceDelegate {
                     
                 case .failure(let error):
                     print("Ошибка загрузки данных: \(error.localizedDescription)")
+                    self.updateProducts()
                 }
             }
         } else {
